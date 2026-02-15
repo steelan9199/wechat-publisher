@@ -1,5 +1,5 @@
 {
-  "name": "wechat-publisher-skill",
+  "name": "wechat-publisher"
   "description": "将本地 Markdown 文章发布到微信公众号草稿箱",
   "version": "1.0.0",
   "type": "module",
