@@ -85,6 +85,15 @@ npm install --prefix "/Users/yourname/.qoder/skills/wechat-publisher-skill"
 2. 更新 `markdownFilePath` 为用户提供的文章路径
 3. 用户提供了其他参数时，覆盖对应的默认值
 4. 将 `config.default.json` 中的相对路径转换为绝对路径（`<技能目录绝对路径>` + 文件名，如 `./cover.jpg` → `<技能目录绝对路径>/cover.jpg`）
+5. **写入 `config.json`**。
+
+**⚠️ 关键格式说明：**
+
+在生成 JSON 内容时，**严禁**对`prefix` 和 `suffix` 字段的值进行二次转义.
+举例说明:
+假设用户提供的`prefix`是`"本文由AI创作\n"`
+*   ✅ **正确写法**（保持单反斜杠）：`"prefix": "本文由AI创作\n"`
+*   ❌ **错误写法**（生成双反斜杠）：`"prefix": "本文由AI创作\\n"`
 
 **config.json 字段说明：**
 
