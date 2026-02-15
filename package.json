@@ -1,0 +1,20 @@
+{
+  "name": "wechat-publisher-skill",
+  "description": "将本地 Markdown 文章发布到微信公众号草稿箱",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js --config ./config.json"
+  },
+  "dependencies": {
+    "cheerio": "^1.1.2",
+    "fastmcp": "^3.23.1",
+    "marked": "^16.3.0",
+    "mathjax-full": "^3.2.1",
+    "yargs": "^18.0.0"
+  },
+  "engines": {
+    "node": ">=24.13.0"
+  }
+}

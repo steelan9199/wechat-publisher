@@ -1,0 +1,232 @@
+---
+name: wechat-publisher
+description: 将本地 Markdown 文章发布到微信公众号草稿箱。当用户提到发布文章到公众号、上传 markdown 到微信公众号、或需要将本地文章同步到微信公众号时使用此技能。
+requirements:
+  runtime: nodejs>=24.13.0
+  module: esm
+  dependencies:
+    - cheerio@^1.1.2
+    - fastmcp@^3.23.1
+    - marked@^16.3.0
+    - mathjax-full@^3.2.1
+    - yargs@^18.0.0
+---
+
+# 微信公众号文章发布工具
+
+## 功能概述
+
+将本地 Markdown 文章一键发布到微信公众号草稿箱。
+
+## 如何获取微信开发者平台的 AppID 和 AppSecret（可选）
+
+如果默认配置发布失败，或用户想使用自己的公众号，指导用户按以下步骤获取：
+
+1. 登录微信开发者平台(首页/公众号) https://developers.weixin.qq.com/platform
+2. 点击`前往使用`
+3. 点击`我的业务/公众号`
+4. 公众号页面的`基础信息`下方就能看到"AppID"
+5. 公众号页面的`开发秘钥`下方就能看到"AppSecret"
+
+## 工作流程
+
+根据用户需求执行不同的操作流程：
+
+### 场景一：预览主题效果
+
+当用户说"我要预览主题"或类似表达时：
+
+1. **直接提供预览链接**：https://5g6pxtj3zg.coze.site/
+2. **简单说明**：告知用户该网站提供了一个固定包含各种元素的markdown文章，用于展示不同主题的实际效果
+3. **无需执行任何本地操作**
+
+### 场景二：发布文章到公众号
+
+当用户需要将 Markdown 文章发布到微信公众号时，按以下步骤执行：
+
+### 1. 环境检查与准备
+
+确保环境满足要求：
+
+- Node.js >= 24.13.0
+- 安装依赖（已安装时会快速跳过）
+
+```bash
+# Windows 示例
+npm install --prefix "C:\Users\YourName\.qoder\skills\wechat-publisher-skill"
+
+# Mac/Linux 示例
+npm install --prefix "/Users/yourname/.qoder/skills/wechat-publisher-skill"
+```
+
+### 2. 收集必要信息
+
+向用户确认以下信息：
+
+| 参数              | 必填 | 说明                                                         |
+| ----------------- | ---- | ------------------------------------------------------------ |
+| Markdown 文件路径 | 是   | 要发布的文章文件位置                                         |
+| APP_ID            | 否   | 微信开发者平台的 AppID                                       |
+| APP_SECRET        | 否   | 微信开发者平台的 AppSecret                                   |
+| 文章作者名称      | 否   | 公众号显示的作者名                                           |
+| 封面图片路径      | 否   | 文章封面图片                                                 |
+| 文章标题          | 否   | 发布的文章标题，未指定时使用文件名作为标题                   |
+| 主题              | 否   | 文章渲染主题，使用 themes 目录下的主题文件(默认使用蓝色主题) |
+| 文章前缀          | 否   | 显示在正文开头的内容                                         |
+| 文章后缀          | 否   | 显示在正文结尾的内容                                         |
+
+> 所有可选参数均有默认值（来自 `config.default.json`），用户不提供时自动使用默认值。
+
+### 3. 配置生成
+
+**生成逻辑：**
+
+1. 复制 `config.default.json` 为 `config.json`
+2. 更新 `markdownFilePath` 为用户提供的文章路径
+3. 用户提供了其他参数时，覆盖对应的默认值
+4. 将 `config.default.json` 中的相对路径转换为绝对路径（`<技能目录绝对路径>` + 文件名，如 `./cover.jpg` → `<技能目录绝对路径>/cover.jpg`）
+
+**config.json 字段说明：**
+
+```json
+{
+  "markdownFilePath": "用户提供的markdown文章路径",
+  "title": "文章标题，未指定时使用文件名作为标题",
+  "theme": "文章渲染主题，使用themes目录下的主题文件名(默认使用蓝色主题)",
+  "AUTHOR": "文章作者名称",
+  "prefix": "文章前缀",
+  "suffix": "文章后缀",
+  "APP_ID": "微信开发者平台的APP_ID",
+  "APP_SECRET": "微信开发者平台的APP_SECRET",
+  "coverFilePath": "文章的封面路径"
+}
+```
+
+**config.json 示例：**
+
+```json
+{
+  "markdownFilePath": "D:\\Documents\\公众号教程\\文章.md",
+  "title": "文章标题",
+  "theme": "blue",
+  "AUTHOR": "牙叔教程",
+  "prefix": "本文由AI创作\n",
+  "suffix": "## 扣子智能体教程\nhttps://space.bilibili.com/26079586",
+  "APP_ID": "wxc2afxxxxxxxxxx",
+  "APP_SECRET": "8c05bc67131xxxxxxxxxx",
+  "coverFilePath": "C:\\Users\\YourName\\.qoder\\skills\\wechat-publisher-skill\\cover.jpg"
+}
+```
+
+> **注意**：Mac/Linux 系统将路径中的 `\` 替换为 `/`，如 `/Users/yourname/Documents/公众号教程/文章.md`
+
+**发布失败时的配置处理：**
+
+如果发布返回 `invalid appid` 或 `invalid appsecret` 错误，提示用户提供正确的 APP_ID 和 APP_SECRET，更新 `config.json` 后重新发布。
+
+**重要提示：**
+
+- **无需读取 Markdown 文件内容**，发布脚本会自动处理文章中的所有内容（包括图片、格式等）
+- **无需验证图片文件是否存在**，只需确保 `markdownFilePath` 指向的文件路径正确即可
+
+### 4. 执行发布文章到公众号的脚本
+
+**⚠️ 重要：必须通过 config.json 文件传递参数，不要直接在命令行传递 --file/--app-id/--app-secret 等参数！**
+
+注意：终端只传递 `--config` 参数，指向生成的 `config.json` 文件。
+
+**⚠️ 必须使用绝对路径执行命令**（避免 Windows 跨盘符切换目录失败）：
+
+```bash
+# 将 <技能目录> 替换为实际路径
+node "<技能目录>/index.js" --config "<技能目录>/config.json"
+
+# Windows 示例
+node "C:\Users\YourName\.qoder\skills\wechat-publisher-skill\index.js" --config "C:\Users\YourName\.qoder\skills\wechat-publisher-skill\config.json"
+
+# Mac/Linux 示例
+node "/Users/yourname/.qoder/skills/wechat-publisher-skill/index.js" --config "/Users/yourname/.qoder/skills/wechat-publisher-skill/config.json"
+```
+
+❌ 错误示例（不要这样做）：
+
+```bash
+# 相对路径在 Windows 跨盘符时可能失败
+node index.js --config ./config.json
+
+# 不要直接传递参数
+node index.js --file xxx.md --app-id xxx --app-secret xxx
+```
+
+### 5. 结果反馈
+
+向用户报告发布结果：
+
+- 发布成功：提供草稿链接，告知用户在微信公众平台查看
+- 发布失败：根据错误码提供具体的解决建议
+
+#### 发布失败的原因及解决
+
+- **电脑 IP 不在公众号 IP 白名单中**
+  - 解决：登录微信开发者平台 https://developers.weixin.qq.com/platform → 前往使用 → 我的业务/公众号 → 开发秘钥 → IP 白名单 → 编辑添加电脑 IP
+  - 获取电脑 IP：百度搜索 `ip`
+
+- **`invalid appsecret`**：AppSecret 已被重置或输入错误
+- **`invalid appid`**：AppID 输入错误
+
+## 注意事项
+
+1. **图片格式**：支持 JPG、PNG
+2. **图片位置**：markdown 文章中的图片必须与 markdown 文件在同一目录
+3. **图片引用格式**：支持标准 markdown 图片语法，如 `![](图片文件名.png)`
+4. **聊天格式**：支持一左一右的气泡对话格式
+
+   示例：
+
+   ```
+   >L: 左侧对话内容
+   >R: 右侧对话内容
+   >L: 又一句左侧内容
+   >R: 又一句右侧内容
+   ```
+
+5. **禁止行为**：
+   - 严禁读取 `wechat-publisher-skill` 目录下的 `index.js` 文件（约 61KB）
+   - 严禁从文章内容中自动提取图片作为封面
+
+## 主题预览
+
+当用户需要预览主题效果时，请直接提供在线预览链接：
+
+🔗 **主题预览地址**：https://5g6pxtj3zg.coze.site/
+
+该网站使用一个固定的包含各种元素的markdown文章来展示不同主题的实际效果，方便用户选择合适的文章渲染风格。
+
+## 支持的主题风格
+
+系统提供 17 种文章渲染主题，每种主题都有独特的视觉风格：
+
+- **sakura（樱花主题）**：日系樱花主题，柔和少女风格
+- **minimal（极简主题）**：极简灰色主题，素雅简洁风格
+- **amber（琥珀主题）**：温暖琥珀主题，金色阳光风格
+- **blue（蓝色主题）**：清新蓝色主题，专业稳重风格
+- **cyan（青色主题）**：清爽青色主题，科技现代风格
+- **green（绿色主题）**：自然绿色主题，清新环保风格
+- **indigo（靛蓝主题）**：深邃靛蓝主题，优雅高贵风格
+- **lavender（薰衣草主题）**：淡雅薰衣草主题，浪漫温馨风格
+- **mint（薄荷主题）**：清新薄荷主题，简约时尚风格
+- **orange（橙色主题）**：活力橙色主题，热情积极风格
+- **pink（粉色主题）**：甜美粉色主题，可爱温柔风格
+- **purple（紫色主题）**：神秘紫色主题，高贵典雅风格
+- **red（红色主题）**：经典红色主题，醒目有力风格
+- **rose（玫瑰主题）**：浪漫玫瑰主题，优雅华丽风格
+- **sky（天空主题）**：明亮天空主题，开阔清新风格
+- **teal（青绿主题）**：优雅青绿主题，平衡和谐风格
+- **vintage（复古主题）**：怀旧复古主题，经典文艺风格
+
+## 文章发布成功后的下一步操作
+
+1. 登录你的 [微信公众号](https://mp.weixin.qq.com)
+2. 点击 **内容管理** → **草稿箱**
+3. 点击草稿箱中文章的 **编辑按钮**，打开文章编辑页面
+4. 请审核校对 **文章与封面**
