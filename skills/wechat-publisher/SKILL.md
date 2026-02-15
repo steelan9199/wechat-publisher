@@ -61,19 +61,19 @@ npm install --prefix "/Users/yourname/.qoder/skills/wechat-publisher-skill"
 
 ### 2. 收集必要信息
 
-向用户确认以下信息：
+向用户确认以下配置信息：
 
-| 参数              | 必填 | 说明                                                         |
-| ----------------- | ---- | ------------------------------------------------------------ |
-| Markdown 文件路径 | 是   | 要发布的文章文件位置                                         |
-| APP_ID            | 否   | 微信开发者平台的 AppID                                       |
-| APP_SECRET        | 否   | 微信开发者平台的 AppSecret                                   |
-| 文章作者名称      | 否   | 公众号显示的作者名                                           |
-| 封面图片路径      | 否   | 文章封面图片                                                 |
-| 文章标题          | 否   | 发布的文章标题，未指定时使用文件名作为标题                   |
-| 主题              | 否   | 文章渲染主题，使用 themes 目录下的主题文件(默认使用蓝色主题) |
-| 文章前缀          | 否   | 显示在正文开头的内容                                         |
-| 文章后缀          | 否   | 显示在正文结尾的内容                                         |
+| 字段键名 (Key) | 必填 | 参数说明 |
+| :--- | :--- | :--- |
+| `markdownFilePath` | **是** | **Markdown 文件路径**。本地要发布的文章文件绝对路径。 |
+| `APP_ID` | 否 | **微信 AppID**。微信开发者平台的 AppID。 |
+| `APP_SECRET` | 否 | **微信 AppSecret**。微信开发者平台的 AppSecret。 |
+| `AUTHOR` | 否 | **文章作者名称**。在公众号文章中显示的作者名。 |
+| `coverFilePath` | 否 | **封面图片路径**。文章封面的本地文件路径。 |
+| `title` | 否 | **文章标题**。未指定时默认使用文件名作为标题。 |
+| `theme` | 否 | **渲染主题**。使用 themes 目录下的主题文件(默认使用蓝色主题)。 |
+| `prefix` | 否 | **文章前缀**。**见下方[配置生成]中的决策逻辑**。用户未指定时严禁自行发挥。 |
+| `suffix` | 否 | **文章后缀**。**见下方[配置生成]中的决策逻辑**。用户未指定时严禁自行发挥。 |
 
 > 所有可选参数均有默认值（来自 `config.default.json`），用户不提供时自动使用默认值。
 
@@ -81,35 +81,30 @@ npm install --prefix "/Users/yourname/.qoder/skills/wechat-publisher-skill"
 
 **生成逻辑：**
 
-1. 复制 `config.default.json` 为 `config.json`
-2. 更新 `markdownFilePath` 为用户提供的文章路径
-3. 用户提供了其他参数时，覆盖对应的默认值
-4. 将 `config.default.json` 中的相对路径转换为绝对路径（`<技能目录绝对路径>` + 文件名，如 `./cover.jpg` → `<技能目录绝对路径>/cover.jpg`）
+1. 读取本地 `config.default.json` 内容。
+2. 将 `markdownFilePath` 更新为用户提供的文章路径。
+3. **参数填充决策树（核心逻辑）**：
+   针对 `prefix` (前缀) 和 `suffix` (后缀) 以及其他可选参数，**必须**严格执行以下判断流程：
+
+   *   **判断：用户是否明确指定了该字段的内容？**
+       *   **👉 是 (YES)**
+           *   **执行操作**：使用用户提供的内容覆盖对应字段。
+           *   *示例*：用户说“前缀写上：大家好”，则 `config.json` 中 `"prefix": "大家好"`。
+       *   **👉 否 (NO)**
+           *   **执行操作**：**直接复用** `config.default.json` 中的原始值，**不**做任何修改或生成。
+           *   *禁止*：**绝对禁止**因为用户没说话就自动脑补内容（如自动填入“本文由AI辅助生成”）。
+           *   *禁止*：**绝对禁止**随意清空 `config.default.json` 中已有的默认值。
+
+4. 将 `config.default.json` 中的相对路径转换为绝对路径（`<技能目录绝对路径>` + 文件名）。
 5. **写入 `config.json`**。
 
 **⚠️ 关键格式说明：**
 
 在生成 JSON 内容时，**严禁**对`prefix` 和 `suffix` 字段的值进行二次转义.
 举例说明:
-假设用户提供的`prefix`是`"本文由AI创作\n"`
-*   ✅ **正确写法**（保持单反斜杠）：`"prefix": "本文由AI创作\n"`
-*   ❌ **错误写法**（生成双反斜杠）：`"prefix": "本文由AI创作\\n"`
-
-**config.json 字段说明：**
-
-```json
-{
-  "markdownFilePath": "用户提供的markdown文章路径",
-  "title": "文章标题，未指定时使用文件名作为标题",
-  "theme": "文章渲染主题，使用themes目录下的主题文件名(默认使用蓝色主题)",
-  "AUTHOR": "文章作者名称",
-  "prefix": "文章前缀",
-  "suffix": "文章后缀",
-  "APP_ID": "微信开发者平台的APP_ID",
-  "APP_SECRET": "微信开发者平台的APP_SECRET",
-  "coverFilePath": "文章的封面路径"
-}
-```
+假设用户提供的`prefix`是`"我是文章的前缀\n"`
+*   ✅ **正确写法**（保持单反斜杠）：`"prefix": "我是文章的前缀\n"`
+*   ❌ **错误写法**（生成双反斜杠）：`"prefix": "我是文章的前缀\\n"`
 
 **config.json 示例：**
 
@@ -118,11 +113,11 @@ npm install --prefix "/Users/yourname/.qoder/skills/wechat-publisher-skill"
   "markdownFilePath": "D:\\Documents\\公众号教程\\文章.md",
   "title": "文章标题",
   "theme": "blue",
-  "AUTHOR": "牙叔教程",
-  "prefix": "本文由AI创作\n",
-  "suffix": "## 扣子智能体教程\nhttps://space.bilibili.com/26079586",
-  "APP_ID": "wxc2afxxxxxxxxxx",
-  "APP_SECRET": "8c05bc67131xxxxxxxxxx",
+  "AUTHOR": "文章作者名称",
+  "prefix": "（此处应是用户指定的内容，或 config.default.json 的原值）",
+  "suffix": "（此处应是用户指定的内容，或 config.default.json 的原值）",
+  "APP_ID": "微信开发者平台的APP_ID",
+  "APP_SECRET": "微信开发者平台的APP_SECRET",
   "coverFilePath": "C:\\Users\\YourName\\.qoder\\skills\\wechat-publisher-skill\\cover.jpg"
 }
 ```
