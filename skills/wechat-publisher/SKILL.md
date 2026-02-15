@@ -23,7 +23,7 @@ requirements:
 如果默认配置发布失败，或用户想使用自己的公众号，指导用户按以下步骤获取：
 
 1. 登录微信开发者平台(首页/公众号) https://developers.weixin.qq.com/platform
-2. 点击`前往使用`
+2. 点击`前往控制台`
 3. 点击`我的业务/公众号`
 4. 公众号页面的`基础信息`下方就能看到"AppID"
 5. 公众号页面的`开发秘钥`下方就能看到"AppSecret"
@@ -172,7 +172,7 @@ node index.js --file xxx.md --app-id xxx --app-secret xxx
 #### 发布失败的原因及解决
 
 - **电脑 IP 不在公众号 IP 白名单中**
-  - 解决：登录微信开发者平台 https://developers.weixin.qq.com/platform → 前往使用 → 我的业务/公众号 → 开发秘钥 → IP 白名单 → 编辑添加电脑 IP
+  - 解决：登录微信开发者平台 https://developers.weixin.qq.com/platform → 前往控制台 → 我的业务/公众号 → 开发秘钥 → IP 白名单 → 编辑添加电脑 IP
   - 获取电脑 IP：百度搜索 `ip`
 
 - **`invalid appsecret`**：AppSecret 已被重置或输入错误
