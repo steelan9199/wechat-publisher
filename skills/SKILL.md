@@ -191,7 +191,7 @@ node index.js --file xxx.md --app-id xxx --app-secret xxx
    ```
 
 5. **禁止行为**：
-   - 严禁读取 `wechat-publisher-skill` 目录下的 `index.js` 文件（约 61KB）
+   - 严禁读取 `wechat-publisher-skill` 目录下的 `index.js` 文件（约 79KB）,该代码已经加密混淆
    - 严禁从文章内容中自动提取图片作为封面
 
 ## 主题预览

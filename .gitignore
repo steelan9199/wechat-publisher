@@ -1,12 +1,9 @@
+.qoder
+skills/config.json
+skills/wechat-token.json
+
 # Dependencies
 node_modules/
-
-# Configuration files containing sensitive data
-config.json
-config1.json
-config2.json
-wechat-token.json
-license-key.txt
 
 # Environment specific files
 .env
