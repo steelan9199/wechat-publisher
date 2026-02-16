@@ -4,7 +4,8 @@
     "optimizeLanguage": true,
     "optimizeFormatting": true,
     "addEmojis": false,
-    "optimizeHeadings": true
+    "optimizeHeadings": true,
+    "optimizeOrder": true
   },
   "audience": {
     "ageRange": "16-50岁",

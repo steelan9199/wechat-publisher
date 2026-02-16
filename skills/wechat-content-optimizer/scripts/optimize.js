@@ -17,6 +17,7 @@ const defaultConfig = {
     optimizeFormatting: true,   // 优化排版格式
     addEmojis: false,           // 是否添加 emoji
     optimizeHeadings: true,     // 优化小标题
+    optimizeOrder: true         // 优化段落顺序
   },
   // 目标受众配置
   audience: {
@@ -148,12 +149,13 @@ async function main() {
     console.log('\n========================================');
     console.log('优化维度参考:');
     console.log('========================================');
-    console.log('1. 开头吸引力 - 前3秒抓住读者');
-    console.log('2. 段落节奏 - 适合手机阅读的短段落');
-    console.log('3. 语言表达 - 口语化、亲切、易懂');
-    console.log('4. 小标题 - 增加吸引力，引导阅读');
-    console.log('5. 结尾转化 - 引导互动或行动');
-    console.log('6. 排版格式 - 重点突出，层次分明');
+    console.log('1. 段落顺序 - 重要内容前置，逻辑顺畅');
+    console.log('2. 开头吸引力 - 前3秒抓住读者');
+    console.log('3. 段落节奏 - 适合手机阅读的短段落');
+    console.log('4. 语言表达 - 口语化、亲切、易懂');
+    console.log('5. 小标题 - 增加吸引力，引导阅读');
+    console.log('6. 结尾转化 - 引导互动或行动');
+    console.log('7. 排版格式 - 重点突出，层次分明');
     console.log('========================================\n');
 
     return {

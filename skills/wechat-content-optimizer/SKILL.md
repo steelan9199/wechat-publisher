@@ -12,6 +12,7 @@ description: 优化本地 Markdown 文件中的公众号文章内容，使其更
 - 本地 Markdown 文件需要优化后发布到公众号
 - 文章读起来太生硬，需要更口语化
 - 段落太长，不适合手机阅读
+- 段落顺序不合理，重要内容太靠后
 - 开头不够吸引人，跳出率高
 - 结尾没有引导，缺少互动
 - 小标题太平淡，需要更有吸引力
@@ -41,6 +42,7 @@ node "<skill目录>/scripts/optimize.js" <markdown文件路径> --config "<skill
 | 维度 | 优化要点 |
 |------|----------|
 | **开头吸引力** | 前3秒抓住读者，用痛点/悬念/数据/场景切入 |
+| **段落顺序** | 调整段落位置，重要内容前置，逻辑更顺畅 |
 | **段落节奏** | 短段落（手机不超过4行）、多留白、易扫读 |
 | **语言表达** | 口语化、亲切、用"你"称呼、具象化抽象概念 |
 | **小标题** | 用问句/数字/对比/利益驱动，引导阅读 |
@@ -106,7 +108,8 @@ node "<skill目录>/scripts/optimize.js" <markdown文件路径> --config "<skill
     "optimizeLanguage": true,     // 优化语言表达
     "optimizeFormatting": true,   // 优化排版格式
     "addEmojis": false,           // 是否添加 emoji
-    "optimizeHeadings": true      // 优化小标题
+    "optimizeHeadings": true,     // 优化小标题
+    "optimizeOrder": true         // 优化段落顺序
   },
   "audience": {
     "ageRange": "16-50岁",
