@@ -91,12 +91,13 @@ eskill list-agents
 
 | 自然语言请求 | 执行的命令 |
 |------------|-----------|
-| "帮我安装 wechat-publisher 技能" | `eskill install wechat-publisher` |
+| "帮我安装 wechat-publisher 技能" | `eskill install https://github.com/steelan9199/wechat-publisher/tree/main/skills` |
 | "列出所有已安装的技能" | `eskill list` |
 | "删除 skill-creator" | `eskill remove skill-creator` |
 | "查看支持哪些 Agent" | `eskill agents` |
 | "给 Cursor 安装这个技能" | `eskill install <skill> -a cursor` |
-| "用链接模式安装本地技能" | `eskill install ./my-skill -l` |
+| "软链接当前文件夹下的技能到[~/.emp-agent/skills/]" | `eskill install . --link` |
+
 
 ## 注意事项
 
