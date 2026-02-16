@@ -53,7 +53,7 @@ requirements:
 
 ```bash
 # Windows 示例
-npm install --prefix "C:\Users\YourName\.qoder\skills\wechat-publisher-skill"
+npm install --prefix "C:/Users/YourName/.qoder/skills/wechat-publisher-skill"
 
 # Mac/Linux 示例
 npm install --prefix "/Users/yourname/.qoder/skills/wechat-publisher-skill"
@@ -106,11 +106,18 @@ npm install --prefix "/Users/yourname/.qoder/skills/wechat-publisher-skill"
 *   ✅ **正确写法**（保持单反斜杠）：`"prefix": "我是文章的前缀\n"`
 *   ❌ **错误写法**（生成双反斜杠）：`"prefix": "我是文章的前缀\\n"`
 
+**路径格式说明：**
+
+配置文件中的路径必须统一使用正斜杠 `/`：
+
+- ✅ **正确**：`"D:/software/wechat-publisher/cover.jpg"`
+- ❌ **错误**：`"D:\\software\\wechat-publisher\\cover.jpg"`
+
 **config.json 示例：**
 
 ```json
 {
-  "markdownFilePath": "D:\\Documents\\公众号教程\\文章.md",
+  "markdownFilePath": "D:/Documents/公众号教程/文章.md",
   "title": "文章标题",
   "theme": "blue",
   "AUTHOR": "文章作者名称",
@@ -118,11 +125,9 @@ npm install --prefix "/Users/yourname/.qoder/skills/wechat-publisher-skill"
   "suffix": "（此处应是用户指定的内容，或 config.default.json 的原值）",
   "APP_ID": "微信开发者平台的APP_ID",
   "APP_SECRET": "微信开发者平台的APP_SECRET",
-  "coverFilePath": "C:\\Users\\YourName\\.qoder\\skills\\wechat-publisher-skill\\cover.jpg"
+  "coverFilePath": "D:/software/wechat-publisher/cover.jpg"
 }
 ```
-
-> **注意**：Mac/Linux 系统将路径中的 `\` 替换为 `/`，如 `/Users/yourname/Documents/公众号教程/文章.md`
 
 **发布失败时的配置处理：**
 
@@ -146,7 +151,7 @@ npm install --prefix "/Users/yourname/.qoder/skills/wechat-publisher-skill"
 node "<技能目录>/index.js" --config "<技能目录>/config.json"
 
 # Windows 示例
-node "C:\Users\YourName\.qoder\skills\wechat-publisher-skill\index.js" --config "C:\Users\YourName\.qoder\skills\wechat-publisher-skill\config.json"
+node "C:/Users/YourName/.qoder/skills/wechat-publisher-skill/index.js" --config "C:/Users/YourName/.qoder/skills/wechat-publisher-skill/config.json"
 
 # Mac/Linux 示例
 node "/Users/yourname/.qoder/skills/wechat-publisher-skill/index.js" --config "/Users/yourname/.qoder/skills/wechat-publisher-skill/config.json"
