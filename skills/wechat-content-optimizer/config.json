@@ -1,0 +1,19 @@
+{
+  "options": {
+    "optimizeStructure": true,
+    "optimizeLanguage": true,
+    "optimizeFormatting": true,
+    "addEmojis": false,
+    "optimizeHeadings": true
+  },
+  "audience": {
+    "ageRange": "16-50岁",
+    "style": "亲切、易懂、有网感但不失专业",
+    "readingDevice": "mobile"
+  },
+  "output": {
+    "backup": true,
+    "overwrite": false,
+    "suffix": ".optimized"
+  }
+}
