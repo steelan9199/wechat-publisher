@@ -41,7 +41,6 @@ tmp/
 temp/
 
 # IDE specific files
-.vscode/
 .idea/
 *.swp
 *.swo

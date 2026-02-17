@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🚀 Push to GitHub",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "powershell.exe",
+      "runtimeArgs": [
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/push.ps1"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "✏️ Push with Custom Message",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "powershell.exe",
+      "runtimeArgs": [
+        "-ExecutionPolicy",
+        "Bypass",
+        "-Command",
+        "$msg = Read-Host 'Enter commit message'; & '${workspaceFolder}/push.ps1' $msg"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}
