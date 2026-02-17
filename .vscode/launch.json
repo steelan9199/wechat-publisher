@@ -10,8 +10,8 @@
         "-NoProfile",
         "-ExecutionPolicy",
         "Bypass",
-        "-Command",
-        "& '${workspaceFolder}/push.ps1'; exit $LASTEXITCODE"
+        "-File",
+        "${workspaceFolder}/push-wrapper.ps1"
       ],
       "console": "integratedTerminal"
     },
@@ -25,7 +25,7 @@
         "-ExecutionPolicy",
         "Bypass",
         "-Command",
-        "$msg = Read-Host 'Enter commit message'; & '${workspaceFolder}/push.ps1' $msg; exit $LASTEXITCODE"
+        "$msg = Read-Host 'Enter commit message'; & '${workspaceFolder}/push-wrapper.ps1' $msg"
       ],
       "console": "integratedTerminal"
     }
