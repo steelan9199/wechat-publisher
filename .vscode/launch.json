@@ -7,13 +7,13 @@
       "request": "launch",
       "runtimeExecutable": "powershell.exe",
       "runtimeArgs": [
+        "-NoProfile",
         "-ExecutionPolicy",
         "Bypass",
-        "-File",
-        "${workspaceFolder}/push.ps1"
+        "-Command",
+        "& '${workspaceFolder}/push.ps1'; exit $LASTEXITCODE"
       ],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
+      "console": "integratedTerminal"
     },
     {
       "name": "✏️ Push with Custom Message",
@@ -21,13 +21,13 @@
       "request": "launch",
       "runtimeExecutable": "powershell.exe",
       "runtimeArgs": [
+        "-NoProfile",
         "-ExecutionPolicy",
         "Bypass",
         "-Command",
-        "$msg = Read-Host 'Enter commit message'; & '${workspaceFolder}/push.ps1' $msg"
+        "$msg = Read-Host 'Enter commit message'; & '${workspaceFolder}/push.ps1' $msg; exit $LASTEXITCODE"
       ],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
+      "console": "integratedTerminal"
     }
   ]
 }
