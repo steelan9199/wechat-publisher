@@ -28,4 +28,4 @@
   - `empjs-skill/` - empjs 技能管理工具
   - `generate-cover-prompt/` - 封面提示词生成工具
 
-- `push.ps1` - 快速推送脚本
+- `push.js` - 快速推送脚本
