@@ -2,6 +2,8 @@
 
 个人技能包和工具集合。
 
+**仓库地址:** https://github.com/steelan9199/wechat-publisher.git
+
 ## 快速推送脚本
 
 ### 🚀 使用方法: 运行和调试面板
