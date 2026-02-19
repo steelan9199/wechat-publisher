@@ -25,12 +25,13 @@ function createSkillMdFiles(dir) {
     const stat = fs.statSync(fullPath);
     if (stat.isDirectory() && !item.startsWith(".") && item !== "node_modules") {
       createSkillMdFiles(fullPath);
-    } else if (stat.isFile() && item.endsWith(".hide")) {
+    } else if (stat.isFile() && item === "SKILL.md.hide") {
       const normalFile = fullPath.replace(/\.hide$/, "");
       // 复制内容创建 SKILL.md
       fs.copyFileSync(fullPath, normalFile);
       console.log(`\x1b[90m  已创建: ${normalFile}\x1b[0m`);
     }
+    // 注意：不处理只有 SKILL.md 的情况，保持原样
   }
 }
 
@@ -62,7 +63,7 @@ try {
 
   console.log("\x1b[32mSuccessfully pushed to GitHub!\x1b[0m");
 
-  // 推送成功后删除临时创建的 SKILL.md 文件
+  // 推送成功后删除有 .hide 对应的 SKILL.md 文件
   console.log("\x1b[36mCleaning up temporary SKILL.md files...\x1b[0m");
   function cleanupSkillMdFiles(dir) {
     const items = fs.readdirSync(dir);
@@ -72,6 +73,7 @@ try {
       if (stat.isDirectory() && !item.startsWith(".") && item !== "node_modules") {
         cleanupSkillMdFiles(fullPath);
       } else if (stat.isFile() && item === "SKILL.md") {
+        // 只有存在对应的 .hide 文件时，才删除 SKILL.md
         const hideFile = fullPath + ".hide";
         if (fs.existsSync(hideFile)) {
           fs.unlinkSync(fullPath);
