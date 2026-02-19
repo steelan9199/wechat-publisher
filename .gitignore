@@ -9,6 +9,10 @@ temp
 skills/wechat-publisher/config.json
 skills/wechat-publisher/wechat-token.json
 
+# Hide 文件：本地使用 .hide 后缀，推送到 GitHub 时去掉后缀
+# 由 pre-commit 钩子自动处理同步
+*.hide
+
 # Dependencies
 node_modules/
 

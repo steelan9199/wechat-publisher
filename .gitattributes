@@ -1,0 +1,2 @@
+# 提交时清空 license-key.txt 文件内容
+skills/wechat-publisher/license-key.txt filter=emptyfile
