@@ -12,12 +12,12 @@ if sys.platform == 'win32':
 
 # 添加scripts目录到Python路径，以便导入config_manager
 sys.path.insert(0, os.path.dirname(__file__))
-from config_manager import normalize_path, read_config, add_to_history
+from config_manager import get_skill_hide_self_path, normalize_path, read_config, add_to_history
 
 
-def unhide_skills(skill_names, folders=None, specific_folder=None):
+def hide_skills(skill_names, folders=None, specific_folder=None):
     """
-    取消隐藏技能（将SKILL.md.hide重命名为SKILL.md）
+    隐藏技能（将SKILL.md重命名为SKILL.md.hide）
 
     Args:
         skill_names: 技能名称列表（如["exam-grading", "pdf-parser"]）
@@ -35,6 +35,12 @@ def unhide_skills(skill_names, folders=None, specific_folder=None):
     if not skill_names:
         return {"success": [], "failed": [], "skipped": []}
 
+    if not folders:
+        return {"success": [], "failed": [{"name": s, "reason": "no folders configured"} for s in skill_names], "skipped": []}
+
+    # 规范化所有文件夹路径
+    folders = [normalize_path(f) for f in folders]
+
     # 如果指定了specific_folder，规范化并验证
     if specific_folder:
         specific_folder = normalize_path(specific_folder)
@@ -43,11 +49,6 @@ def unhide_skills(skill_names, folders=None, specific_folder=None):
             return {"success": [], "failed": [{"name": s, "reason": f"specified folder does not exist: {specific_folder}"} for s in skill_names], "skipped": []}
         search_folders = [specific_folder]
     else:
-        # 如果没有指定特定文件夹，使用配置的文件夹
-        if not folders:
-            return {"success": [], "failed": [{"name": s, "reason": "no folders configured"} for s in skill_names], "skipped": []}
-        # 规范化所有文件夹路径
-        folders = [normalize_path(f) for f in folders]
         search_folders = folders
 
     result = {"success": [], "failed": [], "skipped": []}
@@ -55,41 +56,47 @@ def unhide_skills(skill_names, folders=None, specific_folder=None):
     for skill_name in skill_names:
         found_count = 0
 
+        # 检查是否试图隐藏自己
+        if skill_name == "skill-hide":
+            result["skipped"].append({"name": skill_name, "reason": "cannot hide skill-hide itself"})
+            continue
+
         for folder in search_folders:
             skill_path = os.path.join(folder, skill_name)
-            skill_md_hide_path = os.path.join(skill_path, "SKILL.md.hide")
+            skill_md_path = os.path.join(skill_path, "SKILL.md")
+            skill_hide_path = os.path.join(skill_path, "SKILL.md.hide")
 
-            if os.path.exists(skill_md_hide_path):
+            # 检查是否已经被隐藏（SKILL.md.hide 存在但 SKILL.md 不存在）
+            if os.path.exists(skill_hide_path):
                 found_count += 1
-                skill_md_path = os.path.join(skill_path, "SKILL.md")
+                result["skipped"].append({"name": skill_name, "path": skill_path, "reason": "already hidden"})
+                continue  # 继续检查其他文件夹
+
+            if os.path.exists(skill_md_path):
+                found_count += 1
 
                 try:
-                    # 检查是否已经存在SKILL.md
-                    if os.path.exists(skill_md_path):
-                        result["skipped"].append({"name": skill_name, "path": skill_path, "reason": "SKILL.md already exists"})
-                        continue  # 继续检查其他文件夹
-
-                    # 执行取消隐藏操作
-                    os.rename(skill_md_hide_path, skill_md_path)
+                    # 执行隐藏操作
+                    os.rename(skill_md_path, skill_hide_path)
                     result["success"].append({"name": skill_name, "path": skill_path})
                 except Exception as e:
                     result["failed"].append({"name": skill_name, "path": skill_path, "reason": str(e)})
 
         if found_count == 0:
-            result["failed"].append({"name": skill_name, "reason": "hidden skill not found in configured folders"})
+            result["failed"].append({"name": skill_name, "reason": "skill not found in configured folders"})
 
     return result
 
 
-def get_hidden_skills(folder):
+def get_all_skills(folder):
     """
-    获取指定文件夹下所有已隐藏的技能列表
+    获取指定文件夹下的所有技能列表
 
     Args:
         folder: 技能父文件夹路径
 
     Returns:
-        list: 已隐藏的技能名称列表
+        list: 技能名称列表
     """
     skills = []
     if not os.path.exists(folder):
@@ -97,12 +104,13 @@ def get_hidden_skills(folder):
 
     for item in os.listdir(folder):
         item_path = os.path.join(folder, item)
-        # 跳过隐藏文件
-        if item.startswith('.'):
+        # 跳过隐藏文件和skill-hide本身
+        if item.startswith('.') or item == 'skill-hide':
             continue
-        # 检查是否是已隐藏的技能（包含SKILL.md.hide）
+        # 检查是否是技能文件夹（包含SKILL.md或SKILL.md.hide）
         if os.path.isdir(item_path):
-            if os.path.exists(os.path.join(item_path, "SKILL.md.hide")):
+            if os.path.exists(os.path.join(item_path, "SKILL.md")) or \
+               os.path.exists(os.path.join(item_path, "SKILL.md.hide")):
                 skills.append(item)
 
     return skills
@@ -170,12 +178,93 @@ if __name__ == "__main__":
     # 测试代码
     import argparse
 
-    parser = argparse.ArgumentParser(description='取消隐藏技能')
-    parser.add_argument('skills', nargs='*', help='要取消隐藏的技能名称列表')
+    parser = argparse.ArgumentParser(description='隐藏技能')
+    parser.add_argument('skills', nargs='*', help='要隐藏的技能名称列表')
     parser.add_argument('--folder', help='指定在哪个父文件夹下操作')
-    parser.add_argument('--all', action='store_true', help='取消隐藏指定文件夹下的所有技能')
+    parser.add_argument('--all', action='store_true', help='隐藏指定文件夹下的所有技能')
     parser.add_argument('--show-all', action='store_true', help='仅显示指定文件夹下的所有技能及其状态（预览模式，不执行操作）')
+    parser.add_argument('--hide-all-except', help='隐藏除指定技能外的所有技能（逗号分隔技能名）')
     args = parser.parse_args()
+
+    # 处理--hide-all-except参数（隐藏除指定技能外的所有技能）
+    if args.hide_all_except:
+        if not folders:
+            print('错误: 未配置技能父文件夹，请先配置或使用 --folder 指定')
+            sys.exit(1)
+        
+        # 解析要保留的技能列表
+        keep_skills = [s.strip() for s in args.hide_all_except.split(',')]
+        print(f'要保留的技能: {', '.join(keep_skills)}')
+        
+        # 收集所有需要隐藏的技能
+        all_to_hide = []
+        for folder in folders:
+            folder = normalize_path(folder)
+            if not os.path.exists(folder):
+                continue
+            for item in os.listdir(folder):
+                if item.startswith('.') or item == 'skill-hide':
+                    continue
+                if item in keep_skills:
+                    continue
+                item_path = os.path.join(folder, item)
+                if os.path.isdir(item_path):
+                    if os.path.exists(os.path.join(item_path, 'SKILL.md')):
+                        all_to_hide.append({'name': item, 'path': item_path, 'folder': folder})
+        
+        if not all_to_hide:
+            print('没有需要隐藏的技能')
+            sys.exit(0)
+        
+        print(f"
+将隐藏 {len(all_to_hide)} 个技能:")
+        print(f"
+将隐藏 {len(all_to_hide)} 个技能:")
+        for skill in all_to_hide:
+            print(f'  - {skill["name"]}')
+        print()
+        
+        # 执行隐藏
+        result = {'success': [], 'failed': [], 'skipped': []}
+        for skill in all_to_hide:
+            skill_md_path = os.path.join(skill['path'], 'SKILL.md')
+            skill_hide_path = os.path.join(skill['path'], 'SKILL.md.hide')
+            try:
+                if os.path.exists(skill_hide_path):
+                    result['skipped'].append({'name': skill['name'], 'path': skill['path'], 'reason': 'already hidden'})
+                else:
+                    os.rename(skill_md_path, skill_hide_path)
+                    # 验证隐藏是否成功
+                    if os.path.exists(skill_hide_path) and not os.path.exists(skill_md_path):
+                        result['success'].append({'name': skill['name'], 'path': skill['path']})
+                    else:
+                        result['failed'].append({'name': skill['name'], 'path': skill['path'], 'reason': 'verification failed'})
+            except Exception as e:
+                result['failed'].append({'name': skill['name'], 'path': skill['path'], 'reason': str(e)})
+        
+        # 记录历史
+        if folders:
+            add_to_history(folders[0], 'hide')
+        
+        # 输出结果
+        print('
+隐藏结果:')
+        if result['success']:
+            print(f'
+成功 ({len(result["success"])} 个):')
+            for item in result['success']:
+                print(f'  [OK] {item["name"]}')
+        if result['failed']:
+            print(f'
+失败 ({len(result["failed"])} 个):')
+            for item in result['failed']:
+                print(f'  [FAIL] {item["name"]}: {item["reason"]}')
+        if result['skipped']:
+            print(f'
+跳过 ({len(result["skipped"])} 个):')
+            for item in result['skipped']:
+                print(f'  [SKIP] {item["name"]}: {item["reason"]}')
+        sys.exit(0)
 
     folders = read_config()
 
@@ -242,11 +331,11 @@ if __name__ == "__main__":
             if not os.path.exists(target_folder):
                 print(f"错误: 指定的文件夹不存在: {target_folder}")
                 sys.exit(1)
-            all_skills = get_hidden_skills(target_folder)
+            all_skills = get_all_skills(target_folder)
             if not all_skills:
-                print(f"在 {target_folder} 下没有找到可取消隐藏的技能")
+                print(f"在 {target_folder} 下没有找到可隐藏的技能")
                 sys.exit(0)
-            print(f"在 {target_folder} 发现 {len(all_skills)} 个已隐藏技能: {', '.join(all_skills)}\n")
+            print(f"在 {target_folder} 发现 {len(all_skills)} 个技能: {', '.join(all_skills)}\n")
             args.skills = all_skills
             target_folders = [target_folder]
         else:
@@ -254,8 +343,8 @@ if __name__ == "__main__":
             if not folders:
                 print("错误: 未配置技能父文件夹，请先配置或使用 --folder 指定")
                 sys.exit(1)
-            # 收集所有已隐藏的技能（带路径信息）
-            all_hidden = []
+            # 收集所有可隐藏的技能（带路径信息）
+            all_visible = []
             for folder in folders:
                 folder = normalize_path(folder)
                 if os.path.exists(folder):
@@ -264,33 +353,36 @@ if __name__ == "__main__":
                             continue
                         item_path = os.path.join(folder, item)
                         if os.path.isdir(item_path):
-                            if os.path.exists(os.path.join(item_path, "SKILL.md.hide")):
-                                all_hidden.append({"name": item, "path": item_path, "folder": folder})
-            if not all_hidden:
-                print("在所有配置文件夹中都没有找到可取消隐藏的技能")
+                            if os.path.exists(os.path.join(item_path, "SKILL.md")):
+                                all_visible.append({"name": item, "path": item_path, "folder": folder})
+            if not all_visible:
+                print("在所有配置文件夹中都没有找到可隐藏的技能")
                 sys.exit(0)
-            print(f"发现 {len(all_hidden)} 个已隐藏技能:\n")
-            for skill in all_hidden:
+            print(f"发现 {len(all_visible)} 个可隐藏技能:\n")
+            for skill in all_visible:
                 print(f"  - {skill['name']} ({skill['path']})")
             print()
-            # 直接逐个恢复，不调用 unhide_skills
+            # 直接逐个隐藏，不调用 hide_skills
             result = {"success": [], "failed": [], "skipped": []}
-            for skill in all_hidden:
-                skill_md_hide_path = os.path.join(skill['path'], "SKILL.md.hide")
+            for skill in all_visible:
+                if skill['name'] == "skill-hide":
+                    result["skipped"].append({"name": skill['name'], "path": skill['path'], "reason": "cannot hide skill-hide itself"})
+                    continue
                 skill_md_path = os.path.join(skill['path'], "SKILL.md")
+                skill_hide_path = os.path.join(skill['path'], "SKILL.md.hide")
                 try:
-                    if os.path.exists(skill_md_path):
-                        result["skipped"].append({"name": skill['name'], "path": skill['path'], "reason": "SKILL.md already exists"})
+                    if os.path.exists(skill_hide_path):
+                        result["skipped"].append({"name": skill['name'], "path": skill['path'], "reason": "already hidden"})
                     else:
-                        os.rename(skill_md_hide_path, skill_md_path)
+                        os.rename(skill_md_path, skill_hide_path)
                         result["success"].append({"name": skill['name'], "path": skill['path']})
                 except Exception as e:
                     result["failed"].append({"name": skill['name'], "path": skill['path'], "reason": str(e)})
             # 记录历史
             if folders:
-                add_to_history(folders[0], 'unhide')
+                add_to_history(folders[0], 'hide')
             # 输出结果
-            print("\n取消隐藏结果:")
+            print("\n隐藏结果:")
             if result["success"]:
                 print("\n成功:")
                 for item in result["success"]:
@@ -305,6 +397,10 @@ if __name__ == "__main__":
                     print(f"  [SKIP] {item['name']}: {item['reason']}")
             sys.exit(0)
     else:
+        if not args.skills:
+            parser.print_help()
+            sys.exit(1)
+
         # 如果指定了 --folder，将指定的文件夹添加到 folders 列表中
         target_folders = folders.copy() if folders else []
         if args.folder:
@@ -312,13 +408,9 @@ if __name__ == "__main__":
             if normalized_folder not in target_folders:
                 target_folders.append(normalized_folder)
 
-        if not args.skills:
-            parser.print_help()
-            sys.exit(1)
+        result = hide_skills(args.skills, target_folders, args.folder)
 
-        result = unhide_skills(args.skills, target_folders, args.folder)
-
-    # 记录操作历史（如果有成功取消隐藏的技能）
+    # 记录操作历史（如果有成功隐藏的技能）
     if result["success"]:
         # 确定记录的文件夹路径
         if args.folder:
@@ -329,9 +421,9 @@ if __name__ == "__main__":
             history_folder = None
 
         if history_folder:
-            add_to_history(history_folder, 'unhide')
+            add_to_history(history_folder, 'hide')
 
-    print("取消隐藏结果:")
+    print("隐藏结果:")
     if result["success"]:
         print("\n成功:")
         for item in result["success"]:
