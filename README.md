@@ -30,5 +30,6 @@
   - `empjs-skill/` - empjs 技能管理工具
   - `generate-cover-prompt/` - 封面提示词生成工具
   - `skill-hide/` - 隐藏或恢复技能
+  - `skill-optimizer/` - 分析和优化 Skill
 
 - `push.js` - 快速推送脚本
