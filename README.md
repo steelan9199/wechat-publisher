@@ -29,5 +29,6 @@
   - `move-big-folder/` - 大文件夹迁移工具
   - `empjs-skill/` - empjs 技能管理工具
   - `generate-cover-prompt/` - 封面提示词生成工具
+  - `skill-hide/` - 隐藏或恢复技能
 
 - `push.js` - 快速推送脚本
