@@ -53,15 +53,54 @@ pyautogui.FAILSAFE = True  # 鼠标移到左上角触发异常停止
 pyautogui.PAUSE = 0.1  # 每个操作后的暂停时间
 
 
-def screenshot(output_path=None):
-    """截图并保存到文件，返回文件路径"""
+def screenshot(output_path=None, region=None):
+    """截图并保存到文件，返回文件路径
+
+    Args:
+        output_path: 输出文件路径，默认为自动生成
+        region: 区域截图参数 (x, y, width, height)，默认为全屏
+    """
     if output_path is None:
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         output_path = f"screenshot_{timestamp}.png"
 
-    screenshot = pyautogui.screenshot()
+    screenshot = pyautogui.screenshot(region=region)
     screenshot.save(output_path)
     return str(Path(output_path).resolve())
+
+
+def screenshot_to_clipboard(region=None):
+    """截图并复制到剪贴板
+
+    Args:
+        region: 区域截图参数 (x, y, width, height)，默认为全屏
+    """
+    try:
+        import io
+
+        import win32clipboard
+        from PIL import Image as PILImage
+
+        # 截图
+        screenshot = pyautogui.screenshot(region=region)
+
+        # 转换为剪贴板格式
+        output = io.BytesIO()
+        screenshot.convert("RGB").save(output, "BMP")
+        data = output.getvalue()[14:]  # 移除BMP文件头
+        output.close()
+
+        # 写入剪贴板
+        win32clipboard.OpenClipboard()
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
+        win32clipboard.CloseClipboard()
+
+        return {"success": True, "message": "截图已复制到剪贴板"}
+    except ImportError:
+        return {"success": False, "error": "需要安装 pywin32: pip install pywin32"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
 
 
 def click(x, y, button="left", clicks=1, interval=0.0):
@@ -136,6 +175,24 @@ def drag_mouse(x, y, duration=0.0, button="left"):
     return {"success": True, "x": x, "y": y, "duration": duration, "button": button}
 
 
+def move_mouse_rel(x, y, duration=0.0):
+    """相对当前位置移动鼠标"""
+    pyautogui.moveRel(x, y, duration=duration)
+    return {"success": True, "x": x, "y": y, "duration": duration}
+
+
+def mouse_down(button="left"):
+    """按下鼠标按钮（不释放）"""
+    pyautogui.mouseDown(button=button)
+    return {"success": True, "button": button}
+
+
+def mouse_up(button="left"):
+    """释放鼠标按钮"""
+    pyautogui.mouseUp(button=button)
+    return {"success": True, "button": button}
+
+
 def scroll(amount, x=None, y=None):
     """滚动鼠标滚轮"""
     if x is not None and y is not None:
@@ -175,6 +232,48 @@ def hotkey(*keys):
     return {"success": True, "keys": list(keys)}
 
 
+def copy():
+    """复制 (Ctrl+C)"""
+    pyautogui.hotkey("ctrl", "c")
+    return {"success": True, "action": "copy"}
+
+
+def paste():
+    """粘贴 (Ctrl+V)"""
+    pyautogui.hotkey("ctrl", "v")
+    return {"success": True, "action": "paste"}
+
+
+def cut():
+    """剪切 (Ctrl+X)"""
+    pyautogui.hotkey("ctrl", "x")
+    return {"success": True, "action": "cut"}
+
+
+def select_all():
+    """全选 (Ctrl+A)"""
+    pyautogui.hotkey("ctrl", "a")
+    return {"success": True, "action": "select_all"}
+
+
+def undo():
+    """撤销 (Ctrl+Z)"""
+    pyautogui.hotkey("ctrl", "z")
+    return {"success": True, "action": "undo"}
+
+
+def redo():
+    """重做 (Ctrl+Y)"""
+    pyautogui.hotkey("ctrl", "y")
+    return {"success": True, "action": "redo"}
+
+
+def save():
+    """保存 (Ctrl+S)"""
+    pyautogui.hotkey("ctrl", "s")
+    return {"success": True, "action": "save"}
+
+
 def locate_on_screen(image_path, confidence=None, region=None):
     """在屏幕上查找图片位置"""
     try:
@@ -199,6 +298,77 @@ def locate_on_screen(image_path, confidence=None, region=None):
             }
         else:
             return {"success": True, "found": False}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+def wait_for_image(image_path, confidence=None, region=None, timeout=10, interval=0.5):
+    """等待图片出现在屏幕上"""
+    try:
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            location = None
+            if confidence is not None:
+                location = pyautogui.locateOnScreen(
+                    image_path, confidence=confidence, region=region
+                )
+            else:
+                location = pyautogui.locateOnScreen(image_path, region=region)
+
+            if location:
+                center = pyautogui.center(location)
+                return {
+                    "success": True,
+                    "found": True,
+                    "waited": round(time.time() - start_time, 2),
+                    "left": location.left,
+                    "top": location.top,
+                    "width": location.width,
+                    "height": location.height,
+                    "center_x": center.x,
+                    "center_y": center.y,
+                }
+            time.sleep(interval)
+
+        return {
+            "success": True,
+            "found": False,
+            "waited": timeout,
+            "message": f"等待超时，{timeout}秒内未找到图片",
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+def wait_for_image_to_vanish(
+    image_path, confidence=None, region=None, timeout=10, interval=0.5
+):
+    """等待图片从屏幕上消失"""
+    try:
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            location = None
+            if confidence is not None:
+                location = pyautogui.locateOnScreen(
+                    image_path, confidence=confidence, region=region
+                )
+            else:
+                location = pyautogui.locateOnScreen(image_path, region=region)
+
+            if location is None:
+                return {
+                    "success": True,
+                    "vanished": True,
+                    "waited": round(time.time() - start_time, 2),
+                }
+            time.sleep(interval)
+
+        return {
+            "success": True,
+            "vanished": False,
+            "waited": timeout,
+            "message": f"等待超时，{timeout}秒内图片仍未消失",
+        }
     except Exception as e:
         return {"success": False, "error": str(e)}
 
@@ -234,6 +404,67 @@ def locate_all_on_screen(image_path, confidence=None, region=None):
         return {"success": False, "error": str(e)}
 
 
+def get_active_window():
+    """获取当前活动窗口的位置和大小（Windows）"""
+    try:
+        import win32gui
+
+        # 获取活动窗口句柄
+        hwnd = win32gui.GetForegroundWindow()
+
+        # 获取窗口矩形
+        left, top, right, bottom = win32gui.GetWindowRect(hwnd)
+
+        # 获取窗口标题
+        title = win32gui.GetWindowText(hwnd)
+
+        return {
+            "success": True,
+            "title": title,
+            "left": left,
+            "top": top,
+            "width": right - left,
+            "height": bottom - top,
+            "right": right,
+            "bottom": bottom,
+        }
+    except ImportError:
+        return {"success": False, "error": "需要安装 pywin32: pip install pywin32"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+def get_all_windows():
+    """获取所有可见窗口列表（Windows）"""
+    try:
+        import win32gui
+
+        windows = []
+
+        def callback(hwnd, extra):
+            if win32gui.IsWindowVisible(hwnd):
+                title = win32gui.GetWindowText(hwnd)
+                if title:  # 只返回有标题的窗口
+                    left, top, right, bottom = win32gui.GetWindowRect(hwnd)
+                    windows.append(
+                        {
+                            "title": title,
+                            "left": left,
+                            "top": top,
+                            "width": right - left,
+                            "height": bottom - top,
+                        }
+                    )
+
+        win32gui.EnumWindows(callback, None)
+
+        return {"success": True, "count": len(windows), "windows": windows}
+    except ImportError:
+        return {"success": False, "error": "需要安装 pywin32: pip install pywin32"}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 def alert(title, text, button="OK"):
     """显示警告对话框"""
     pyautogui.alert(text=text, title=title, button=button)
@@ -258,21 +489,36 @@ def main():
         "action",
         choices=[
             "screenshot",
+            "screenshot_to_clipboard",
             "click",
             "double_click",
+            "mouse_down",
+            "mouse_up",
             "get_pixel_color",
             "find_color",
             "get_mouse_position",
             "move_mouse",
+            "move_mouse_rel",
             "drag_mouse",
             "scroll",
             "get_screen_size",
+            "get_active_window",
+            "get_all_windows",
             "sleep",
             "type_text",
             "press_key",
             "hotkey",
+            "copy",
+            "paste",
+            "cut",
+            "select_all",
+            "undo",
+            "redo",
+            "save",
             "locate_on_screen",
             "locate_all_on_screen",
+            "wait_for_image",
+            "wait_for_image_to_vanish",
             "alert",
             "confirm",
             "prompt",
@@ -317,6 +563,10 @@ def main():
     # 其他
     parser.add_argument("--amount", type=int, help="滚动量")
     parser.add_argument("--seconds", type=float, help="等待秒数")
+    parser.add_argument("--timeout", type=float, default=10, help="等待超时时间（秒）")
+    parser.add_argument(
+        "--wait_interval", type=float, default=0.5, help="等待检查间隔（秒）"
+    )
 
     args = parser.parse_args()
 
@@ -324,7 +574,8 @@ def main():
 
     try:
         if args.action == "screenshot":
-            result = screenshot(args.output)
+            region = tuple(map(int, args.region.split(","))) if args.region else None
+            result = screenshot(args.output, region)
 
         elif args.action == "click":
             if args.x is None or args.y is None:
@@ -417,6 +668,65 @@ def main():
             if args.text is None:
                 raise ValueError("输入对话框需要提供 --text 参数")
             result = prompt(args.title, args.text, args.default)
+
+        # 新增功能
+        elif args.action == "screenshot_to_clipboard":
+            region = tuple(map(int, args.region.split(","))) if args.region else None
+            result = screenshot_to_clipboard(region)
+
+        elif args.action == "mouse_down":
+            result = mouse_down(args.button)
+
+        elif args.action == "mouse_up":
+            result = mouse_up(args.button)
+
+        elif args.action == "move_mouse_rel":
+            if args.x is None or args.y is None:
+                raise ValueError("相对移动操作需要提供 --x 和 --y 参数")
+            result = move_mouse_rel(args.x, args.y, args.duration)
+
+        elif args.action == "copy":
+            result = copy()
+
+        elif args.action == "paste":
+            result = paste()
+
+        elif args.action == "cut":
+            result = cut()
+
+        elif args.action == "select_all":
+            result = select_all()
+
+        elif args.action == "undo":
+            result = undo()
+
+        elif args.action == "redo":
+            result = redo()
+
+        elif args.action == "save":
+            result = save()
+
+        elif args.action == "wait_for_image":
+            if args.image is None:
+                raise ValueError("等待图片操作需要提供 --image 参数")
+            region = tuple(map(int, args.region.split(","))) if args.region else None
+            result = wait_for_image(
+                args.image, args.confidence, region, args.timeout, args.wait_interval
+            )
+
+        elif args.action == "wait_for_image_to_vanish":
+            if args.image is None:
+                raise ValueError("等待图片消失操作需要提供 --image 参数")
+            region = tuple(map(int, args.region.split(","))) if args.region else None
+            result = wait_for_image_to_vanish(
+                args.image, args.confidence, region, args.timeout, args.wait_interval
+            )
+
+        elif args.action == "get_active_window":
+            result = get_active_window()
+
+        elif args.action == "get_all_windows":
+            result = get_all_windows()
 
     except Exception as e:
         result = {"success": False, "error": str(e)}

@@ -7,16 +7,16 @@ description: 基于 PyAutoGUI 的桌面自动化操作 skill。支持截图、�
 
 ## 功能概览
 
-| 功能类别 | 支持的操作 |
-|---------|-----------|
-| 截图 | 全屏截图、区域截图 |
-| 鼠标控制 | 点击、双击、移动、拖拽、滚动 |
-| 颜色操作 | 获取像素颜色、查找颜色位置 |
-| 键盘操作 | 输入文本、按键、组合键 |
-| 图像识别 | 在屏幕上查找图片位置 |
-| 对话框 | 警告、确认、输入对话框 |
-| 系统信息 | 屏幕分辨率、鼠标位置 |
-| 工具 | 等待、暂停 |
+| 功能类别 | 支持的操作                                           |
+| -------- | ---------------------------------------------------- |
+| 截图     | 全屏截图、区域截图、截图到剪贴板                     |
+| 鼠标控制 | 点击、双击、移动、相对移动、拖拽、滚动、按下/释放    |
+| 颜色操作 | 获取像素颜色、查找颜色位置                           |
+| 键盘操作 | 输入文本、按键、组合键、快捷操作（复制/粘贴/全选等） |
+| 图像识别 | 在屏幕上查找图片位置、等待图片出现/消失              |
+| 对话框   | 警告、确认、输入对话框                               |
+| 系统信息 | 屏幕分辨率、鼠标位置、窗口信息                       |
+| 工具     | 等待、暂停                                           |
 
 ## 快速开始
 
@@ -38,6 +38,13 @@ python scripts/automation.py screenshot
 
 # 指定输出路径
 python scripts/automation.py screenshot --output my_screenshot.png
+
+# 区域截图
+python scripts/automation.py screenshot --output region.png --region 100,100,400,300
+
+# 截图到剪贴板（需要安装 pywin32）
+python scripts/automation.py screenshot_to_clipboard
+python scripts/automation.py screenshot_to_clipboard --region 100,100,400,300
 ```
 
 ### 鼠标点击
@@ -82,8 +89,18 @@ python scripts/automation.py move_mouse --x 500 --y 300
 # 移动鼠标（动画效果，0.5秒）
 python scripts/automation.py move_mouse --x 500 --y 300 --duration 0.5
 
+# 相对当前位置移动鼠标
+python scripts/automation.py move_mouse_rel --x 100 --y -50
+python scripts/automation.py move_mouse_rel --x 100 --y -50 --duration 0.5
+
 # 拖拽鼠标
 python scripts/automation.py drag_mouse --x 800 --y 600 --duration 1.0
+
+# 鼠标按下（不释放）
+python scripts/automation.py mouse_down --button left
+
+# 鼠标释放
+python scripts/automation.py mouse_up --button left
 
 # 滚动（正数向上，负数向下）
 python scripts/automation.py scroll --amount 500
@@ -96,6 +113,14 @@ python scripts/automation.py scroll --amount -500 --x 500 --y 300
 # 获取屏幕分辨率
 python scripts/automation.py get_screen_size
 # 返回: {"width": 1920, "height": 1080}
+
+# 获取当前活动窗口信息（需要安装 pywin32）
+python scripts/automation.py get_active_window
+# 返回: {"title": "窗口标题", "left": 100, "top": 100, "width": 800, "height": 600}
+
+# 获取所有可见窗口列表（需要安装 pywin32）
+python scripts/automation.py get_all_windows
+# 返回: {"count": 5, "windows": [...]}
 ```
 
 ### 等待
@@ -121,6 +146,15 @@ python scripts/automation.py press_key --key esc
 # 组合键
 python scripts/automation.py hotkey --keys ctrl,c
 python scripts/automation.py hotkey --keys ctrl,shift,esc
+
+# 快捷操作
+python scripts/automation.py copy      # Ctrl+C
+python scripts/automation.py paste     # Ctrl+V
+python scripts/automation.py cut       # Ctrl+X
+python scripts/automation.py select_all # Ctrl+A
+python scripts/automation.py undo      # Ctrl+Z
+python scripts/automation.py redo      # Ctrl+Y
+python scripts/automation.py save      # Ctrl+S
 ```
 
 常用按键名称: `enter`, `esc`, `tab`, `space`, `backspace`, `delete`, `up`, `down`, `left`, `right`, `f1`-`f12`, `ctrl`, `alt`, `shift`, `win`
@@ -141,6 +175,15 @@ python scripts/automation.py locate_on_screen --image button.png --region 0,0,80
 
 # 查找所有匹配位置
 python scripts/automation.py locate_all_on_screen --image icon.png
+
+# 等待图片出现（最多等待10秒）
+python scripts/automation.py wait_for_image --image button.png --timeout 10
+
+# 等待图片出现（自定义检查间隔）
+python scripts/automation.py wait_for_image --image loading.png --timeout 30 --wait_interval 1
+
+# 等待图片消失
+python scripts/automation.py wait_for_image_to_vanish --image loading.png --timeout 30
 ```
 
 ### 对话框

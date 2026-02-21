@@ -31,23 +31,24 @@ python skill-optimizer-yashu/scripts/analyze.py <skill-name> --folder <skills-fo
 
 ### 1. Frontmatter 格式
 
-| 检查项 | 说明 |
-|--------|------|
-| name | 必需，小写字母/数字/连字符，1-64 字符 |
-| description | 必需，1-1024 字符，描述技能和触发条件 |
-| 可选字段 | license, compatibility, metadata, allowed-tools |
+| 检查项      | 说明                                            |
+| ----------- | ----------------------------------------------- |
+| name        | 必需，小写字母/数字/连字符，1-64 字符           |
+| description | 必需，1-1024 字符，描述技能和触发条件           |
+| 可选字段    | license, compatibility, metadata, allowed-tools |
 
 ### 2. 渐进式披露结构
 
 根据 Agent Skills 的渐进式披露原则：
 
-| 层级 | 内容 | 建议大小 |
-|------|------|----------|
-| Metadata | name + description | ~100 tokens |
-| Instructions | SKILL.md body | < 5000 tokens (< 500 行) |
-| Resources | scripts/, references/ | 按需加载 |
+| 层级         | 内容                  | 建议大小                 |
+| ------------ | --------------------- | ------------------------ |
+| Metadata     | name + description    | ~100 tokens              |
+| Instructions | SKILL.md body         | < 5000 tokens (< 500 行) |
+| Resources    | scripts/, references/ | 按需加载                 |
 
 检查项：
+
 - [ ] SKILL.md 是否超过 500 行
 - [ ] 是否有大段内容可以移到 references/
 - [ ] 是否有重复内容可以提取到独立文件
@@ -56,13 +57,24 @@ python skill-optimizer-yashu/scripts/analyze.py <skill-name> --folder <skills-fo
 
 检查 SKILL.md 中引用的文件是否存在：
 
-| 文件夹 | 检查内容 |
-|--------|----------|
-| scripts/ | 引用的 .py/.sh/.js 文件是否存在 |
-| references/ | 引用的 .md 文件是否存在 |
-| assets/ | 引用的模板/图片是否存在 |
+| 文件夹      | 检查内容                        |
+| ----------- | ------------------------------- |
+| scripts/    | 引用的 .py/.sh/.js 文件是否存在 |
+| references/ | 引用的 .md 文件是否存在         |
+| assets/     | 引用的模板/图片是否存在         |
 
-### 4. Token 效率
+### 4. 脚本代码 AI 友好性
+
+检查 scripts/ 中的代码是否遵循 AI 友好原则：
+
+| 检查项           | 说明                                                              |
+| ---------------- | ----------------------------------------------------------------- |
+| 输入方式         | 支持命令行参数、环境变量或结构化数据（JSON/YAML），避免交互式提示 |
+| 输出格式         | 使用结构化格式（JSON/YAML/表格），包含明确的字段名                |
+| 错误处理         | 返回标准退出码，错误信息输出到 stderr，成功结果输出到 stdout      |
+| 避免自然语言解析 | 输出不包含需要 AI 解析的自然语言描述                              |
+
+### 5. Token 效率
 
 - 使用表格组织信息（如用户输入对照表）
 - 使用列表代替长段落
@@ -85,10 +97,12 @@ python skill-optimizer-yashu/scripts/analyze.py <skill-name> --folder <skills-fo
 
 ```markdown
 # 正确
+
 参见技术参考：references/REFERENCE.md
 运行脚本：scripts/extract.py
 
 # 避免
+
 参见 /absolute/path/to/reference.md
 ```
 
