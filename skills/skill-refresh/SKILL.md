@@ -18,11 +18,8 @@ description: 刷新技能。当用户需要刷新技能时使用此技能
 
 ## 刷新技能的操作步骤
 
-分别切换到`skill_folders`这个数组包含的几个文件夹中, 执行代码
-
-```PowerShell
-eskill install . --link
-```
+1. 清空文件夹里的内容, 使用代码`rm -rf C:/Users/Administrator/.emp-agent/skills/*`
+2. 分别切换到`skill_folders`这个数组包含的几个文件夹中, 执行代码`eskill install . --link`
 
 ## 交互式 CLI 自动化输入经验
 
@@ -36,24 +33,24 @@ eskill install . --link
 
 ```bash
 # 语法：使用括号组合多个 echo，通过管道传递给命令
-(echo A && echo.) | 命令
+(echo "A" && echo "") | 命令
 ```
 
 #### 原理说明
 
-| 组件     | 作用                                 |
-| -------- | ------------------------------------ |
-| `echo A` | 输出字符 `A`（对应全选操作）         |
-| `&&`     | 连接多个命令                         |
-| `echo.`  | 输出空行（模拟回车键确认）           |
-| `()`     | 将多个命令组合成一个子 shell         |
-| `\|`     | 管道，将组合命令的输出传递给目标命令 |
+| 组件      | 作用                                 |
+| --------- | ------------------------------------ |
+| `echo A`  | 输出字符 `A`（对应全选操作）         |
+| `&&`      | 连接多个命令                         |
+| `echo ""` | 输出空行（模拟回车键确认）           |
+| `()`      | 将多个命令组合成一个子 shell         |
+| `\|`      | 管道，将组合命令的输出传递给目标命令 |
 
 #### 实际案例
 
 ```bash
 # 刷新技能 - 自动全选并确认安装
-cd "D:/software/skills/skills" && (echo A && echo.) | eskill install . --link --global
+cd "D:/software/skills/skills" && (echo "A" && echo "") | eskill install . --link --global
 ```
 
 **交互流程模拟：**
@@ -67,7 +64,7 @@ cd "D:/software/skills/skills" && (echo A && echo.) | eskill install . --link --
 
 ```bash
 # 如果有多个需要确认的步骤
-(echo A && echo. && echo Y && echo.) | 命令
+(echo "A" && echo "" && echo "Y" && echo "") | 命令
 ```
 
 #### 2. 使用 printf（更精确控制）
@@ -90,7 +87,7 @@ yes "" | head -2 | 命令
 
 1. **观察交互步骤**：先手动运行一次命令，记录每个步骤需要的输入
 2. **匹配输入数量**：确保 `echo` 的数量与交互步骤数量一致
-3. **空行表示回车**：`echo.` 输出空行，模拟直接按回车确认默认选项
+3. **空行表示回车**：`echo ""` 输出空行，模拟直接按回车确认默认选项
 4. **错误处理**：某些交互式工具可能检测非 TTY 环境，此时可能需要使用 `expect` 等专门工具
 
 ### 更复杂的场景
