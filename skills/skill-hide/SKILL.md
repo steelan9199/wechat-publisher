@@ -57,15 +57,17 @@ AI:  "'显示'有两种含义：
 
 ### 配置方法
 
+> 路径格式说明：使用正斜杠 `/` 兼容 Windows CMD、PowerShell 和类 Unix shell（Git Bash、MSYS2、WSL）
+
 ```bash
 # 添加单个路径
-python skill-hide/scripts/config_manager.py --add "C:\path\to\skills"
+python skill-hide/scripts/config_manager.py --add "C:/path/to/skills"
 
 # 添加多个路径
-python skill-hide/scripts/config_manager.py --add "C:\path1" --add "D:\path2"
+python skill-hide/scripts/config_manager.py --add "C:/path1" --add "D:/path2"
 
 # 覆盖设置所有路径（逗号分隔）
-python skill-hide/scripts/config_manager.py --set "C:\path1,D:\path2,E:\path3"
+python skill-hide/scripts/config_manager.py --set "C:/path1,D:/path2,E:/path3"
 
 # 列出当前配置
 python skill-hide/scripts/config_manager.py --list
