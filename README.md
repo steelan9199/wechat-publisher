@@ -31,5 +31,8 @@
   - `generate-cover-prompt/` - 封面提示词生成工具
   - `skill-hide/` - 隐藏或恢复技能
   - `skill-optimizer/` - 分析和优化 Skill
+  - `chrome-devtools-skill/` - Chrome DevTools 网页分析工具
+  - `skill-creator-yashu/` - 技能创建工具
+  - `skill-refresh/` - 技能刷新工具
 
 - `push.js` - 快速推送脚本

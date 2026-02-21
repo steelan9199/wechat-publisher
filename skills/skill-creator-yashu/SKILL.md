@@ -1,5 +1,5 @@
 ---
-name: skill-creator
+name: skill-creator-yashu
 description: 创建符合 Agent Skills 规范的新 skill。当用户需要创建 skill、初始化 skill 目录结构、生成 SKILL.md 文件、打包或验证 skill 时使用此 skill。
 metadata:
   author: 牙叔教程
