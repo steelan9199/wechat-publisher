@@ -220,9 +220,10 @@ python scripts/package_skill.py <path/to/skill-folder> [output-directory]
 
 | 脚本 | 用途 | 命令 |
 |------|------|------|
-| init_skill.py | 初始化新 skill | `python scripts/init_skill.py <skill-name> --path <output-dir>` |
-| package_skill.py | 打包 skill | `python scripts/package_skill.py <skill-folder> [output-dir]` |
-| quick_validate.py | 快速验证 | `python scripts/quick_validate.py <skill-directory>` |
+| [init_skill.py](scripts/init_skill.py) | 初始化新 skill | `python scripts/init_skill.py <skill-name> --path <output-dir>` |
+| [package_skill.py](scripts/package_skill.py) | 打包 skill | `python scripts/package_skill.py <skill-folder> [output-dir]` |
+| [quick_validate.py](scripts/quick_validate.py) | 快速验证 | `python scripts/quick_validate.py <skill-directory>` |
+| [create-skill.py](scripts/create-skill.py) | 创建完整 skill | `python scripts/create-skill.py <skill-name>` |
 
 ## 创建示例
 

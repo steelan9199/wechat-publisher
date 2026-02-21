@@ -9,7 +9,7 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Any, Dict, List
 
 
 class SkillAnalyzer:
@@ -88,7 +88,9 @@ class SkillAnalyzer:
             result["name"]["issues"].append(f"name 长度 {len(name)} 超过 64 字符限制")
             self.issues.append(f"错误: name 长度 {len(name)} 超过 64 字符")
         elif not re.match(r"^[a-z0-9]+(-[a-z0-9]+)*$", name):
-            result["name"]["issues"].append("name 只能包含小写字母、数字、连字符，不能以连字符开头或结尾")
+            result["name"]["issues"].append(
+                "name 只能包含小写字母、数字、连字符，不能以连字符开头或结尾"
+            )
             self.issues.append(f"错误: name '{name}' 格式不符合规范")
         else:
             result["name"]["valid"] = True
@@ -101,7 +103,9 @@ class SkillAnalyzer:
             result["description"]["issues"].append("description 不能为空")
             self.issues.append("错误: frontmatter 缺少 description 字段")
         elif len(desc) > 1024:
-            result["description"]["issues"].append(f"description 长度 {len(desc)} 超过 1024 字符限制")
+            result["description"]["issues"].append(
+                f"description 长度 {len(desc)} 超过 1024 字符限制"
+            )
             self.issues.append(f"错误: description 长度 {len(desc)} 超过 1024 字符")
         else:
             result["description"]["valid"] = True
@@ -124,8 +128,12 @@ class SkillAnalyzer:
             result["description"]["has_trigger"] = has_trigger
 
             if not has_trigger:
-                result["description"]["issues"].append("description 缺少触发条件，建议添加'当...时使用此技能'")
-                self.issues.append("建议: description 应包含使用场景和触发条件，如'当用户需要...时使用此技能'")
+                result["description"]["issues"].append(
+                    "description 缺少触发条件，建议添加'当...时使用此技能'"
+                )
+                self.issues.append(
+                    "建议: description 应包含使用场景和触发条件，如'当用户需要...时使用此技能'"
+                )
 
         # 检查可选字段
         optional_fields = ["license", "compatibility", "metadata", "allowed-tools"]
@@ -150,7 +158,9 @@ class SkillAnalyzer:
         # 检查行数（推荐 < 500 行）
         if result["line_count"] > 500:
             result["too_long"] = True
-            self.issues.append(f"警告: SKILL.md 共 {result['line_count']} 行，建议保持在 500 行以内")
+            self.issues.append(
+                f"警告: SKILL.md 共 {result['line_count']} 行，建议保持在 500 行以内"
+            )
             result["should_split"] = True
 
         # 检查大段落（可能适合移到 references/）
@@ -169,7 +179,9 @@ class SkillAnalyzer:
         if large_sections:
             result["large_sections"] = large_sections
             for sec in large_sections:
-                self.issues.append(f"建议: 章节 '{sec['name']}' 有 {sec['lines']} 行，考虑移到 references/")
+                self.issues.append(
+                    f"建议: 章节 '{sec['name']}' 有 {sec['lines']} 行，考虑移到 references/"
+                )
 
         return result
 
@@ -209,7 +221,9 @@ class SkillAnalyzer:
                     self.issues.append(f"错误: 引用的脚本不存在: {ref_path}")
 
             # 检查 references/
-            elif ref_path.startswith("references/") or ref_path.startswith("references\\"):
+            elif ref_path.startswith("references/") or ref_path.startswith(
+                "references\\"
+            ):
                 ref_name = Path(ref_path).name
                 result["references_referenced"].append(ref_name)
 
@@ -231,10 +245,42 @@ class SkillAnalyzer:
         # 检查是否有未引用的脚本
         scripts_dir = self.skill_path / "scripts"
         if scripts_dir.exists():
-            py_files = [f.name for f in scripts_dir.glob("*.py")]
-            unreferenced = [f for f in py_files if f not in result["scripts_referenced"]]
+            py_files = list(scripts_dir.glob("*.py"))
+            # 获取所有已引用脚本的文件名（从路径中提取）
+            referenced_names = set()
+            for ref_path in result["scripts_referenced"]:
+                referenced_names.add(Path(ref_path).name)
+
+            unreferenced = [f.name for f in py_files if f.name not in referenced_names]
             if unreferenced:
-                self.issues.append(f"提示: scripts/ 中有未引用的文件: {', '.join(unreferenced)}")
+                self.issues.append(
+                    f"提示: scripts/ 中有未引用的文件: {', '.join(unreferenced)}"
+                )
+
+            # 检查脚本文件大小（推荐 < 500 行）
+            for py_file in py_files:
+                line_count = len(py_file.read_text(encoding="utf-8").split("\n"))
+                if line_count > 500:
+                    self.issues.append(
+                        f"建议: 脚本文件 '{py_file.name}' 有 {line_count} 行，建议保持在 500 行以内，考虑拆分功能"
+                    )
+
+        # 检查文件引用格式（应该使用 Markdown 链接格式）
+        # 查找代码块中的文件路径引用（如 `scripts/xxx.py` 但没有 Markdown 链接）
+        code_blocks = re.findall(r"```[\s\S]*?```", self.content)
+        for block in code_blocks:
+            # 查找代码块中的文件路径
+            file_refs = re.findall(
+                r"(?:python|bash|sh|cmd)\s+(scripts/\S+|references/\S+|assets/\S+)",
+                block,
+            )
+            for ref in file_refs:
+                # 检查这个文件是否在正文中有 Markdown 链接引用
+                md_link_pattern = rf"\[([^\]]+)\]\({re.escape(ref)}\)"
+                if not re.search(md_link_pattern, self.content):
+                    self.issues.append(
+                        f"建议: 文件 '{ref}' 在代码示例中被引用，建议在正文中添加 Markdown 链接说明，如 [{Path(ref).name}]({ref})"
+                    )
 
         return result
 
@@ -254,7 +300,9 @@ class SkillAnalyzer:
                 result["verbose_paragraphs"].append(p[:80] + "...")
 
         if len(result["verbose_paragraphs"]) > 3:
-            self.issues.append(f"建议: 有 {len(result['verbose_paragraphs'])} 个长段落，考虑用表格或列表简化")
+            self.issues.append(
+                f"建议: 有 {len(result['verbose_paragraphs'])} 个长段落，考虑用表格或列表简化"
+            )
 
         # 检查是否有重复内容
         lines = [l.strip() for l in self.body.split("\n") if l.strip()]
@@ -271,12 +319,15 @@ class SkillAnalyzer:
         suggestions = [i for i in self.issues if i.startswith("建议:")]
         hints = [i for i in self.issues if i.startswith("提示:")]
 
+        # 评级逻辑：任何 issues 都会影响评级
         if errors:
             level = "需修复"
         elif warnings:
             level = "良好"
         elif suggestions:
             level = "优秀"
+        elif hints:
+            level = "很好"
         else:
             level = "完美"
 
@@ -302,7 +353,13 @@ def main():
     analyzer = SkillAnalyzer(skill_path)
 
     if not analyzer.load():
-        print(json.dumps({"error": "加载失败", "issues": analyzer.issues}, indent=2, ensure_ascii=False))
+        print(
+            json.dumps(
+                {"error": "加载失败", "issues": analyzer.issues},
+                indent=2,
+                ensure_ascii=False,
+            )
+        )
         sys.exit(1)
 
     result = analyzer.analyze()
@@ -319,6 +376,7 @@ def main():
 
 if __name__ == "__main__":
     import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
     main()

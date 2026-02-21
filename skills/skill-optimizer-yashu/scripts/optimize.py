@@ -8,7 +8,6 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from typing import List, Dict
 
 
 class SkillOptimizer:
@@ -31,25 +30,51 @@ class SkillOptimizer:
 
     def optimize(self) -> str:
         """执行优化"""
-        content = self.original_content
+        try:
+            content = self.original_content
 
-        # 1. 确保有 frontmatter
-        content = self._ensure_frontmatter(content)
+            # 1. 确保有 frontmatter
+            content = self._ensure_frontmatter(content)
 
-        # 2. 将强制规则移到顶部
-        content = self._move_rules_to_top(content)
+            # 2. 将强制规则移到顶部
+            content = self._move_rules_to_top(content)
 
-        # 3. 优化长段落为表格/列表
-        content = self._optimize_format(content)
+            # 3. 优化长段落为表格/列表
+            content = self._optimize_format(content)
 
-        # 4. 添加快速参考表（如果不存在）
-        content = self._add_quick_reference(content)
+            # 4. 添加快速参考表（如果不存在）
+            content = self._add_quick_reference(content)
 
-        # 5. 清理冗余内容
-        content = self._cleanup(content)
+            # 5. 清理冗余内容
+            content = self._cleanup(content)
 
-        self.optimized_content = content
-        return content
+            # 6. 验证优化后的内容
+            if not self._validate(content):
+                print("警告: 优化后的文档验证未通过，使用原始内容")
+                return self.original_content
+
+            self.optimized_content = content
+            return content
+        except Exception as e:
+            print(f"优化过程中出错: {e}")
+            return self.original_content
+
+    def _validate(self, content: str) -> bool:
+        """验证优化后的内容是否有效"""
+        # 检查 frontmatter 是否完整
+        if not content.strip().startswith("---"):
+            return False
+
+        # 检查是否有 name 和 description
+        if "name:" not in content or "description:" not in content:
+            return False
+
+        # 检查 frontmatter 是否正确闭合
+        fm_matches = re.findall(r"^---\s*$", content, re.MULTILINE)
+        if len(fm_matches) < 2:
+            return False
+
+        return True
 
     def _ensure_frontmatter(self, content: str) -> str:
         """确保有 frontmatter"""
@@ -60,7 +85,9 @@ class SkillOptimizer:
         skill_name = self.skill_path.name
 
         # 尝试从内容中提取 description
-        desc_match = re.search(r"description[:\s]+(.+?)(?:\n|$)", content, re.IGNORECASE)
+        desc_match = re.search(
+            r"description[:\s]+(.+?)(?:\n|$)", content, re.IGNORECASE
+        )
         if desc_match:
             description = desc_match.group(1).strip()
         else:
@@ -77,12 +104,37 @@ description: {description}
     def _move_rules_to_top(self, content: str) -> str:
         """将强制规则移到文档顶部（frontmatter之后）"""
         # 如果已经有强制规则在顶部，跳过
-        first_section = re.search(r"^---\s*\n.*?^---\s*\n\s*##\s*", content, re.MULTILINE | re.DOTALL)
+        first_section = re.search(
+            r"^---\s*\n.*?^---\s*\n\s*##\s*", content, re.MULTILINE | re.DOTALL
+        )
         if first_section:
             section_start = content.find("##", first_section.end() - 10)
-            next_section = content[section_start:section_start + 50]
+            next_section = content[section_start : section_start + 50]
             if "⚠️" in next_section or "强制" in next_section:
                 return content
+
+        # 查找强制规则部分
+        rules_pattern = r"(##\s*[^\n]*(?:强制|必须|⚠️)[^\n]*\n.*?)(?=\n##\s|$)"
+        rules_match = re.search(rules_pattern, content, re.DOTALL | re.IGNORECASE)
+
+        if rules_match:
+            rules_section = rules_match.group(1)
+            # 从原位置移除
+            content = content.replace(rules_section, "", 1)
+            # 插入到 frontmatter 之后
+            fm_end = re.search(
+                r"^---\s*\n.*?^---\s*\n", content, re.MULTILINE | re.DOTALL
+            )
+            if fm_end:
+                insert_pos = fm_end.end()
+                content = (
+                    content[:insert_pos]
+                    + "\n"
+                    + rules_section
+                    + "\n"
+                    + content[insert_pos:]
+                )
+
         return content
 
     def _optimize_format(self, content: str) -> str:
@@ -97,27 +149,39 @@ description: {description}
 
     def _convert_to_table(self, content: str) -> str:
         """尝试将某些段落转换为表格"""
-        # 查找 "用户表达/意图/操作" 模式
-        pattern = r"([|]\s*用户表达\s*[|].*?[|]\s*对应操作\s*[|].*?[|])"
-
         # 如果已经有表格，保持原样
         if "| 用户输入 |" in content or "| 用户表达 |" in content:
             return content
 
-        # 尝试提取意图对照信息
-        intent_pattern = r"[|]\s*(.+?)\s*[|]\s*(.+?)\s*[|]\s*(.+?)\s*[|]"
-        matches = re.findall(intent_pattern, content)
+        # 尝试将 "当用户...时 -> 执行..." 格式的段落转换为表格
+        # 匹配模式：当用户[条件]时，[操作]
+        pattern = (
+            r"当用户(.+?)(?:时|表达|说|输入).*?(?:触发|执行|使用|调用)(.+?)(?:\n|$)"
+        )
+        matches = re.findall(pattern, content, re.IGNORECASE)
 
-        if len(matches) > 3:
-            # 已经有表格了
-            return content
+        if len(matches) >= 3:
+            # 构建表格
+            table = "\n| 用户输入 | AI 行动 |\n|----------|----------|\n"
+            for user_input, action in matches[:10]:  # 最多10行
+                user_input = user_input.strip()[:30]  # 截断过长内容
+                action = action.strip()[:40]
+                table += f"| {user_input} | {action} |\n"
+
+            # 在第一个匹配位置插入表格
+            first_match = re.search(pattern, content, re.IGNORECASE)
+            if first_match:
+                insert_pos = first_match.start()
+                content = content[:insert_pos] + table + "\n" + content[insert_pos:]
 
         return content
 
     def _optimize_lists(self, content: str) -> str:
         """优化列表格式"""
         # 确保列表项之间有适当空行
-        content = re.sub(r"(^[\s]*[-*+][\s].*\n)(?=[\s]*[-*+])", r"\1\n", content, flags=re.MULTILINE)
+        content = re.sub(
+            r"(^[\s]*[-*+][\s].*\n)(?=[\s]*[-*+])", r"\1\n", content, flags=re.MULTILINE
+        )
         return content
 
     def _add_quick_reference(self, content: str) -> str:
@@ -144,7 +208,9 @@ description: {description}
         content = re.sub(r"\n{3,}", "\n\n", content)
 
         # 修复列表项之间的多余空行（保留表格前的空行）
-        content = re.sub(r"(^[\s]*[-][\s].*\n)\n+(?=[\s]*[-])", r"\1", content, flags=re.MULTILINE)
+        content = re.sub(
+            r"(^[\s]*[-][\s].*\n)\n+(?=[\s]*[-])", r"\1", content, flags=re.MULTILINE
+        )
 
         return content
 
@@ -210,6 +276,7 @@ def main():
 
 if __name__ == "__main__":
     import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
     main()

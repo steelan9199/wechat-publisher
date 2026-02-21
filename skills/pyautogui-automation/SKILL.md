@@ -1,6 +1,6 @@
 ---
 name: pyautogui-automation
-description: 基于 PyAutoGUI 的桌面自动化操作 skill。支持截图、鼠标点击/移动/拖拽、颜色获取与查找、键盘输入、图像识别、对话框交互等功能。当用户需要自动化操作桌面应用、进行 UI 测试、执行重复性鼠标键盘操作时触发。
+description: 基于 PyAutoGUI 的桌面自动化工具。支持截图、鼠标键盘控制、图像识别、颜色检测等操作。当用户需要自动化操作桌面应用、执行 UI 测试或重复性任务时触发。
 ---
 
 # PyAutoGUI 自动化操作
@@ -27,6 +27,8 @@ python scripts/automation.py <action> [参数...]
 ```
 
 所有操作返回 JSON 格式结果。
+
+**脚本位置**: [scripts/automation.py](scripts/automation.py)
 
 ## 操作详解
 
@@ -268,9 +270,26 @@ result=$(python scripts/automation.py locate_on_screen --image submit_button.png
 pip install opencv-python
 ```
 
+## 资源索引
+
+- [automation.py](scripts/automation.py) - 主入口脚本
+- [utils.py](scripts/utils.py) - 公共工具函数
+- [mouse.py](scripts/mouse.py) - 鼠标操作
+- [keyboard.py](scripts/keyboard.py) - 键盘操作
+- [screen.py](scripts/screen.py) - 截图和图像识别
+- [color.py](scripts/color.py) - 颜色检测
+- [dialog.py](scripts/dialog.py) - 对话框操作
+- [system.py](scripts/system.py) - 系统信息
+
 ## 注意事项
 
 1. **坐标系**: 屏幕左上角为原点 (0, 0)，向右为 X 增加，向下为 Y 增加
 2. **权限**: Windows 上可能需要以管理员权限运行某些操作
 3. **分辨率**: 多显示器环境下，坐标可能跨越多个屏幕
 4. **图像识别**: 受屏幕分辨率和缩放比例影响，建议使用 confidence 参数提高鲁棒性
+
+## 快速参考表
+
+| 用户输入 | AI 行动      |
+| -------- | ------------ |
+| "xxx"    | 直接执行 xxx |
