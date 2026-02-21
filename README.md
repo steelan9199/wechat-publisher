@@ -21,7 +21,7 @@
 
 - `skills/` - 各种技能包
 
-  - `wechat-publisher/` - 微信公众号发布工具
+  - `wechat-publisher-yashu/` - 微信公众号发布工具
   - `wechat-content-optimizer/` - 微信内容优化工具
   - `wechat-title-optimizer/` - 微信标题优化工具
   - `webp-to-jpg/` - WebP 图片转 JPG 工具
@@ -30,7 +30,7 @@
   - `empjs-skill/` - empjs 技能管理工具
   - `generate-cover-prompt/` - 封面提示词生成工具
   - `skill-hide/` - 隐藏或恢复技能
-  - `skill-optimizer/` - 分析和优化 Skill
+  - `skill-optimizer-yashu/` - 分析和优化 Skill
   - `chrome-devtools-skill/` - Chrome DevTools 网页分析工具
   - `skill-creator-yashu/` - 技能创建工具
   - `skill-refresh/` - 技能刷新工具

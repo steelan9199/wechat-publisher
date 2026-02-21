@@ -1,6 +1,9 @@
 ---
 name: skill-optimizer-yashu
 description: 分析和优化其他 Skill 的 SKILL.md 文档，检查 frontmatter 格式、渐进式披露结构、文件引用完整性等问题。当用户需要[优化 skill]、[检查 skill 质量]、[review skill] 时，使用该技能。
+metadata:
+  author: 牙叔教程
+  version: "1.0"
 ---
 
 # Skill 优化器
