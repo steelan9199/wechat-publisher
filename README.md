@@ -34,5 +34,6 @@
   - `skill-refresh/` - 技能刷新工具
   - `empjs-skill/` - 技能包管理工具
   - `move-big-folder/` - 大文件夹迁移工具
+  - `fix-peacock-color/` - Peacock 颜色修复工具
 
 - `push.js` - 快速推送脚本

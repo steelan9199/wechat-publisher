@@ -106,6 +106,27 @@ class SkillAnalyzer:
         else:
             result["description"]["valid"] = True
 
+        # 检查 description 内容质量：是否包含触发条件
+        if desc:
+            # 检查是否包含"做什么"（功能描述）
+            has_function = len(desc) > 10  # 简单判断：长度足够说明有内容
+
+            # 检查是否包含"何时使用"的触发条件
+            trigger_patterns = [
+                r"当[^。]+时",  # 当...时
+                r"使用此技能",  # 使用此技能
+                r"触发",  # 触发
+                r"需要[^。]+(?:帮助|协助|支持)",  # 需要帮助/协助/支持
+            ]
+            has_trigger = any(re.search(p, desc) for p in trigger_patterns)
+
+            result["description"]["has_function"] = has_function
+            result["description"]["has_trigger"] = has_trigger
+
+            if not has_trigger:
+                result["description"]["issues"].append("description 缺少触发条件，建议添加'当...时使用此技能'")
+                self.issues.append("建议: description 应包含使用场景和触发条件，如'当用户需要...时使用此技能'")
+
         # 检查可选字段
         optional_fields = ["license", "compatibility", "metadata", "allowed-tools"]
         for field in optional_fields:

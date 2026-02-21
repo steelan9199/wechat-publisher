@@ -8,16 +8,6 @@ metadata:
 
 # Skill Creator
 
-## 何时使用此 skill
-
-当用户需要：
-- 创建一个新的 Agent Skill
-- 初始化 skill 目录结构
-- 生成符合规范的 SKILL.md 文件
-- 了解 Agent Skills 规范要求
-- 打包 skill 为 .skill 文件
-- 验证 skill 是否符合规范
-
 ## 核心原则
 
 ### 简洁至上 (Concise is Key)
