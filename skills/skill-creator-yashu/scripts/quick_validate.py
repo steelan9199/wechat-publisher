@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Quick validation script for skills - minimal version
+修复版：添加 UTF-8 编码支持
 """
 
 import sys
@@ -18,8 +19,8 @@ def validate_skill(skill_path):
     if not skill_md.exists():
         return False, "SKILL.md not found"
 
-    # Read and validate frontmatter
-    content = skill_md.read_text()
+    # Read and validate frontmatter (使用 UTF-8 编码)
+    content = skill_md.read_text(encoding='utf-8')
     if not content.startswith('---'):
         return False, "No YAML frontmatter found"
 

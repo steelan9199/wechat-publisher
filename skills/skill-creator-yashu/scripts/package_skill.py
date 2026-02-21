@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Skill Packager - Creates a distributable .skill file of a skill folder
+修复版：使用 UTF-8 编码的验证脚本
 
 Usage:
     python package_skill.py <path/to/skill-folder> [output-directory]
