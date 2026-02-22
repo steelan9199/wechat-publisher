@@ -16,6 +16,16 @@ const skillSourceDirs = [
 console.log("=== 技能刷新工具 ===");
 console.log("");
 
+// 清空目标技能目录
+const targetSkillsDir = "C:/Users/Administrator/.emp-agent/skills";
+if (fs.existsSync(targetSkillsDir)) {
+  console.log(`清空目标目录: ${targetSkillsDir}`);
+  fs.rmSync(targetSkillsDir, { recursive: true, force: true });
+  fs.mkdirSync(targetSkillsDir, { recursive: true });
+  console.log("目标目录已清空");
+  console.log("");
+}
+
 let totalSuccessCount = 0;
 let totalFailCount = 0;
 let totalSkillCount = 0;
