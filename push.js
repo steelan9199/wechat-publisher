@@ -265,6 +265,9 @@ function createAndPushTag() {
 
 // 清理 SKILL.md 文件
 function cleanupSkillMdFiles(dir) {
+  // 跳过被忽略的目录
+  if (isIgnored(dir)) return;
+
   const items = fs.readdirSync(dir);
   for (const item of items) {
     const fullPath = path.join(dir, item);
