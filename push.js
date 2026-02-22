@@ -189,6 +189,9 @@ async function main() {
 
     console.log("\x1b[32mSuccessfully pushed to GitHub!\x1b[0m");
 
+    // 推送成功后创建并推送 tag
+    createAndPushTag();
+
     // 推送成功后删除有 .hide 对应的 SKILL.md 文件
     console.log("\x1b[36mCleaning up temporary SKILL.md files...\x1b[0m");
     cleanupSkillMdFiles("skills");
@@ -196,6 +199,47 @@ async function main() {
   } catch (error) {
     console.log("\x1b[31mPush failed: " + error.message + "\x1b[0m");
     throw error;
+  }
+}
+
+// 生成带时间戳的 tag 名称
+function generateTagName() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+  return `v${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
+}
+
+// 创建并推送 tag
+function createAndPushTag() {
+  try {
+    const tagName = generateTagName();
+    console.log(`\x1b[36mCreating tag: ${tagName}...\x1b[0m`);
+
+    // 创建带注释的 tag
+    execSync(
+      `git tag -a "${tagName}" -m "Auto tagged at ${new Date().toLocaleString(
+        "zh-CN"
+      )}"`,
+      {
+        stdio: "pipe",
+      }
+    );
+    console.log(`\x1b[90m  已创建 tag: ${tagName}\x1b[0m`);
+
+    // 推送 tag 到远端
+    console.log(`\x1b[36mPushing tag to remote...\x1b[0m`);
+    execSync(`git push origin "${tagName}"`, { stdio: "inherit" });
+    console.log(`\x1b[32mTag ${tagName} pushed successfully!\x1b[0m`);
+
+    return tagName;
+  } catch (error) {
+    console.log(`\x1b[33m  警告: 创建或推送 tag 失败: ${error.message}\x1b[0m`);
+    return null;
   }
 }
 
