@@ -188,6 +188,57 @@ node index.js --file xxx.md --app-id xxx --app-secret xxx
 - **`invalid appsecret`**：AppSecret 已被重置或输入错误
 - **`invalid appid`**：AppID 输入错误
 
+## Windows 环境下配置文件更新的最佳实践
+
+在 Windows 环境下更新 `config.json` 时，可能会遇到以下问题：
+
+### 常见问题
+
+| 问题 | 原因 | 解决方案 |
+|------|------|----------|
+| `Access denied` | 尝试直接写入技能目录下的文件，超出工作目录权限 | 使用 Node.js 脚本间接写入 |
+| 中文/特殊字符转义错误 | 命令行解析中文标题、问号等字符时出错 | 使用临时 JS 脚本文件避免命令行转义 |
+| 引号嵌套问题 | PowerShell 或 CMD 中引号嵌套导致解析失败 | 使用 JS 文件存储配置对象 |
+
+### 推荐的配置文件更新方法
+
+**方法：使用临时 Node.js 脚本**
+
+在项目工作目录下创建临时脚本，然后通过 Node.js 执行：
+
+```javascript
+// update-config.js
+const fs = require('fs');
+
+const config = {
+  markdownFilePath: "Markdown文件的绝对路径",
+  title: "文章标题",
+  AUTHOR: "作者名称",
+  prefix: "文章前缀\n",
+  suffix: "文章后缀\n",
+  APP_ID: "你的AppID",
+  APP_SECRET: "你的AppSecret",
+  coverFilePath: "封面图片的绝对路径",
+  theme: "主题名称（如：blue）",
+};
+
+fs.writeFileSync("技能目录/config.json", JSON.stringify(config, null, 2));
+console.log("Config updated successfully");
+```
+
+执行命令：
+```bash
+node "update-config.js的绝对路径"
+```
+
+**优势：**
+- 避免中文和特殊字符（如 `？`）的转义问题
+- 避免引号嵌套复杂性
+- 代码清晰易读，便于调试
+- 不受工作目录权限限制（因为 Node.js 可以写入任意路径）
+
+---
+
 ## 注意事项
 
 1. **图片格式**：支持 JPG、PNG
