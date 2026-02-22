@@ -179,6 +179,26 @@ async function main() {
     console.log("\x1b[36mAdding all changes...\x1b[0m");
     execSync("git add .", { stdio: "inherit" });
 
+    // 再次检查是否有变更可以提交（排除 license-key.txt 被清空后无实际变更的情况）
+    const statusAfterAdd = execSync("git status --porcelain", {
+      encoding: "utf8",
+    });
+    const hasChangesToCommit = statusAfterAdd
+      .trim()
+      .split("\n")
+      .some((line) => {
+        // 检查是否有除了 license-key.txt 之外的其他变更，或者 license-key.txt 有实际内容变更
+        return line.trim() && !line.includes("license-key.txt");
+      });
+
+    if (!hasChangesToCommit) {
+      console.log(
+        "\x1b[33mNo significant changes to commit (only license-key.txt empty state)\x1b[0m"
+      );
+      // 恢复 license-key.txt 并退出
+      return;
+    }
+
     // Commit
     console.log("\x1b[36mCommitting changes...\x1b[0m");
     execSync(`git commit -m "${message}"`, { stdio: "inherit" });
