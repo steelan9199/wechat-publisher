@@ -211,11 +211,6 @@ async function main() {
 
     // 推送成功后创建并推送 tag
     createAndPushTag();
-
-    // 推送成功后删除有 .hide 对应的 SKILL.md 文件
-    console.log("\x1b[36mCleaning up temporary SKILL.md files...\x1b[0m");
-    cleanupSkillMdFiles("skills");
-    console.log("\x1b[32mCleanup complete!\x1b[0m");
   } catch (error) {
     console.log("\x1b[31mPush failed: " + error.message + "\x1b[0m");
     throw error;
@@ -289,16 +284,25 @@ function cleanupSkillMdFiles(dir) {
   }
 }
 
-// 执行主逻辑，使用 finally 确保恢复
+// 清理 SKILL.md 文件（无论成功与否都执行）
+function cleanupAllSkillMdFiles() {
+  console.log("\x1b[36mCleaning up temporary SKILL.md files...\x1b[0m");
+  cleanupSkillMdFiles("skills");
+  console.log("\x1b[32mCleanup complete!\x1b[0m");
+}
+
+// 执行主逻辑，使用 finally 确保恢复和清理
 main()
   .then(() => {
     console.log("\x1b[36mRestoring license-key.txt...\x1b[0m");
     restoreLicenseKey(licenseKeyContent);
+    cleanupAllSkillMdFiles();
     process.exit(0);
   })
   .catch((error) => {
     console.log("\x1b[31mOperation failed\x1b[0m");
     console.log("\x1b[36mRestoring license-key.txt...\x1b[0m");
     restoreLicenseKey(licenseKeyContent);
+    cleanupAllSkillMdFiles();
     process.exit(1);
   });
