@@ -1,6 +1,6 @@
 ---
 name: skill-creator-yashu
-description: 创建符合 Agent Skills 规范的新 skill。当用户需要创建 skill、初始化 skill 目录结构、生成 SKILL.md 文件、打包或验证 skill 时使用此 skill。
+description: 创建新 skill。当用户需要创建 skill 时使用。
 metadata:
   author: 牙叔教程
   updated: "2026-02-23 00:00:00"
@@ -16,20 +16,7 @@ metadata:
 
 - 初始化 skill 目录结构（SKILL.md、scripts/、references/、assets/）
 - 生成符合规范的 SKILL.md 模板文件
-- 打包 skill 为可分发的 .skill 文件
 - 验证 skill 结构是否符合 Agent Skills 规范
-
-### 触发方式
-
-当用户表达以下需求时触发此 skill：
-
-| 用户输入示例                  | 说明                       |
-| ----------------------------- | -------------------------- |
-| "帮我创建一个新的 skill"      | 用户想要创建新技能         |
-| "如何初始化 skill 目录"       | 用户需要初始化技能结构     |
-| "打包这个 skill"              | 用户需要打包技能为分发文件 |
-| "验证 skill 是否符合规范"     | 用户需要验证技能结构       |
-| "我想做一个处理 PDF 的 skill" | 用户有具体功能需求         |
 
 ### 使用流程
 
@@ -65,11 +52,6 @@ metadata:
    python scripts/quick_validate.py <skill-directory>
    ```
 
-5. **打包分发**
-   ```bash
-   python scripts/package_skill.py <skill-folder>
-   ```
-
 ### 输出结果
 
 **成功时：**
@@ -77,7 +59,6 @@ metadata:
 - 创建完整的 skill 目录结构
 - 生成包含模板内容的 SKILL.md
 - 创建示例脚本和参考文档
-- 打包生成 `.skill` 文件（如执行打包命令）
 
 **失败时：**
 
@@ -109,31 +90,16 @@ metadata:
 
 **Skill 是给 AI 使用的**，必须确保 AI 能够准确理解和执行。创建的 skill 必须符合以下 AI 友好性标准：
 
-| 检查项                 | 要求 | 说明                                                |
-| ---------------------- | ---- | --------------------------------------------------- |
-| **清晰的 description** | 必须 | AI 需要知道何时触发此 skill，必须包含功能和触发条件 |
-| **明确的指令**         | 必须 | 使用祈使句（运行、执行、调用等）而非模糊建议        |
-| **具体的示例**         | 必须 | 提供代码示例或用户请求示例，AI 需要知道具体怎么做   |
-| **决策逻辑**           | 推荐 | 复杂任务提供条件判断或决策树，帮助 AI 做出正确选择  |
-| **输出格式**           | 必须 | 明确说明 skill 应该输出什么内容                     |
-| **错误处理**           | 推荐 | 说明异常情况和边界处理                              |
-| **避免长段落**         | 推荐 | 超过 500 字符的段落难以提取关键信息，使用列表或表格 |
-| **文件引用说明**       | 必须 | 引用的文件必须有 Markdown 链接说明                  |
-
-**AI 友好性检查清单：**
-
-创建 skill 后，使用 [skill-optimizer-yashu](../skill-optimizer-yashu/) 检查 AI 友好性评分：
-
-```bash
-python skill-optimizer-yashu/scripts/analyze.py <skill-name> --folder <skills-folder>
-```
-
-评分标准：
-
-- **90-100 分**：优秀 - AI 能够准确理解和执行
-- **75-89 分**：良好 - 基本可用，有改进空间
-- **60-74 分**：一般 - AI 可能产生歧义，需要优化
-- **< 60 分**：需改进 - AI 难以理解，必须优化
+| 检查项                 | 要求 | 说明                                                                             |
+| ---------------------- | ---- | -------------------------------------------------------------------------------- |
+| **清晰的 description** | 必须 | AI 需要知道何时触发此 skill，frontmatter 中的 description 必须包含功能和触发条件 |
+| **明确的指令**         | 必须 | 使用祈使句（运行、执行、调用等）而非模糊建议                                     |
+| **具体的示例**         | 必须 | 提供代码示例或用户请求示例，AI 需要知道具体怎么做                                |
+| **决策逻辑**           | 推荐 | 复杂任务提供条件判断或决策树，帮助 AI 做出正确选择                               |
+| **输出格式**           | 必须 | 明确说明 skill 应该输出什么内容                                                  |
+| **错误处理**           | 推荐 | 说明异常情况和边界处理                                                           |
+| **避免长段落**         | 推荐 | 超过 500 字符的段落难以提取关键信息，使用列表或表格                              |
+| **文件引用说明**       | 必须 | 引用的文件必须有 Markdown 链接说明                                               |
 
 **优化技巧：**
 
@@ -148,7 +114,7 @@ python skill-optimizer-yashu/scripts/analyze.py <skill-name> --folder <skills-fo
 
 ```
 skill-name/
-├── SKILL.md          # 必需：包含元数据和指令
+├── SKILL.md          # 必需：技能文档
 ├── scripts/          # 可选：可执行代码
 ├── references/       # 可选：参考文档
 └── assets/           # 可选：模板、资源
@@ -167,8 +133,6 @@ description: 描述此 skill 的功能和使用时机
 ---
 ```
 
-**可选字段：** `license`、`compatibility`、`metadata`、`allowed-tools`
-
 ### name 字段规则
 
 - 1-64 字符，只能包含小写字母、数字和连字符
@@ -183,7 +147,7 @@ description: 描述此 skill 的功能和使用时机
 好的示例：
 
 ```yaml
-description: 全面的文档创建、编辑和分析，支持修订跟踪、评论、格式保留和文本提取。当 AI 需要处理专业文档（.docx 文件）时使用：(1) 创建新文档，(2) 修改或编辑内容，(3) 处理修订跟踪，(4) 添加评论
+description: 创建和管理 Word 文档（.docx）。当用户需要创建、编辑或分析 Word 文档时使用。
 ```
 
 ## 渐进式披露设计
@@ -272,17 +236,7 @@ python scripts/init_skill.py <skill-name> --path <output-directory>
 
 添加的脚本必须通过实际运行测试。删除任何不需要的示例文件和目录。
 
-### 步骤 5：打包 Skill
-
-开发完成后，打包为可分发的 .skill 文件：
-
-```bash
-python scripts/package_skill.py <path/to/skill-folder> [output-directory]
-```
-
-打包脚本会先验证 skill，如果验证失败会报告错误并退出。
-
-### 步骤 6：迭代
+### 步骤 5：迭代
 
 测试 skill 后，根据使用反馈改进 SKILL.md 或捆绑资源。
 
@@ -313,7 +267,6 @@ python scripts/package_skill.py <path/to/skill-folder> [output-directory]
 
 - **何时包含**：AI 工作时应该参考的详细文档
 - **好处**：保持 SKILL.md 精简，只在需要时加载
-- **最佳实践**：如果文件很大（>10k 词），在 SKILL.md 中包含 grep 搜索模式
 
 ### assets/
 
@@ -328,7 +281,6 @@ python scripts/package_skill.py <path/to/skill-folder> [output-directory]
 | ------------------------------------------------ | -------------- | --------------------------------------------------------------- |
 | [init_skill.py](scripts/init_skill.py)           | 初始化新 skill | `python scripts/init_skill.py <skill-name> --path <output-dir>` |
 | [skill_templates.py](scripts/skill_templates.py) | 模板定义模块   | 被 init_skill.py 调用，包含 SKILL.md 和示例文件模板             |
-| [package_skill.py](scripts/package_skill.py)     | 打包 skill     | `python scripts/package_skill.py <skill-folder> [output-dir]`   |
 | [quick_validate.py](scripts/quick_validate.py)   | 快速验证       | `python scripts/quick_validate.py <skill-directory>`            |
 | [create-skill.py](scripts/create-skill.py)       | 创建完整 skill | `python scripts/create-skill.py <skill-name>`                   |
 
@@ -349,9 +301,3 @@ python scripts/init_skill.py pdf-processor --path ./skills
 ```
 
 4. **编辑 SKILL.md**：填写模板中的 TODO 项，添加具体指令
-
-5. **打包**：
-
-```bash
-python scripts/package_skill.py ./skills/pdf-processor
-```
