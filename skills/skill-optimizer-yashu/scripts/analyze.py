@@ -60,6 +60,7 @@ class SkillAnalyzer:
             "progressive_disclosure": self._check_progressive_disclosure(),
             "file_references": self._check_file_references(),
             "token_efficiency": self._check_token_efficiency(),
+            "usage_guide": self._check_usage_guide(),
             "issues": self.issues,
             "summary": self._generate_summary(),
         }
@@ -309,6 +310,73 @@ class SkillAnalyzer:
         unique_lines = set(lines)
         if len(lines) > 50 and len(unique_lines) / len(lines) < 0.7:
             self.issues.append("建议: 文档可能有较多重复内容")
+
+        return result
+
+    def _check_usage_guide(self) -> Dict[str, Any]:
+        """检查是否包含'如何使用这个 skill'的内容"""
+        result = {
+            "has_usage_guide": False,
+            "usage_section_title": None,
+            "suggested_content": [],
+        }
+
+        # 定义可能的章节标题模式（中英文）
+        usage_patterns = [
+            r"##\s*如何使用这个\s*[Ss]kill",
+            r"##\s*如何使用",
+            r"##\s*使用说明",
+            r"##\s*使用指南",
+            r"##\s*Usage",
+            r"##\s*How to Use",
+            r"##\s*Getting Started",
+        ]
+
+        # 检查是否包含使用说明章节
+        for pattern in usage_patterns:
+            match = re.search(pattern, self.body, re.IGNORECASE)
+            if match:
+                result["has_usage_guide"] = True
+                result["usage_section_title"] = match.group(0).strip()
+                break
+
+        if not result["has_usage_guide"]:
+            self.issues.append(
+                "建议: SKILL.md 缺少'如何使用这个 skill'的说明章节，建议添加 '## 如何使用这个 Skill' 部分"
+            )
+            result["suggested_content"] = [
+                "功能概述 - 描述 skill 的核心功能和适用场景",
+                "使用方式 - 列出用户触发 skill 的示例方式",
+                "工作流程 - 说明 skill 被触发后的执行步骤",
+                "注意事项 - 重要提示和限制",
+            ]
+        else:
+            # 检查使用说明章节的内容完整性
+            # 获取使用说明章节的内容
+            section_title = result["usage_section_title"]
+            pattern = rf"{re.escape(section_title)}\n(.*?)(?=##\s+|\Z)"
+            match = re.search(pattern, self.body, re.DOTALL | re.IGNORECASE)
+
+            if match:
+                usage_content = match.group(1)
+                usage_lines = len(usage_content.split("\n"))
+
+                # 检查内容是否足够详细（至少 5 行）
+                if usage_lines < 5:
+                    self.issues.append(
+                        f"建议: '{section_title}' 章节内容较简略（仅 {usage_lines} 行），建议补充更详细的使用说明"
+                    )
+
+                # 检查是否包含示例
+                has_examples = bool(
+                    re.search(r"[\"'].*?[\"']", usage_content)
+                    or "示例" in usage_content
+                    or "Example" in usage_content
+                )
+                if not has_examples:
+                    self.issues.append(
+                        f"建议: '{section_title}' 章节缺少具体示例，建议添加用户请求示例"
+                    )
 
         return result
 

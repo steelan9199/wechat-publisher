@@ -53,6 +53,36 @@ Patterns can be mixed and matched as needed. Most skills combine patterns (e.g.,
 
 Delete this entire "Structuring This Skill" section when done - it's just guidance.]
 
+## 如何使用这个 Skill
+
+当用户询问"如何使用这个 skill"或"这个 skill 能做什么"时，向用户介绍以下内容：
+
+### 功能概述
+- **主要功能**：【描述 skill 的核心功能】
+- **适用场景**：【列出 2-3 个典型使用场景】
+
+### 使用方式
+用户可以通过以下方式触发此 skill：
+
+1. **直接描述需求**
+   - 示例："【示例用户请求 1】"
+   - 示例："【示例用户请求 2】"
+
+2. **明确提及功能**
+   - 示例："使用 {skill_name} 来【示例操作】"
+
+### 工作流程
+当 skill 被触发后，AI 将：
+1. 【步骤 1：分析/理解需求】
+2. 【步骤 2：执行具体操作】
+3. 【步骤 3：输出结果】
+
+### 注意事项
+- 【重要提示 1】
+- 【重要提示 2】
+
+---
+
 ## [TODO: Replace with the first main section based on chosen structure]
 
 [TODO: Add content here. See examples in existing skills:
