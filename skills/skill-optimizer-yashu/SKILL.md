@@ -1,9 +1,10 @@
 ---
 name: skill-optimizer-yashu
-description: 分析和优化其他 Skill 的 SKILL.md 主文档和 references/ 引用文档，检查 frontmatter 格式、渐进式披露结构、文件引用完整性、文档 AI 友好性等问题。当用户需要[优化 skill]、[检查 skill 质量]、[review skill] 时，使用该技能。需要用户提供 skill 名称和 skills 文件夹路径。
+description: 分析并优化其他 Skill 的文档质量问题，包括 frontmatter 格式、渐进式披露结构、文件引用完整性、AI 友好性等检查。何时使用：当用户说"优化这个 skill"、"检查 skill 质量"、"review skill"、"skill 有问题"、"帮我看看这个 skill"、"诊断 skill"时。
 metadata:
   author: 牙叔教程
-  updated: "2026-02-23"
+  updated: "2026-02-24 00:23:55"
+  version: "1.0.0"
 ---
 
 # Skill 优化器
@@ -19,34 +20,74 @@ metadata:
 
 ## 如何使用这个 Skill
 
-### 使用方式
+### 执行步骤
 
-运行分析脚本，指定要检查的 skill 名称和 skills 文件夹路径：
+1. **询问参数**：向用户确认要分析的 skill 名称和 skills 文件夹路径
+2. **运行分析**：执行分析脚本检查文档质量
+3. **展示结果**：向用户说明评级结果和具体改进建议
+
+### 执行命令
+
+**立即运行以下命令分析指定 skill：**
 
 ```bash
-# 分析指定 skill
+# 基础分析（推荐）
 python skill-optimizer-yashu/scripts/analyze.py <skill-name> --folder <skills-folder>
 
-# 输出 JSON 报告
+# 输出 JSON 报告供后续处理
 python skill-optimizer-yashu/scripts/analyze.py <skill-name> --folder <skills-folder> --output report.json
 ```
 
 ### 完整示例
 
-```bash
-# 示例：分析 skill-optimizer-yashu 自身
-python skill-optimizer-yashu/scripts/analyze.py skill-optimizer-yashu --folder ./skills
+**示例 1：分析 skill-optimizer-yashu 自身**
 
-# 示例：分析其他 skill 并输出 JSON 报告
+```bash
+python skill-optimizer-yashu/scripts/analyze.py skill-optimizer-yashu --folder ./skills
+```
+
+**示例 2：分析其他 skill 并生成报告**
+
+```bash
 python skill-optimizer-yashu/scripts/analyze.py my-skill --folder ./skills --output report.json
 ```
 
-### 工作流程
+### 分析工作流程
 
-1. **解析参数**：获取 skill 名称和文件夹路径
+1. **解析参数**：获取 skill 名称和 skills 文件夹路径
 2. **加载文档**：读取 SKILL.md 和 references/ 下的文件
 3. **执行检查**：依次运行 frontmatter、渐进式披露、文件引用、AI 友好性等检查
 4. **生成报告**：汇总结果，输出评级和详细问题列表
+5. **展示结果**：向用户说明评级和改进建议
+
+### 输出报告示例
+
+分析完成后，终端会显示类似以下的报告：
+
+```
+📊 Skill 质量分析报告: my-skill
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🎯 综合评级: 良好
+
+📋 检查结果:
+  ✅ Frontmatter 格式: 通过
+  ✅ 渐进式披露结构: 通过
+  ⚠️  文件引用完整性: 1 个警告
+     - 引用的文件不存在: scripts/helper.py
+  ✅ AI 友好性: 通过
+  ✅ 使用说明完整性: 通过
+
+🔧 建议优化:
+  1. 修复缺失的文件引用
+  2. 考虑将长段落拆分为列表
+```
+
+**根据评级采取相应行动：**
+
+- **需修复**：向用户说明必须修复的问题
+- **良好/优秀**：向用户说明有小问题可以优化
+- **很好/完美**：告知用户 skill 质量很高
 
 ### 错误处理
 
@@ -59,7 +100,7 @@ python skill-optimizer-yashu/scripts/analyze.py my-skill --folder ./skills --out
 
 ### 环境要求
 
-- Python 3.8+
+- Python 3.13.11
 
 ## 评级标准
 
@@ -82,6 +123,15 @@ python skill-optimizer-yashu/scripts/analyze.py my-skill --folder ./skills --out
 | name        | 必需，小写字母/数字/连字符，1-64 字符           |
 | description | 必需，1-1024 字符，描述技能和触发条件           |
 | 可选字段    | license, compatibility, metadata, allowed-tools |
+
+**metadata 字段规范：**
+
+| 字段    | 格式要求                                | 示例                             |
+| ------- | --------------------------------------- | -------------------------------- |
+| author  | 字符串                                  | `author: "牙叔教程"`             |
+| updated | **YYYY-MM-DD HH:MM:SS**（必须精确到秒） | `updated: "2026-02-24 14:30:00"` |
+| version | 语义化版本号                            | `version: "1.0.0"`               |
+| tags    | 字符串数组                              | `tags: ["工具", "AI"]`           |
 
 ### 2. 渐进式披露结构
 
@@ -251,3 +301,17 @@ python scripts/analyze.py <skill-name> --folder <skills-folder>
 3. **渐进式披露**：大段参考内容放到 references/，按需加载
 4. **自我检查**：skill 应该能通过自己的检查规则，建议定期用本工具检查自身质量
 5. **代码块格式**：使用标准的 3 个反引号（```）包裹代码块。避免使用 4 个反引号造成解析问题
+
+## 快速参考卡片
+
+**触发关键词：** 优化 skill | 检查 skill 质量 | review skill | skill 有问题 | 诊断 skill
+
+**必需参数：** skill 名称、skills 文件夹路径
+
+**执行命令：**
+
+```bash
+python skill-optimizer-yashu/scripts/analyze.py <skill-name> --folder <skills-folder>
+```
+
+**输出：** 终端显示评级和详细问题列表

@@ -15,14 +15,14 @@ def to_valid_skill_name(name: str) -> str:
     # 转换为小写
     name = name.lower()
     # 替换空格和特殊字符为连字符
-    name = re.sub(r'[^a-z0-9]+', '-', name)
+    name = re.sub(r"[^a-z0-9]+", "-", name)
     # 移除开头和结尾的连字符
-    name = name.strip('-')
+    name = name.strip("-")
     # 移除连续连字符
-    name = re.sub(r'-+', '-', name)
+    name = re.sub(r"-+", "-", name)
     # 限制长度
     if len(name) > 64:
-        name = name[:64].rstrip('-')
+        name = name[:64].rstrip("-")
     return name
 
 
@@ -42,14 +42,15 @@ def create_skill(skill_name: str, description: str, output_dir: str = ".") -> st
     os.makedirs(skill_dir)
 
     # 生成 SKILL.md 内容
-    today = datetime.now().strftime("%Y-%m-%d")
+    today = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     skill_md_content = f"""---
 name: {valid_name}
 description: {description}
-updated: "{today}"
+metadata:
+  updated: "{today}"
 ---
 
-# {valid_name.replace('-', ' ').title()}
+# {valid_name.replace("-", " ").title()}
 
 ## 何时使用此 skill
 
@@ -90,7 +91,7 @@ updated: "{today}"
 
     # 写入 SKILL.md
     skill_md_path = os.path.join(skill_dir, "SKILL.md")
-    with open(skill_md_path, 'w', encoding='utf-8') as f:
+    with open(skill_md_path, "w", encoding="utf-8") as f:
         f.write(skill_md_content)
 
     return skill_dir
@@ -108,16 +109,16 @@ def validate_skill(skill_dir: str) -> list:
         return errors
 
     # 读取内容
-    with open(skill_md_path, 'r', encoding='utf-8') as f:
+    with open(skill_md_path, "r", encoding="utf-8") as f:
         content = f.read()
 
     # 检查前置元数据
-    if not content.startswith('---'):
+    if not content.startswith("---"):
         errors.append("SKILL.md 必须以 YAML 前置元数据开始")
         return errors
 
     # 提取前置元数据
-    parts = content.split('---', 2)
+    parts = content.split("---", 2)
     if len(parts) < 3:
         errors.append("前置元数据格式不正确")
         return errors
@@ -125,15 +126,16 @@ def validate_skill(skill_dir: str) -> list:
     frontmatter = parts[1].strip()
 
     # 检查必需字段
-    if 'name:' not in frontmatter:
+    if "name:" not in frontmatter:
         errors.append("缺少必需的 'name' 字段")
 
-    if 'description:' not in frontmatter:
+    if "description:" not in frontmatter:
         errors.append("缺少必需的 'description' 字段")
 
     # 检查 name 字段值
     import re as regex
-    name_match = regex.search(r'^name:\s*(.+)$', frontmatter, regex.MULTILINE)
+
+    name_match = regex.search(r"^name:\s*(.+)$", frontmatter, regex.MULTILINE)
     if name_match:
         name = name_match.group(1).strip()
         dir_name = os.path.basename(skill_dir)
@@ -142,14 +144,16 @@ def validate_skill(skill_dir: str) -> list:
             errors.append(f"name 字段 '{name}' 与目录名 '{dir_name}' 不匹配")
 
         # 检查命名规范
-        if not regex.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', name):
-            errors.append(f"name 字段 '{name}' 不符合命名规范（只能包含小写字母、数字和连字符）")
+        if not regex.match(r"^[a-z0-9]+(-[a-z0-9]+)*$", name):
+            errors.append(
+                f"name 字段 '{name}' 不符合命名规范（只能包含小写字母、数字和连字符）"
+            )
 
         if len(name) > 64:
-            errors.append(f"name 字段长度超过 64 字符")
+            errors.append("name 字段长度超过 64 字符")
 
     # 检查 description 字段值
-    desc_match = regex.search(r'^description:\s*(.+)$', frontmatter, regex.MULTILINE)
+    desc_match = regex.search(r"^description:\s*(.+)$", frontmatter, regex.MULTILINE)
     if desc_match:
         description = desc_match.group(1).strip()
         if len(description) > 1024:
@@ -170,7 +174,7 @@ def main():
         print("")
         print("示例:")
         print('  python create-skill.py create "PDF Processor" "处理 PDF 文件"')
-        print('  python create-skill.py validate ./my-skill')
+        print("  python create-skill.py validate ./my-skill")
         sys.exit(1)
 
     command = sys.argv[1]

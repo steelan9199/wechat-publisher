@@ -111,9 +111,7 @@ class SkillOptimizer:
 
                 # 如果已有 metadata 对象，合并进去
                 existing_metadata_match = re.search(
-                    r'^metadata:\s*\n((?:\s+\w+:\s*.+\n)*)',
-                    fm_content,
-                    re.MULTILINE
+                    r"^metadata:\s*\n((?:\s+\w+:\s*.+\n)*)", fm_content, re.MULTILINE
                 )
                 if existing_metadata_match:
                     # 解析现有的 metadata
@@ -125,16 +123,24 @@ class SkillOptimizer:
                                 value = value[1:-1]
                             metadata[key] = value
                     # 移除旧的 metadata 块
-                    fm_content = re.sub(r'^metadata:\s*\n(?:\s+\w+:\s*.+\n)*', '', fm_content, flags=re.MULTILINE)
+                    fm_content = re.sub(
+                        r"^metadata:\s*\n(?:\s+\w+:\s*.+\n)*",
+                        "",
+                        fm_content,
+                        flags=re.MULTILINE,
+                    )
 
-                # 确保 updated 字段存在
-                metadata["updated"] = today
+                # 确保 updated 字段存在，使用标准格式: YYYY-MM-DD HH:MM:SS
+                from datetime import datetime
+
+                now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                metadata["updated"] = now
 
                 # 构建新的 frontmatter
                 new_fm = "---\n"
                 for key in ["name", "description"]:
                     if key in core_fields:
-                        new_fm += f'{key}: {core_fields[key]}\n'
+                        new_fm += f"{key}: {core_fields[key]}\n"
 
                 # 添加 metadata 对象
                 if metadata:
@@ -145,7 +151,9 @@ class SkillOptimizer:
                 new_fm += "---\n"
 
                 # 替换原 frontmatter
-                content = content[:fm_match.start()] + new_fm + content[fm_match.end():]
+                content = (
+                    content[: fm_match.start()] + new_fm + content[fm_match.end() :]
+                )
             return content
 
         # 没有 frontmatter，创建新的
@@ -164,7 +172,7 @@ class SkillOptimizer:
 name: {skill_name}
 description: {description}
 metadata:
-  updated: "{today}"
+  updated: "{today} 00:00:00"
 ---
 
 """

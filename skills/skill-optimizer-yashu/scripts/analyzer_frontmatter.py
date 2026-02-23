@@ -2,7 +2,119 @@
 """Frontmatter 检查模块"""
 
 import re
-from typing import Any, Dict, List
+from typing import Any, Dict
+
+
+def semantic_check_description(desc: str) -> Dict[str, Any]:
+    """
+    语义检查 description 是否包含功能描述和触发条件
+    返回包含 has_function_desc 和 has_trigger_condition 的字典
+    """
+    result = {
+        "has_function_desc": False,
+        "has_trigger_condition": False,
+        "function_keywords": [],
+        "trigger_keywords": [],
+        "suggestions": [],
+    }
+
+    # 功能描述关键词（表示这个 skill 是做什么的）
+    function_indicators = [
+        "分析",
+        "检查",
+        "优化",
+        "生成",
+        "创建",
+        "转换",
+        "处理",
+        "管理",
+        "查询",
+        "搜索",
+        "下载",
+        "上传",
+        "同步",
+        "部署",
+        "构建",
+        "测试",
+        "调试",
+        "监控",
+        "备份",
+        "恢复",
+        "清理",
+        "统计",
+        "计算",
+        "验证",
+        "修复",
+        "更新",
+        "删除",
+        "添加",
+        "用于",
+        "用来",
+        "功能",
+        "作用",
+        "可以",
+        "能够",
+    ]
+
+    # 触发条件关键词（表示什么时候使用这个 skill）
+    trigger_indicators = [
+        "当",
+        "如果",
+        "遇到",
+        "需要",
+        "想要",
+        "希望",
+        "时",
+        "情况下",
+        "场景",
+        "情形",
+        "使用此技能",
+        "使用本技能",
+        "使用这个 skill",
+        "触发",
+        "执行",
+        "调用",
+    ]
+
+    # 检查功能描述
+    found_function = []
+    for keyword in function_indicators:
+        if keyword in desc:
+            found_function.append(keyword)
+
+    # 判断是否包含功能描述（至少包含2个功能相关词，或描述足够详细）
+    if len(found_function) >= 2 or (len(found_function) >= 1 and len(desc) > 30):
+        result["has_function_desc"] = True
+    result["function_keywords"] = found_function
+
+    # 检查触发条件
+    found_trigger = []
+    for keyword in trigger_indicators:
+        if keyword in desc:
+            found_trigger.append(keyword)
+
+    # 判断是否包含触发条件（包含"当...时"结构或明确的触发词）
+    has_when_structure = "当" in desc and ("时" in desc or "情况下" in desc)
+    has_explicit_trigger = any(
+        kw in desc for kw in ["使用此技能", "使用本技能", "使用这个 skill", "触发"]
+    )
+
+    if has_when_structure or has_explicit_trigger or len(found_trigger) >= 2:
+        result["has_trigger_condition"] = True
+    result["trigger_keywords"] = found_trigger
+
+    # 生成建议
+    if not result["has_function_desc"]:
+        result["suggestions"].append(
+            "description 应该清晰说明这个 skill 的功能（如：分析、生成、处理等）"
+        )
+
+    if not result["has_trigger_condition"]:
+        result["suggestions"].append(
+            "description 应该包含触发条件（如：当用户需要...时、当遇到...情况时）"
+        )
+
+    return result
 
 
 def check_frontmatter(analyzer) -> Dict[str, Any]:
@@ -51,27 +163,44 @@ def check_frontmatter(analyzer) -> Dict[str, Any]:
     else:
         result["description"]["valid"] = True
 
-    # 检查 description 内容质量：是否包含触发条件
+    # 使用语义检查 description 内容质量
     if desc:
-        has_function = len(desc) > 10
-        trigger_patterns = [
-            r"当[^。]+时",
-            r"使用此技能",
-            r"触发",
-            r"需要[^。]+(?:帮助|协助|支持)",
-        ]
-        has_trigger = any(re.search(p, desc) for p in trigger_patterns)
+        semantic_result = semantic_check_description(desc)
 
-        result["description"]["has_function"] = has_function
-        result["description"]["has_trigger"] = has_trigger
+        result["description"]["has_function"] = semantic_result["has_function_desc"]
+        result["description"]["has_trigger"] = semantic_result["has_trigger_condition"]
+        result["description"]["semantic_check"] = semantic_result
 
-        if not has_trigger:
+        # 根据语义检查结果添加建议
+        if not semantic_result["has_function_desc"]:
             result["description"]["issues"].append(
-                "description 缺少触发条件，建议添加'当...时使用此技能'"
+                f"description 缺少清晰的功能描述（检测到的功能词: {', '.join(semantic_result['function_keywords']) or '无'}）"
             )
             analyzer.issues.append(
-                "建议: description 应包含使用场景和触发条件，如'当用户需要...时使用此技能'"
+                "建议: description 应该清晰说明这个 skill 的功能，如'分析...'、'生成...'、'处理...'等"
             )
+
+        if not semantic_result["has_trigger_condition"]:
+            result["description"]["issues"].append(
+                f"description 缺少触发条件说明（检测到的触发词: {', '.join(semantic_result['trigger_keywords']) or '无'}）"
+            )
+            analyzer.issues.append(
+                "建议: description 应该包含使用场景和触发条件，如'当用户需要...时'、'当遇到...情况时'"
+            )
+
+        # 如果语义检查通过，给出正面反馈
+        if (
+            semantic_result["has_function_desc"]
+            and semantic_result["has_trigger_condition"]
+        ):
+            result["description"]["quality"] = "良好"
+        elif (
+            semantic_result["has_function_desc"]
+            or semantic_result["has_trigger_condition"]
+        ):
+            result["description"]["quality"] = "一般"
+        else:
+            result["description"]["quality"] = "需改进"
 
     # 检查可选字段
     optional_fields = ["license", "compatibility", "metadata", "allowed-tools"]
@@ -86,5 +215,16 @@ def check_frontmatter(analyzer) -> Dict[str, Any]:
             analyzer.issues.append(
                 f"警告: '{field}' 字段应该放在 'metadata' 对象下，而不是 frontmatter 根级别"
             )
+
+    # 检查 metadata.updated 字段格式
+    metadata = analyzer.frontmatter.get("metadata", {})
+    if metadata and "updated" in metadata:
+        updated_value = metadata["updated"]
+        # 标准格式: YYYY-MM-DD HH:MM:SS（必须精确到秒）
+        if not re.match(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$", updated_value):
+            analyzer.issues.append(
+                f"警告: metadata.updated 格式不正确 '{updated_value}'，必须使用 'YYYY-MM-DD HH:MM:SS' 格式并精确到秒（如: 2026-02-24 14:30:00）"
+            )
+        result["optional_fields"]["metadata_updated"] = updated_value
 
     return result
