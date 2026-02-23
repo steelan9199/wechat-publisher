@@ -1,8 +1,9 @@
 ---
 name: skill-optimizer-yashu
-description: 分析和优化其他 Skill 的 SKILL.md 文档，检查 frontmatter 格式、渐进式披露结构、文件引用完整性等问题。当用户需要[优化 skill]、[检查 skill 质量]、[review skill] 时，使用该技能。
-author: 牙叔教程
-updated: "2026-02-23"
+description: 分析和优化其他 Skill 的 SKILL.md 主文档和 references/ 引用文档，检查 frontmatter 格式、渐进式披露结构、文件引用完整性、文档 AI 友好性等问题。当用户需要[优化 skill]、[检查 skill 质量]、[review skill] 时，使用该技能。需要用户提供 skill 名称和 skills 文件夹路径。
+metadata:
+  author: 牙叔教程
+  updated: "2026-02-23"
 ---
 
 # Skill 优化器
@@ -16,7 +17,11 @@ updated: "2026-02-23"
 - 文件引用完整性
 - Token 效率
 
-## 使用方式
+## 如何使用这个 Skill
+
+### 使用方式
+
+运行分析脚本，指定要检查的 skill 名称和 skills 文件夹路径：
 
 ```bash
 # 分析指定 skill
@@ -25,6 +30,36 @@ python skill-optimizer-yashu/scripts/analyze.py <skill-name> --folder <skills-fo
 # 输出 JSON 报告
 python skill-optimizer-yashu/scripts/analyze.py <skill-name> --folder <skills-folder> --output report.json
 ```
+
+### 完整示例
+
+```bash
+# 示例：分析 skill-optimizer-yashu 自身
+python skill-optimizer-yashu/scripts/analyze.py skill-optimizer-yashu --folder ./skills
+
+# 示例：分析其他 skill 并输出 JSON 报告
+python skill-optimizer-yashu/scripts/analyze.py my-skill --folder ./skills --output report.json
+```
+
+### 工作流程
+
+1. **解析参数**：获取 skill 名称和文件夹路径
+2. **加载文档**：读取 SKILL.md 和 references/ 下的文件
+3. **执行检查**：依次运行 frontmatter、渐进式披露、文件引用、AI 友好性等检查
+4. **生成报告**：汇总结果，输出评级和详细问题列表
+
+### 错误处理
+
+| 错误场景      | 处理方式                       |
+| ------------- | ------------------------------ |
+| Skill 不存在  | 提示找不到指定 skill 的文件夹  |
+| 路径错误      | 提示无效的文件夹路径           |
+| SKILL.md 缺失 | 标记为错误，提示缺少主文档     |
+| JSON 输出失败 | 提示文件写入错误，建议检查权限 |
+
+### 环境要求
+
+- Python 3.8+
 
 ## 评级标准
 
@@ -89,29 +124,64 @@ python skill-optimizer-yashu/scripts/analyze.py <skill-name> --folder <skills-fo
 python scripts/analyze.py <skill-name> --folder <skills-folder>
 ```
 
-### 4. 脚本代码 AI 友好性
+### 4. 文档 AI 友好性
 
-检查 scripts/ 中的代码是否遵循 AI 友好原则：
+检查 SKILL.md 主文档和 references/ 目录下的引用文档是否对 AI 友好：
 
-| 检查项           | 说明                                                              |
-| ---------------- | ----------------------------------------------------------------- |
-| 输入方式         | 支持命令行参数、环境变量或结构化数据（JSON/YAML），避免交互式提示 |
-| 输出格式         | 使用结构化格式（JSON/YAML/表格），包含明确的字段名                |
-| 错误处理         | 返回标准退出码，错误信息输出到 stderr，成功结果输出到 stdout      |
-| 避免自然语言解析 | 输出不包含需要 AI 解析的自然语言描述                              |
-| 文件大小         | 脚本文件建议保持在 500 行以内，超过则建议拆分功能                 |
+**检查范围：**
+
+- **主文档** (SKILL.md)：严格要求，权重 70%
+- **引用文档** (references/\*.md)：适当放宽，权重 30%
+
+**差异化标准：**
+
+| 检查项       | 主文档要求   | 引用文档要求 |
+| ------------ | ------------ | ------------ |
+| description  | 必须清晰明确 | 无要求       |
+| 祈使句指令   | 必须有       | 建议有       |
+| 具体示例     | 必须有       | 建议有       |
+| 决策逻辑     | 长文档需要   | 建议有       |
+| 输出格式说明 | 必须有       | 建议有       |
+| 错误处理说明 | 必须有       | 建议有       |
+| 长段落阈值   | 500 字符     | 800 字符     |
+| 扣分权重     | 高           | 低           |
+
+**评分计算：** 总体评分 = 主文档评分 × 70% + 引用文档平均分 × 30%
+
+检查 SKILL.md 文档本身是否对 AI 友好，确保 AI 能准确理解何时触发、如何执行：
+
+| 检查项                 | 说明                                         | 重要性 |
+| ---------------------- | -------------------------------------------- | ------ |
+| **清晰的 description** | AI 需要知道何时触发此 skill                  | ⭐⭐⭐ |
+| **明确的指令**         | 使用祈使句（运行、执行、调用等）而非模糊建议 | ⭐⭐⭐ |
+| **具体的示例**         | 提供代码示例或用户请求示例                   | ⭐⭐⭐ |
+| **决策逻辑**           | 复杂任务提供条件判断或决策树                 | ⭐⭐   |
+| **输出格式**           | 明确说明 skill 应该输出什么内容              | ⭐⭐   |
+| **错误处理**           | 说明异常情况和边界处理                       | ⭐⭐   |
+| **避免长段落**         | 超过 500 字符的段落难以提取关键信息          | ⭐     |
+| **文件引用说明**       | 引用的文件需要有 Markdown 链接说明           | ⭐     |
+
+**文档 AI 友好性评分标准：**
+
+| 评分   | 等级   | 说明                      |
+| ------ | ------ | ------------------------- |
+| 90-100 | 优秀   | AI 能够准确理解和执行     |
+| 75-89  | 良好   | 基本可用，有改进空间      |
+| 60-74  | 一般   | AI 可能产生歧义，需要优化 |
+| < 60   | 需改进 | AI 难以理解，必须优化     |
 
 ### 5. 使用说明完整性
 
 检查 SKILL.md 是否包含"如何使用这个 skill"的内容：
 
-| 检查项           | 说明                                                              |
-| ---------------- | ----------------------------------------------------------------- |
-| 使用说明章节     | 是否包含 `## 如何使用这个 Skill` 或类似的章节                     |
-| 内容完整性       | 使用说明是否足够详细（建议至少 5 行以上内容）                     |
-| 示例说明         | 是否包含具体的使用示例                                            |
+| 检查项       | 说明                                          |
+| ------------ | --------------------------------------------- |
+| 使用说明章节 | 是否包含 `## 如何使用这个 Skill` 或类似的章节 |
+| 内容完整性   | 使用说明是否足够详细（建议至少 5 行以上内容） |
+| 示例说明     | 是否包含具体的使用示例                        |
 
 **建议的使用说明结构：**
+
 - **功能概述** - 描述 skill 的核心功能和适用场景
 - **使用方式** - 列出用户触发 skill 的示例方式
 - **工作流程** - 说明 skill 被触发后的执行步骤
@@ -156,8 +226,23 @@ python scripts/analyze.py <skill-name> --folder <skills-folder>
 
 ## 资源索引
 
-- [scripts/analyze.py](scripts/analyze.py) - 分析 SKILL.md 质量
-- [scripts/optimize.py](scripts/optimize.py) - 生成优化后的文档（实验性）
+### 分析模块
+
+| 文件                                                       | 功能                       |
+| ---------------------------------------------------------- | -------------------------- |
+| [analyze.py](scripts/analyze.py)                           | 主分析脚本，协调各检查模块 |
+| [analyzer_frontmatter.py](scripts/analyzer_frontmatter.py) | Frontmatter 格式检查       |
+| [analyzer_disclosure.py](scripts/analyzer_disclosure.py)   | 渐进式披露结构检查         |
+| [analyzer_references.py](scripts/analyzer_references.py)   | 文件引用完整性检查         |
+| [analyzer_token.py](scripts/analyzer_token.py)             | Token 效率检查             |
+| [analyzer_usage.py](scripts/analyzer_usage.py)             | 使用说明完整性检查         |
+| [analyzer_ai_friendly.py](scripts/analyzer_ai_friendly.py) | 文档 AI 友好性检查         |
+
+### 优化模块
+
+| 文件                               | 功能                       |
+| ---------------------------------- | -------------------------- |
+| [optimize.py](scripts/optimize.py) | 生成优化后的文档（实验性） |
 
 ## 注意事项
 

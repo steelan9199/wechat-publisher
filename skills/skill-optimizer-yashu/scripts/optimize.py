@@ -77,33 +77,78 @@ class SkillOptimizer:
         return True
 
     def _ensure_frontmatter(self, content: str) -> str:
-        """确保有 frontmatter，并添加/更新 updated 字段"""
+        """确保有 frontmatter，并将自定义字段移到 metadata 对象中"""
         from datetime import datetime
 
         today = datetime.now().strftime("%Y-%m-%d")
 
         if content.strip().startswith("---"):
-            # 已有 frontmatter，检查并更新 updated 字段
+            # 已有 frontmatter，规范化字段
             fm_match = re.search(r"^---\s*\n(.*?)\n---\s*\n", content, re.DOTALL)
             if fm_match:
                 fm_content = fm_match.group(1)
-                # 检查是否已有 updated 字段
-                if "updated:" in fm_content:
-                    # 更新已有的 updated 字段
-                    fm_content = re.sub(
-                        r'updated:\s*"?[^"\n]*"?',
-                        f'updated: "{today}"',
-                        fm_content
-                    )
-                else:
-                    # 在 frontmatter 末尾添加 updated 字段
-                    fm_content = fm_content.rstrip() + f'\nupdated: "{today}"'
+
+                # 定义应该移到 metadata 的自定义字段
+                custom_fields = ["author", "updated", "version", "tags"]
+                metadata = {}
+                core_fields = {}
+
+                # 解析现有字段
+                for line in fm_content.strip().split("\n"):
+                    line = line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    if ":" in line:
+                        key = line.split(":")[0].strip()
+                        value = line.split(":", 1)[1].strip()
+                        # 去除引号
+                        if value.startswith('"') and value.endswith('"'):
+                            value = value[1:-1]
+                        if key in custom_fields:
+                            metadata[key] = value
+                        elif key != "metadata":
+                            core_fields[key] = value
+
+                # 如果已有 metadata 对象，合并进去
+                existing_metadata_match = re.search(
+                    r'^metadata:\s*\n((?:\s+\w+:\s*.+\n)*)',
+                    fm_content,
+                    re.MULTILINE
+                )
+                if existing_metadata_match:
+                    # 解析现有的 metadata
+                    for line in existing_metadata_match.group(1).strip().split("\n"):
+                        if ":" in line:
+                            key = line.split(":")[0].strip()
+                            value = line.split(":", 1)[1].strip()
+                            if value.startswith('"') and value.endswith('"'):
+                                value = value[1:-1]
+                            metadata[key] = value
+                    # 移除旧的 metadata 块
+                    fm_content = re.sub(r'^metadata:\s*\n(?:\s+\w+:\s*.+\n)*', '', fm_content, flags=re.MULTILINE)
+
+                # 确保 updated 字段存在
+                metadata["updated"] = today
+
+                # 构建新的 frontmatter
+                new_fm = "---\n"
+                for key in ["name", "description"]:
+                    if key in core_fields:
+                        new_fm += f'{key}: {core_fields[key]}\n'
+
+                # 添加 metadata 对象
+                if metadata:
+                    new_fm += "metadata:\n"
+                    for key, value in metadata.items():
+                        new_fm += f'  {key}: "{value}"\n'
+
+                new_fm += "---\n"
 
                 # 替换原 frontmatter
-                content = content[:fm_match.start()] + f"---\n{fm_content}\n---\n" + content[fm_match.end():]
+                content = content[:fm_match.start()] + new_fm + content[fm_match.end():]
             return content
 
-        # 提取技能名称
+        # 没有 frontmatter，创建新的
         skill_name = self.skill_path.name
 
         # 尝试从内容中提取 description
@@ -118,7 +163,8 @@ class SkillOptimizer:
         frontmatter = f"""---
 name: {skill_name}
 description: {description}
-updated: "{today}"
+metadata:
+  updated: "{today}"
 ---
 
 """
