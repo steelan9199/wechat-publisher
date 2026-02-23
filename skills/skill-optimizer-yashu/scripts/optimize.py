@@ -77,8 +77,30 @@ class SkillOptimizer:
         return True
 
     def _ensure_frontmatter(self, content: str) -> str:
-        """确保有 frontmatter"""
+        """确保有 frontmatter，并添加/更新 updated 字段"""
+        from datetime import datetime
+
+        today = datetime.now().strftime("%Y-%m-%d")
+
         if content.strip().startswith("---"):
+            # 已有 frontmatter，检查并更新 updated 字段
+            fm_match = re.search(r"^---\s*\n(.*?)\n---\s*\n", content, re.DOTALL)
+            if fm_match:
+                fm_content = fm_match.group(1)
+                # 检查是否已有 updated 字段
+                if "updated:" in fm_content:
+                    # 更新已有的 updated 字段
+                    fm_content = re.sub(
+                        r'updated:\s*"?[^"\n]*"?',
+                        f'updated: "{today}"',
+                        fm_content
+                    )
+                else:
+                    # 在 frontmatter 末尾添加 updated 字段
+                    fm_content = fm_content.rstrip() + f'\nupdated: "{today}"'
+
+                # 替换原 frontmatter
+                content = content[:fm_match.start()] + f"---\n{fm_content}\n---\n" + content[fm_match.end():]
             return content
 
         # 提取技能名称
@@ -96,6 +118,7 @@ class SkillOptimizer:
         frontmatter = f"""---
 name: {skill_name}
 description: {description}
+updated: "{today}"
 ---
 
 """

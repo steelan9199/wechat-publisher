@@ -42,13 +42,11 @@ def create_skill(skill_name: str, description: str, output_dir: str = ".") -> st
     os.makedirs(skill_dir)
 
     # 生成 SKILL.md 内容
+    today = datetime.now().strftime("%Y-%m-%d")
     skill_md_content = f"""---
 name: {valid_name}
 description: {description}
-metadata:
-  author:
-  version: "1.0"
-  created: {datetime.now().strftime("%Y-%m-%d")}
+updated: "{today}"
 ---
 
 # {valid_name.replace('-', ' ').title()}
