@@ -160,6 +160,9 @@ def validate_skill(skill_dir: str) -> list:
             errors.append("description 字段长度超过 1024 字符")
         if len(description) < 1:
             errors.append("description 字段不能为空")
+        # 检查是否包含 "何时使用" 格式
+        if "何时使用" not in description and "何时触发" not in description:
+            errors.append('description 应该使用 "何时使用：" 格式来分隔功能描述和触发条件')
 
     return errors
 

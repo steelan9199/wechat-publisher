@@ -114,15 +114,48 @@ python skill-optimizer-yashu/scripts/analyze.py my-skill --folder ./skills --out
 | **很好**   | 无错误/警告/建议，有提示 | 有轻微提示，整体质量较高            |
 | **完美**   | 无任何 issues            | 完全符合规范，无任何问题            |
 
-## 分析维度
+##### 分析维度
+
+| 维度                | 说明                                    | 适用场景                 |
+| ------------------- | --------------------------------------- | ------------------------ |
+| 1. Frontmatter 格式 | 检查 name、description、metadata 等字段 | 所有 Skill               |
+| 2. 渐进式披露结构   | 检查文档长度和内容组织                  | 所有 Skill               |
+| 3. 文件引用完整性   | 检查引用的文件是否存在                  | 所有 Skill               |
+| 4. 文档 AI 友好性   | 检查 AI 能否准确理解和执行              | 所有 Skill               |
+| 5. 使用说明完整性   | 检查是否有清晰的使用说明                | 所有 Skill               |
+| 6. Token 效率       | 检查信息组织方式                        | 所有 Skill               |
+| 7. 临时文件管理     | 检查临时文件处理是否规范                | **产生临时文件的 Skill** |
 
 ### 1. Frontmatter 格式
 
-| 检查项      | 说明                                            |
-| ----------- | ----------------------------------------------- |
-| name        | 必需，小写字母/数字/连字符，1-64 字符           |
-| description | 必需，1-1024 字符，描述技能和触发条件           |
-| 可选字段    | metadata |
+| 检查项      | 必需 | 说明                            |
+| ----------- | ---- | ------------------------------- |
+| name        | 是   | 小写字母/数字/连字符，1-64 字符 |
+| description | 是   | 1-1024 字符，详见下方格式要求   |
+| metadata    | 否   | 作者、更新时间、版本等信息      |
+
+**description 格式要求：**
+
+必须包含两部分内容，用 `何时使用：` 分隔：
+
+1. **功能描述** - 这个技能是做什么的
+2. **何时使用** - 用户说什么话时触发这个技能
+
+**正确示例：**
+
+```yaml
+description: 分析并优化其他 Skill 的文档质量问题，包括 frontmatter 格式、渐进式披露结构等检查。何时使用：当用户说"优化这个 skill"、"检查 skill 质量"、"review skill"时。
+```
+
+**错误示例：**
+
+```yaml
+# ❌ 缺少"何时使用"部分
+description: 分析并优化 Skill 的文档质量问题
+
+# ❌ 使用"触发条件"而非"何时使用"
+description: 分析 Skill 质量问题。触发条件：用户说优化 skill 时
+```
 
 **metadata 字段规范：**
 
@@ -184,31 +217,31 @@ python scripts/analyze.py <skill-name> --folder <skills-folder>
 
 **差异化标准：**
 
-| 检查项       | 主文档要求   | 引用文档要求 |
-| ------------ | ------------ | ------------ |
-| description  | 必须清晰明确 | 无要求       |
-| 祈使句指令   | 必须有       | 建议有       |
-| 具体示例     | 必须有       | 建议有       |
-| 决策逻辑     | 长文档需要   | 建议有       |
-| 输出格式说明 | 必须有       | 建议有       |
-| 错误处理说明 | 必须有       | 建议有       |
-| 长段落阈值   | 500 字符     | 800 字符     |
-| 扣分权重     | 高           | 低           |
+| 检查项       | 主文档要求 | 引用文档要求 |
+| ------------ | ---------- | ------------ |
+| 祈使句指令   | 必须有     | 建议有       |
+| 具体示例     | 必须有     | 建议有       |
+| 决策逻辑     | 长文档需要 | 建议有       |
+| 输出格式说明 | 必须有     | 建议有       |
+| 错误处理说明 | 必须有     | 建议有       |
+| 长段落阈值   | 500 字符   | 800 字符     |
+| 扣分权重     | 高         | 低           |
+
+> **说明**：description 的要求参见 [Frontmatter 格式](#1-frontmatter-格式) 章节。
 
 **评分计算：** 总体评分 = 主文档评分 × 70% + 引用文档平均分 × 30%
 
 检查 SKILL.md 文档本身是否对 AI 友好，确保 AI 能准确理解何时触发、如何执行：
 
-| 检查项                 | 说明                                         | 重要性 |
-| ---------------------- | -------------------------------------------- | ------ |
-| **清晰的 description** | frontmatter 中的 description 必须包含功能和触发条件                  | ⭐⭐⭐ |
-| **明确的指令**         | 使用祈使句（运行、执行、调用等）而非模糊建议 | ⭐⭐⭐ |
-| **具体的示例**         | 提供代码示例或用户请求示例                   | ⭐⭐⭐ |
-| **决策逻辑**           | 复杂任务提供条件判断或决策树                 | ⭐⭐   |
-| **输出格式**           | 明确说明 skill 应该输出什么内容              | ⭐⭐   |
-| **错误处理**           | 说明异常情况和边界处理                       | ⭐⭐   |
-| **避免长段落**         | 超过 500 字符的段落难以提取关键信息          | ⭐     |
-| **文件引用说明**       | 引用的文件需要有 Markdown 链接说明           | ⭐     |
+| 检查项           | 说明                                         | 重要性 |
+| ---------------- | -------------------------------------------- | ------ |
+| **明确的指令**   | 使用祈使句（运行、执行、调用等）而非模糊建议 | ⭐⭐⭐ |
+| **具体的示例**   | 提供代码示例或用户请求示例                   | ⭐⭐⭐ |
+| **决策逻辑**     | 复杂任务提供条件判断或决策树                 | ⭐⭐   |
+| **输出格式**     | 明确说明 skill 应该输出什么内容              | ⭐⭐   |
+| **错误处理**     | 说明异常情况和边界处理                       | ⭐⭐   |
+| **避免长段落**   | 超过 500 字符的段落难以提取关键信息          | ⭐     |
+| **文件引用说明** | 引用的文件需要有 Markdown 链接说明           | ⭐     |
 
 **文档 AI 友好性评分标准：**
 
@@ -241,6 +274,93 @@ python scripts/analyze.py <skill-name> --folder <skills-folder>
 - 使用列表代替长段落
 - 避免重复内容
 
+### 7. 临时文件管理（可选）
+
+> **适用场景**：仅当 Skill 在执行过程中需要创建临时文件（如参数文件、缓存文件等）时才需要检查此项。
+
+检查 Skill 是否妥善处理执行过程中产生的临时文件：
+
+| 检查项           | 说明                                       | 重要性 |
+| ---------------- | ------------------------------------------ | ------ |
+| **临时文件位置** | 临时文件应存放在系统临时目录，而非技能目录 | ⭐⭐⭐ |
+| **命名规范**     | 使用唯一命名（时间戳+随机数），避免冲突    | ⭐⭐   |
+| **自动清理**     | 执行完成后立即删除临时文件                 | ⭐⭐⭐ |
+| **异常处理**     | 即使执行失败也要尝试清理临时文件           | ⭐⭐   |
+
+**不产生临时文件的 Skill 无需关注此项**，例如：
+
+- 纯查询类 Skill（只读操作）
+- 直接调用 API 无需中间文件的 Skill
+- 使用内存传递数据的 Skill
+
+**推荐的临时文件管理方案：**
+
+```javascript
+// Node.js 示例
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
+
+// 创建临时参数文件（自动存放到系统临时目录）
+function createTempParamsFile(params, operation) {
+  const tempDir = os.tmpdir();
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substring(2, 8);
+  const fileName = `feishu-${operation}-${timestamp}-${random}.json`;
+  const filePath = path.join(tempDir, fileName);
+  fs.writeFileSync(filePath, JSON.stringify(params, null, 2));
+  return filePath;
+}
+
+// 清理临时文件
+function cleanupTempFile(filePath) {
+  try {
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  } catch (e) {
+    // 忽略删除失败
+  }
+}
+
+// 使用示例
+const tempPath = createTempParamsFile(params, "operation-name");
+try {
+  await executeScript(tempPath);
+} finally {
+  cleanupTempFile(tempPath);
+}
+```
+
+```python
+# Python 示例
+import tempfile
+import os
+
+# 创建临时文件
+with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+    json.dump(params, f)
+    temp_path = f.name
+
+try:
+    # 执行操作...
+    execute_script(temp_path)
+finally:
+    # 清理临时文件
+    if os.path.exists(temp_path):
+        os.unlink(temp_path)
+```
+
+**临时文件存放位置：**
+
+- Windows: `%TEMP%` (如 `C:\Users\xxx\AppData\Local\Temp\`)
+- Linux/Mac: `/tmp/`
+
+**命名规范：**
+
+- 格式：`{skill-name}-{operation}-{timestamp}-{random}.{ext}`
+- 示例：`feishu-bitable-create-record-1740374400000-a7x9k2.json`
+
 ## 优化建议
 
 ### 何时拆分内容到 references/
@@ -251,6 +371,29 @@ python scripts/analyze.py <skill-name> --folder <skills-folder>
 2. **表单模板** → 移到 references/FORMS.md
 3. **领域特定文档** → 移到 references/domain.md
 4. **超过 500 行** → 提取非核心内容到 references/
+
+### 临时文件管理最佳实践
+
+> **注意**：仅当 Skill 需要创建临时文件时才需要遵循以下原则。
+
+当 Skill 需要创建临时文件时，遵循以下原则：
+
+1. **存放位置**：使用系统临时目录
+   - Windows: `%TEMP%`
+   - Linux/Mac: `/tmp/`
+   - **避免**：存放在技能目录或工作目录
+
+2. **命名规范**：确保文件名唯一
+   - 格式：`{skill-name}-{operation}-{timestamp}-{random}.{ext}`
+   - **避免**：使用固定名称如 `params.json`
+
+3. **自动清理**：用完即删
+   - 使用 `try...finally` 确保清理代码执行
+   - **避免**：依赖手动清理或系统定期清理
+
+4. **工具函数**：封装复用
+   - Node.js: 参考 `feishu-bitable/scripts/utils.js`
+   - Python: 使用标准库 `tempfile` 模块
 
 ### 文件引用规范
 
@@ -295,10 +438,9 @@ python scripts/analyze.py <skill-name> --folder <skills-folder>
 ## 注意事项
 
 1. **SKILL.md body 无固定格式**：作者自由编写，不强制章节顺序
-2. **保持简洁**：description 必须包含功能和触发条件, 决定何时触发，要准确清晰
-3. **渐进式披露**：大段参考内容放到 references/，按需加载
-4. **自我检查**：skill 应该能通过自己的检查规则，建议定期用本工具检查自身质量
-5. **代码块格式**：使用标准的 3 个反引号（```）包裹代码块。避免使用 4 个反引号造成解析问题
+2. **渐进式披露**：大段参考内容放到 references/，按需加载
+3. **自我检查**：skill 应该能通过自己的检查规则，建议定期用本工具检查自身质量
+4. **代码块格式**：使用标准的 3 个反引号（```）包裹代码块。避免使用 4 个反引号造成解析问题
 
 ## 快速参考卡片
 

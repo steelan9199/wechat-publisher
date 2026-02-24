@@ -93,13 +93,31 @@ def semantic_check_description(desc: str) -> Dict[str, Any]:
         if keyword in desc:
             found_trigger.append(keyword)
 
-    # 判断是否包含触发条件（包含"当...时"结构或明确的触发词）
-    has_when_structure = "当" in desc and ("时" in desc or "情况下" in desc)
-    has_explicit_trigger = any(
-        kw in desc for kw in ["使用此技能", "使用本技能", "使用这个 skill", "触发"]
+    # 判断是否包含触发条件（多种表达方式都可以）
+    # 方式1: "当...时" 结构（如：当用户说...时、当遇到...时）
+    has_when_structure = "当" in desc and (
+        "时" in desc or "情况下" in desc or "场景" in desc
     )
 
-    if has_when_structure or has_explicit_trigger or len(found_trigger) >= 2:
+    # 方式2: "何时使用" 格式（推荐格式）
+    has_when_use_format = "何时使用" in desc or "何时触发" in desc
+
+    # 方式3: 明确的触发词
+    has_explicit_trigger = any(
+        kw in desc
+        for kw in ["使用此技能", "使用本技能", "使用这个 skill", "触发", "调用"]
+    )
+
+    # 方式4: 包含足够多的触发相关词（至少1个）
+    has_enough_trigger_words = len(found_trigger) >= 1
+
+    # 满足任一条件即认为有触发条件说明
+    if (
+        has_when_structure
+        or has_when_use_format
+        or has_explicit_trigger
+        or has_enough_trigger_words
+    ):
         result["has_trigger_condition"] = True
     result["trigger_keywords"] = found_trigger
 
@@ -111,7 +129,7 @@ def semantic_check_description(desc: str) -> Dict[str, Any]:
 
     if not result["has_trigger_condition"]:
         result["suggestions"].append(
-            "description 应该包含触发条件（如：当用户需要...时、当遇到...情况时）"
+            "description 应该包含使用场景或触发条件（如：何时使用：当用户说...时、用于...场景、遇到...情况时）"
         )
 
     return result
