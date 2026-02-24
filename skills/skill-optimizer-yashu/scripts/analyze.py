@@ -78,7 +78,17 @@ class SkillAnalyzer:
         suggestions = len([i for i in self.issues if i.startswith("建议:")])
         hints = len([i for i in self.issues if i.startswith("提示:")])
 
-        # 确定评级
+        # 计算未分类的问题（如引用文档的问题：AI友好(引用文档-xxx): ...）
+        total_classified = errors + warnings + suggestions + hints
+        total_issues = len(self.issues)
+        unclassified = total_issues - total_classified
+
+        # 将未分类问题视为"提示"级别
+        if unclassified > 0:
+            hints += unclassified
+
+        # 确定评级 - 完美必须是真正的零瑕疵
+        # 只要有任何 issues（无论前缀），就不能评为"完美"
         if errors > 0:
             level = "需修复"
         elif warnings > 0:
@@ -95,8 +105,9 @@ class SkillAnalyzer:
             "errors": errors,
             "warnings": warnings,
             "suggestions": suggestions,
-            "hints": hints,
-            "total_issues": len(self.issues),
+            "hints": hints,  # hints 已包含未分类的问题
+            "unclassified": unclassified,
+            "total_issues": total_issues,
         }
 
 
