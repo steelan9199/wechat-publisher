@@ -6,8 +6,7 @@
 """
 
 import re
-from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 
 def check_ai_friendly(analyzer) -> Dict[str, Any]:
@@ -53,7 +52,9 @@ def check_ai_friendly(analyzer) -> Dict[str, Any]:
     # 计算总体评分（主文档占 70%，引用文档占 30%）
     main_score = main_result["score"]
     if result["reference_docs"]:
-        ref_avg_score = sum(r["score"] for r in result["reference_docs"]) / len(result["reference_docs"])
+        ref_avg_score = sum(r["score"] for r in result["reference_docs"]) / len(
+            result["reference_docs"]
+        )
         result["score"] = int(main_score * 0.7 + ref_avg_score * 0.3)
     else:
         result["score"] = main_score
@@ -69,6 +70,76 @@ def check_ai_friendly(analyzer) -> Dict[str, Any]:
         result["rating"] = "需改进"
 
     return result
+
+
+def _is_instruction_document(filename: str, content: str) -> bool:
+    """判断文档是否是操作指令类文档
+
+    操作指令类文档：告诉 AI 如何执行某个任务，需要错误处理说明
+    参考/建议类文档：提供最佳实践、规范说明等，不需要错误处理说明
+
+    Args:
+        filename: 文件名
+        content: 文档内容
+
+    Returns:
+        True 表示是操作指令类文档，需要检查错误处理说明
+    """
+    # 1. 从文件名判断（这些关键词通常表示建议/参考类文档）
+    guide_keywords = [
+        "guide",
+        "optimization",
+        "best-practice",
+        "reference",
+        "spec",
+        "规范",
+        "指南",
+        "建议",
+        "参考",
+        "最佳实践",
+        "说明",
+    ]
+    filename_lower = filename.lower()
+    for keyword in guide_keywords:
+        if keyword in filename_lower:
+            return False
+
+    # 2. 从标题判断
+    title_match = re.search(r"^#\s+(.+)$", content, re.MULTILINE)
+    if title_match:
+        title = title_match.group(1)
+        guide_title_keywords = [
+            "指南",
+            "建议",
+            "规范",
+            "参考",
+            "最佳实践",
+            "说明",
+            "优化",
+        ]
+        for keyword in guide_title_keywords:
+            if keyword in title:
+                return False
+
+    # 3. 从内容特征判断（建议类措辞多于指令类措辞）
+    suggestive_patterns = [r"建议", r"推荐", r"可以", r"考虑", r"可选"]
+    suggestive_count = sum(len(re.findall(p, content)) for p in suggestive_patterns)
+
+    imperative_patterns = [
+        r"运行\s+",
+        r"执行\s+",
+        r"调用\s+",
+        r"使用\s+",
+        r"必须",
+        r"步骤",
+    ]
+    imperative_count = sum(len(re.findall(p, content)) for p in imperative_patterns)
+
+    # 如果建议性措辞明显多于指令性措辞，认为是参考文档
+    if suggestive_count > imperative_count * 2:
+        return False
+
+    return True
 
 
 def _check_single_document(
@@ -88,6 +159,9 @@ def _check_single_document(
     issues = []
     score = 100
     checks = {}
+
+    # 判断文档类型（用于决定是否检查错误处理说明）
+    is_instruction_doc = _is_instruction_document(filename, content)
 
     # 根据文档类型设置不同的检查严格度
     if is_main_doc:
@@ -128,7 +202,9 @@ def _check_single_document(
         }
         if not checks["clear_description"]["passed"]:
             score -= score_penalty["description"]
-            issues.append("description 不够清晰，AI 难以判断何时触发此 skill，建议明确描述使用场景")
+            issues.append(
+                "description 不够清晰，AI 难以判断何时触发此 skill，建议明确描述使用场景"
+            )
 
     # 2. 检查是否有明确的指令
     imperative_patterns = [
@@ -154,7 +230,9 @@ def _check_single_document(
     }
     if not has_imperative:
         score -= score_penalty["imperative"]
-        issues.append("缺少明确的操作指令，建议使用祈使句（如'运行'、'执行'、'参考'等）")
+        issues.append(
+            "缺少明确的操作指令，建议使用祈使句（如'运行'、'执行'、'参考'等）"
+        )
 
     # 3. 检查是否有具体的示例
     has_code_example = "```" in content
@@ -165,12 +243,13 @@ def _check_single_document(
     }
     if not (has_code_example or has_user_example):
         score -= score_penalty["examples"]
-        issues.append("缺少具体示例，AI 难以理解如何执行，建议添加代码示例或用户请求示例")
+        issues.append(
+            "缺少具体示例，AI 难以理解如何执行，建议添加代码示例或用户请求示例"
+        )
 
     # 4. 检查是否有决策树或条件判断
     has_decision_tree = bool(
-        re.search(r"(如果|若|当|是否|选择|分支)", content)
-        or "**" in content
+        re.search(r"(如果|若|当|是否|选择|分支)", content) or "**" in content
     )
     checks["decision_making"] = {
         "passed": has_decision_tree or len(content) < 200,
@@ -202,15 +281,25 @@ def _check_single_document(
             issues.append("缺少输出格式说明，建议明确说明 skill 应该输出什么内容")
 
     # 6. 检查是否有错误处理说明
-    error_patterns = [r"错误", r"异常", r"失败", r"如果.*不", r"注意", r"警告"]
-    has_error_handling = any(re.search(p, content) for p in error_patterns)
-    checks["error_handling"] = {
-        "passed": has_error_handling,
-        "message": "说明错误处理或边界情况",
-    }
-    if not has_error_handling:
-        score -= score_penalty["error"]
-        issues.append("缺少错误处理说明，建议添加异常情况的处理方式")
+    # 只有主文档或操作指令类文档才需要检查错误处理说明
+    # 参考/建议类文档（如 optimization-guide.md）不需要
+    if is_main_doc or is_instruction_doc:
+        error_patterns = [r"错误", r"异常", r"失败", r"如果.*不", r"注意", r"警告"]
+        has_error_handling = any(re.search(p, content) for p in error_patterns)
+        checks["error_handling"] = {
+            "passed": has_error_handling,
+            "message": "说明错误处理或边界情况",
+        }
+        if not has_error_handling:
+            score -= score_penalty["error"]
+            issues.append("缺少错误处理说明，建议添加异常情况的处理方式")
+    else:
+        # 参考/建议类文档，跳过错误处理检查
+        checks["error_handling"] = {
+            "passed": True,
+            "message": "参考类文档不需要错误处理说明",
+            "skipped": True,
+        }
 
     # 7. 检查长段落（排除表格和代码块）
     paragraphs = content.split("\n\n")
@@ -229,7 +318,9 @@ def _check_single_document(
     }
     if long_paragraphs:
         score -= score_penalty["long_para"]
-        issues.append(f"有 {len(long_paragraphs)} 个超过 {long_para_threshold} 字符的长段落，建议拆分为列表或表格")
+        issues.append(
+            f"有 {len(long_paragraphs)} 个超过 {long_para_threshold} 字符的长段落，建议拆分为列表或表格"
+        )
 
     # 8. 检查文件引用清晰度
     md_links = re.findall(r"\[([^\]]+)\]\(([^)]+)\)", content)

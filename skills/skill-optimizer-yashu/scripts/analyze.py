@@ -6,8 +6,12 @@ SKILL.md 文档分析器
 
 import argparse
 import json
+import os
+import random
 import re
 import sys
+import tempfile
+import time
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -20,6 +24,71 @@ from analyzer_frontmatter import check_frontmatter
 from analyzer_references import check_file_references
 from analyzer_token import check_token_efficiency
 from analyzer_usage import check_usage_guide
+
+
+def generate_temp_filename(operation: str = "report") -> str:
+    """生成唯一的临时文件名
+
+    Args:
+        operation: 操作类型
+
+    Returns:
+        唯一文件名
+    """
+    timestamp = int(time.time() * 1000)
+    random_str = ''.join(random.choices('abcdefghijklmnopqrstuvwxyz0123456789', k=6))
+    return f"skill-optimizer-{operation}-{timestamp}-{random_str}.json"
+
+
+def cleanup_temp_file(file_path: str) -> bool:
+    """安全删除临时文件
+
+    Args:
+        file_path: 文件路径
+
+    Returns:
+        是否删除成功
+    """
+    try:
+        path = Path(file_path)
+        if path.exists():
+            path.unlink()
+            return True
+    except Exception as e:
+        print(f"清理临时文件失败: {file_path}, 错误: {e}", file=sys.stderr)
+    return False
+
+
+def cleanup_all_temp_files() -> bool:
+    """清理所有 skill-optimizer 相关的临时文件（24小时前的）
+
+    Returns:
+        是否清理成功
+    """
+    try:
+        temp_dir = Path(tempfile.gettempdir())
+        now = time.time()
+        one_day = 24 * 60 * 60
+
+        count = 0
+        for file_path in temp_dir.iterdir():
+            if file_path.is_file() and file_path.name.startswith("skill-optimizer-") and file_path.suffix == ".json":
+                try:
+                    mtime = file_path.stat().st_mtime
+                    # 只删除24小时前的文件，避免影响正在进行的操作
+                    if now - mtime > one_day:
+                        file_path.unlink()
+                        count += 1
+                except Exception:
+                    # 忽略删除失败的文件
+                    pass
+
+        if count > 0:
+            print(f"已清理 {count} 个过期临时文件")
+        return True
+    except Exception as e:
+        print(f"清理临时文件失败: {e}", file=sys.stderr)
+        return False
 
 
 class SkillAnalyzer:
@@ -116,8 +185,14 @@ def main():
     parser.add_argument("skill_name", help="技能名称")
     parser.add_argument("--folder", required=True, help="技能父文件夹路径")
     parser.add_argument("--output", help="输出 JSON 报告文件路径")
+    parser.add_argument("--cleanup", action="store_true", help="清理所有过期临时文件")
 
     args = parser.parse_args()
+
+    # 如果指定了 --cleanup，执行清理并退出
+    if args.cleanup:
+        cleanup_all_temp_files()
+        return
 
     skill_path = Path(args.folder) / args.skill_name
     analyzer = SkillAnalyzer(skill_path)
@@ -148,12 +223,21 @@ def main():
         for issue in analyzer.issues:
             print(f"  - {issue}")
 
-    # 保存报告
+    # 保存报告到系统临时目录
+    temp_path = None
     if args.output:
-        Path(args.output).write_text(
+        # 生成唯一的临时文件名
+        temp_filename = generate_temp_filename("report")
+
+        # 保存到系统临时目录
+        temp_path = Path(tempfile.gettempdir()) / temp_filename
+        temp_path.write_text(
             json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8"
         )
-        print(f"\n分析报告已保存到: {args.output}")
+        print(f"\n分析报告已保存到: {temp_path}")
+
+    # 清理过期临时文件（在后台静默执行）
+    cleanup_all_temp_files()
 
 
 if __name__ == "__main__":
