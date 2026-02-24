@@ -122,7 +122,7 @@ python skill-optimizer-yashu/scripts/analyze.py my-skill --folder ./skills --out
 | ----------- | ----------------------------------------------- |
 | name        | 必需，小写字母/数字/连字符，1-64 字符           |
 | description | 必需，1-1024 字符，描述技能和触发条件           |
-| 可选字段    | license, compatibility, metadata, allowed-tools |
+| 可选字段    | metadata |
 
 **metadata 字段规范：**
 
@@ -131,7 +131,6 @@ python skill-optimizer-yashu/scripts/analyze.py my-skill --folder ./skills --out
 | author  | 字符串                                  | `author: "牙叔教程"`             |
 | updated | **YYYY-MM-DD HH:MM:SS**（必须精确到秒） | `updated: "2026-02-24 14:30:00"` |
 | version | 语义化版本号                            | `version: "1.0.0"`               |
-| tags    | 字符串数组                              | `tags: ["工具", "AI"]`           |
 
 ### 2. 渐进式披露结构
 
@@ -202,7 +201,7 @@ python scripts/analyze.py <skill-name> --folder <skills-folder>
 
 | 检查项                 | 说明                                         | 重要性 |
 | ---------------------- | -------------------------------------------- | ------ |
-| **清晰的 description** | AI 需要知道何时触发此 skill                  | ⭐⭐⭐ |
+| **清晰的 description** | frontmatter 中的 description 必须包含功能和触发条件                  | ⭐⭐⭐ |
 | **明确的指令**         | 使用祈使句（运行、执行、调用等）而非模糊建议 | ⭐⭐⭐ |
 | **具体的示例**         | 提供代码示例或用户请求示例                   | ⭐⭐⭐ |
 | **决策逻辑**           | 复杂任务提供条件判断或决策树                 | ⭐⭐   |
@@ -233,7 +232,6 @@ python scripts/analyze.py <skill-name> --folder <skills-folder>
 **建议的使用说明结构：**
 
 - **功能概述** - 描述 skill 的核心功能和适用场景
-- **使用方式** - 列出用户触发 skill 的示例方式
 - **工作流程** - 说明 skill 被触发后的执行步骤
 - **注意事项** - 重要提示和限制
 
@@ -297,7 +295,7 @@ python scripts/analyze.py <skill-name> --folder <skills-folder>
 ## 注意事项
 
 1. **SKILL.md body 无固定格式**：作者自由编写，不强制章节顺序
-2. **保持简洁**：name + description 决定何时触发，要准确清晰
+2. **保持简洁**：description 必须包含功能和触发条件, 决定何时触发，要准确清晰
 3. **渐进式披露**：大段参考内容放到 references/，按需加载
 4. **自我检查**：skill 应该能通过自己的检查规则，建议定期用本工具检查自身质量
 5. **代码块格式**：使用标准的 3 个反引号（```）包裹代码块。避免使用 4 个反引号造成解析问题
