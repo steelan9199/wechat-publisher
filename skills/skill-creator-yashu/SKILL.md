@@ -3,66 +3,65 @@ name: skill-creator-yashu
 description: 创建新 skill。何时使用：当用户说"创建 skill"、"新建 skill"、"添加 skill"、"初始化 skill"时。
 metadata:
   author: 牙叔教程
-  updated: "2026-02-23 00:00:00"
+  updated: "2026-02-24 00:00:00"
+  version: "1.1.0"
 ---
 
-# Skill Creator
+## 🎯 触发映射
 
-## 如何使用这个 Skill
+| 用户输入触发词                                              | AI 执行动作        |
+| ----------------------------------------------------------- | ------------------ |
+| "创建 skill" / "新建 skill" / "添加 skill" / "初始化 skill" | 按【创建模式】执行 |
 
-### 功能概述
+---
 
-本 skill 用于创建符合 Agent Skills 规范的新 skill，帮助用户快速搭建 skill 框架，包括：
+## 创建模式
 
-- 初始化 skill 目录结构（SKILL.md、scripts/、references/、assets/）
-- 生成符合规范的 SKILL.md 模板文件
-- 验证 skill 结构是否符合 Agent Skills 规范
+### 执行步骤
 
-### 使用流程
-
-**创建新 Skill 的完整流程：**
-
-1. **理解需求**
-   - 与用户沟通，了解 skill 的具体功能
-   - 确定使用场景和触发条件
-   - 询问是否需要脚本、参考文档等资源
-
-2. **初始化 Skill 目录**
-
-   ```bash
-   python scripts/init_skill.py <skill-name> --path <output-dir>
-   ```
-
-   示例：
-
-   ```bash
-   python scripts/init_skill.py pdf-processor --path ./skills
-   ```
-
-3. **编辑完善**
-   - 编辑生成的 SKILL.md，填写具体功能描述
-   - 根据需求修改或删除示例脚本
-   - 添加实际需要的参考文档
-
-4. **验证结构**
-
-   ```bash
-   python scripts/quick_validate.py <skill-directory>
-   ```
+| 步骤 | 执行动作         | 具体命令/操作                                                                          |
+| ---- | ---------------- | -------------------------------------------------------------------------------------- |
+| 1    | 询问需求         | 运行 `AskUserQuestion` 询问用户 skill 功能、使用场景和触发条件                         |
+| 2    | 初始化目录       | 运行 `RunCommand` 执行 `python scripts/init_skill.py <skill-name> --path <output-dir>` |
+| 3    | 读取并编辑 SKILL | 运行 `Read` 读取生成的 SKILL.md，运行 `SearchReplace` 填写功能描述和触发条件           |
+| 4    | 验证结构         | 运行 `RunCommand` 执行 `python scripts/quick_validate.py <skill-directory>`            |
 
 ### 输出结果
 
-**成功时：**
+**成功时输出示例：**
 
-- 创建完整的 skill 目录结构
-- 生成包含模板内容的 SKILL.md
-- 创建示例脚本和参考文档
+```
+✅ Skill '{skill-name}' 创建成功
 
-**失败时：**
+📁 目录结构：
+.trae/skills/{skill-name}/
+├── SKILL.md          # 技能文档（已填充模板）
+├── scripts/          # 脚本目录
+│   └── example.py    # 示例脚本
+└── references/       # 参考文档目录
+    └── README.md     # 参考说明
 
-- 返回具体错误信息
-- 说明失败原因（如目录已存在、权限不足等）
-- 提供解决建议
+📝 下一步：
+运行 `Read` 读取 SKILL.md，根据用户需求编辑功能描述和触发条件
+```
+
+**失败时输出示例：**
+
+```
+❌ Skill 创建失败
+
+错误原因：{具体错误信息}
+解决建议：{针对性解决方案}
+```
+
+### 错误处理
+
+| 错误场景       | 错误表现               | 处理方式                                                         |
+| -------------- | ---------------------- | ---------------------------------------------------------------- |
+| 目录已存在     | `mkdir` 报错目录已存在 | 运行 `LS` 检查目录内容，如为空则继续，如有内容则询问用户是否覆盖 |
+| 脚本执行失败   | Python 返回非零退出码  | 检查 Python 版本、依赖安装情况，重试执行                         |
+| 权限不足       | 文件写入被拒绝         | 检查目录权限，建议用户更换输出目录                               |
+| skill 名称无效 | 含大写或特殊字符       | 提示用户修改为 kebab-case 格式（如 `my-skill`）                  |
 
 ## 核心原则
 
@@ -219,37 +218,21 @@ skill-name/
 
 按顺序执行以下步骤：
 
-### 步骤 1：用具体例子理解 Skill
+### Skill 创建流程
 
-通过以下问题理解具体使用示例：
+按顺序执行以下步骤：
 
-- "这个 skill 应该支持什么功能？"
-- "你能给出一些这个 skill 如何使用的例子吗？"
-- "用户会说什么来触发这个 skill？"
-
-### 步骤 2：规划可复用的 Skill 内容
-
-分析每个例子，识别哪些脚本、参考和资产在重复执行时会有帮助。
-
-### 步骤 3：初始化 Skill
-
-运行 `init_skill.py` 脚本生成模板：
-
-```bash
-python scripts/init_skill.py <skill-name> --path <output-directory>
-```
-
-### 步骤 4：编辑 Skill
-
-从步骤 2 识别的可复用资源开始实现。
-
-**编写指南：** 始终使用祈使/不定式形式。前置元数据只包含 `name` 和 `description`。
-
-添加的脚本必须通过实际运行测试。删除任何不需要的示例文件和目录。
-
-### 步骤 5：迭代
-
-测试 skill 后，根据使用反馈改进 SKILL.md 或捆绑资源。
+| 步骤 | 执行动作          | 具体命令/操作                                                                                |
+| ---- | ----------------- | -------------------------------------------------------------------------------------------- |
+| 1    | 询问功能需求      | 运行 `AskUserQuestion` 询问 skill 功能、使用示例、触发条件                                   |
+| 2    | 规划可复用资源    | 分析需求，确定需要的 scripts、references、assets                                             |
+| 3    | 初始化 Skill 目录 | 运行 `RunCommand` 执行 `python scripts/init_skill.py <skill-name> --path <output-directory>` |
+| 4    | 读取 SKILL.md     | 运行 `Read` 读取生成的 `.trae/skills/{skill-name}/SKILL.md`                                  |
+| 5    | 编辑功能描述      | 运行 `SearchReplace` 填写 description、触发条件、执行步骤                                    |
+| 6    | 创建脚本          | 如需脚本，运行 `Write` 创建到 `scripts/` 目录                                                |
+| 7    | 创建参考文档      | 如需参考文档，运行 `Write` 创建到 `references/` 目录                                         |
+| 8    | 验证结构          | 运行 `RunCommand` 执行 `python scripts/quick_validate.py <skill-directory>`                  |
+| 9    | 测试迭代          | 根据验证结果，运行 `SearchReplace` 修复问题                                                  |
 
 ## 工作流程模式
 
@@ -297,18 +280,16 @@ python scripts/init_skill.py <skill-name> --path <output-directory>
 
 ## 创建示例
 
-**用户需求：** "创建一个处理 PDF 的 skill"
+**用户输入：** "创建一个处理 PDF 的 skill"
 
 **执行步骤：**
 
-1. **理解需求**：询问具体使用场景（提取文本、填写表单、合并等）
-
-2. **规划内容**：确定需要哪些脚本和参考文档
-
-3. **初始化**：
-
-```bash
-python scripts/init_skill.py pdf-processor --path ./skills
-```
-
-4. **编辑 SKILL.md**：填写模板中的 TODO 项，添加具体指令
+| 步骤 | 执行动作      | 具体命令/操作                                                                          |
+| ---- | ------------- | -------------------------------------------------------------------------------------- |
+| 1    | 询问场景      | 运行 `AskUserQuestion` 询问具体使用场景（提取文本、填写表单、合并等）                  |
+| 2    | 规划内容      | 分析需求，确定需要 Python 脚本处理 PDF                                                 |
+| 3    | 初始化目录    | 运行 `RunCommand` 执行 `python scripts/init_skill.py pdf-processor --path ./skills`    |
+| 4    | 读取 SKILL.md | 运行 `Read` 读取 `./skills/pdf-processor/SKILL.md`                                     |
+| 5    | 编辑描述      | 运行 `SearchReplace` 填写 description 为"处理 PDF 文件。何时使用：当用户说处理 PDF 时" |
+| 6    | 创建处理脚本  | 运行 `Write` 创建 `scripts/pdf_extractor.py`                                           |
+| 7    | 验证结构      | 运行 `RunCommand` 执行 `python scripts/quick_validate.py ./skills/pdf-processor`       |

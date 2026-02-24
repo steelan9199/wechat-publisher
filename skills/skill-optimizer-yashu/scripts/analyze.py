@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
 """
 SKILL.md 文档分析器
 根据 Agent Skills 规范分析文档质量
+
+跨平台使用：python analyze.py
 """
 
 import argparse

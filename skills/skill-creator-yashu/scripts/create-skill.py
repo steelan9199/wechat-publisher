@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
 """
 Skill Creator Helper Script
 自动生成符合 Agent Skills 规范的 skill 目录和 SKILL.md 文件
+
+跨平台使用：python create-skill.py
 """
 
 import os
@@ -162,7 +163,9 @@ def validate_skill(skill_dir: str) -> list:
             errors.append("description 字段不能为空")
         # 检查是否包含 "何时使用" 格式
         if "何时使用" not in description and "何时触发" not in description:
-            errors.append('description 应该使用 "何时使用：" 格式来分隔功能描述和触发条件')
+            errors.append(
+                'description 应该使用 "何时使用：" 格式来分隔功能描述和触发条件'
+            )
 
     return errors
 

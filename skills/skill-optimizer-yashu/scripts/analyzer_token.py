@@ -1,5 +1,7 @@
-#!/usr/bin/env python3
-"""Token 效率检查模块"""
+"""Token 效率检查模块
+
+跨平台使用：python analyzer_token.py
+"""
 
 import re
 from typing import Any, Dict

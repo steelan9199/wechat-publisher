@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
 """
 Quick validation script for skills - minimal version
 修复版：添加 UTF-8 编码支持
+
+跨平台使用：python quick_validate.py
 """
 
 import re

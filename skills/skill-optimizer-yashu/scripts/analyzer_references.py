@@ -1,5 +1,7 @@
-#!/usr/bin/env python3
-"""文件引用完整性检查模块"""
+"""文件引用完整性检查模块
+
+跨平台使用：python analyzer_references.py
+"""
 
 import re
 from pathlib import Path

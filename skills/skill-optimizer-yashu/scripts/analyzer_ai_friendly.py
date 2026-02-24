@@ -1,8 +1,9 @@
-#!/usr/bin/env python3
 """AI 友好性检查模块
 
 检查 SKILL.md 主文档和 references/ 目录下文档的 AI 友好性。
 主文档要求更严格，引用文档适当放宽。
+
+跨平台使用：python analyzer_ai_friendly.py
 """
 
 import re
@@ -282,7 +283,7 @@ def _check_single_document(
 
     # 6. 检查是否有错误处理说明
     # 只有主文档或操作指令类文档才需要检查错误处理说明
-    # 参考/建议类文档（如 optimization-guide.md）不需要
+    # 参考/建议类文档（如 check-spec.md）不需要
     if is_main_doc or is_instruction_doc:
         error_patterns = [r"错误", r"异常", r"失败", r"如果.*不", r"注意", r"警告"]
         has_error_handling = any(re.search(p, content) for p in error_patterns)

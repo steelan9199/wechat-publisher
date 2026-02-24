@@ -1,7 +1,8 @@
-#!/usr/bin/env python3
 """
 SKILL.md 优化器
 根据分析结果生成优化后的文档
+
+跨平台使用：python optimize.py
 """
 
 import argparse
@@ -42,10 +43,13 @@ class SkillOptimizer:
             # 3. 优化长段落为表格/列表
             content = self._optimize_format(content)
 
-            # 4. 添加快速参考表（如果不存在）
+            # 4. 添加 AI 调用规范（如果不存在）
+            content = self._add_ai_guideline(content)
+
+            # 5. 添加快速参考表（如果不存在）
             content = self._add_quick_reference(content)
 
-            # 5. 清理冗余内容
+            # 6. 清理冗余内容
             content = self._cleanup(content)
 
             # 6. 验证优化后的内容
@@ -261,6 +265,43 @@ metadata:
         )
         return content
 
+    def _add_ai_guideline(self, content: str) -> str:
+        """添加 AI 调用规范
+
+        所有 Skill 都是给 AI 使用的，统一添加 AI 调用规范声明。
+        """
+        # 如果已存在 AI 调用规范，跳过
+        if "AI 调用规范" in content or "专为 AI 设计" in content:
+            return content
+
+        ai_guideline = """**AI 调用规范**：本 Skill 专为 AI 设计，人类用户只需用自然语言描述需求，AI 自动完成所有操作。
+
+"""
+
+        # 尝试在 "## 功能概述" 或 "## 如何使用" 后插入
+        patterns = [
+            r"(## 功能概述\s*\n)",
+            r"(## 如何使用\s*\n)",
+            r"(## 概述\s*\n)",
+        ]
+
+        for pattern in patterns:
+            match = re.search(pattern, content, re.IGNORECASE)
+            if match:
+                insert_pos = match.end()
+                content = (
+                    content[:insert_pos] + "\n" + ai_guideline + content[insert_pos:]
+                )
+                return content
+
+        # 如果没有找到合适的插入位置，在 frontmatter 后插入
+        fm_end = re.search(r"^---\s*\n.*?^---\s*\n", content, re.MULTILINE | re.DOTALL)
+        if fm_end:
+            insert_pos = fm_end.end()
+            content = content[:insert_pos] + "\n" + ai_guideline + content[insert_pos:]
+
+        return content
+
     def _add_quick_reference(self, content: str) -> str:
         """添加快速参考表"""
         if "## 快速参考" in content or "## 快速参考表" in content:
@@ -310,6 +351,7 @@ metadata:
 - [x] 确保 frontmatter 完整
 - [x] 强制规则前置
 - [x] 格式优化（表格/列表）
+- [x] 添加 AI 调用规范
 - [x] 添加快速参考表
 - [x] 清理冗余内容
 

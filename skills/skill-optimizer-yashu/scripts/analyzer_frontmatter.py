@@ -1,5 +1,7 @@
-#!/usr/bin/env python3
-"""Frontmatter 检查模块"""
+"""Frontmatter 检查模块
+
+跨平台使用：python analyzer_frontmatter.py
+"""
 
 import re
 from typing import Any, Dict

@@ -1,13 +1,12 @@
-#!/usr/bin/env python3
 """
 Skill Initializer - Creates a new skill from template
 
 Usage:
-    init_skill.py <skill-name> --path <path>
+    python init_skill.py <skill-name> --path <path>
 
 Examples:
-    init_skill.py my-new-skill --path skills/public
-    init_skill.py my-api-helper --path skills/private
+    python init_skill.py my-new-skill --path skills/public
+    python init_skill.py my-api-helper --path skills/private
     init_skill.py custom-skill --path /custom/location
 """
 

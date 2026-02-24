@@ -1,5 +1,7 @@
-#!/usr/bin/env python3
-"""渐进式披露结构检查模块"""
+"""渐进式披露结构检查模块
+
+跨平台使用：python analyzer_disclosure.py
+"""
 
 import re
 from pathlib import Path

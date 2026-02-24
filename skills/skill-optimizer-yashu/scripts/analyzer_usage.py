@@ -1,5 +1,7 @@
-#!/usr/bin/env python3
-"""使用说明完整性检查模块"""
+"""使用说明完整性检查模块
+
+跨平台使用：python analyzer_usage.py
+"""
 
 import re
 from typing import Any, Dict
