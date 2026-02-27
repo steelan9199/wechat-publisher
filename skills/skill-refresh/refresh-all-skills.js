@@ -9,8 +9,7 @@ import path from "path";
  */
 const skillSourceDirs = [
   "D:/software/skills/skills",
-  "D:/script/work-sop/49-1-我使用的skills/skills",
-  "C:/Users/Administrator/.agents/skills"
+  "D:/script/work-sop/49-1-我使用的skills/skills"
 ];
 
 console.log("=== 技能刷新工具 ===");
