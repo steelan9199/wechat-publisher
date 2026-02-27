@@ -48,8 +48,7 @@ node skill-refresh/refresh-all-skills.js
 // 配置：技能源目录列表
 const skillSourceDirs = [
   "D:/software/skills/skills",
-  "D:/script/work-sop/49-1-我使用的skills/skills",
-  "C:/Users/Administrator/.agents/skills",
+  "D:/script/work-sop/49-1-我使用的skills/skills"
 ];
 ```
 

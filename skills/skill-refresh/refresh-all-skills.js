@@ -1,6 +1,6 @@
-const { execSync } = require("child_process");
-const fs = require("fs");
-const path = require("path");
+import { execSync } from "child_process";
+import fs from "fs";
+import path from "path";
 
 /**
  * 配置：技能源目录列表
@@ -10,7 +10,7 @@ const path = require("path");
 const skillSourceDirs = [
   "D:/software/skills/skills",
   "D:/script/work-sop/49-1-我使用的skills/skills",
-  "C:/Users/Administrator/.agents/skills",
+  "C:/Users/Administrator/.agents/skills"
 ];
 
 console.log("=== 技能刷新工具 ===");
@@ -37,18 +37,12 @@ const failedSkills = [];
 skillSourceDirs.forEach((skillsDir, dirIndex) => {
   // 检查目录是否存在
   if (!fs.existsSync(skillsDir)) {
-    console.log(
-      `[${dirIndex + 1}/${
-        skillSourceDirs.length
-      }] 跳过不存在的目录: ${skillsDir}`
-    );
+    console.log(`[${dirIndex + 1}/${skillSourceDirs.length}] 跳过不存在的目录: ${skillsDir}`);
     console.log("");
     return;
   }
 
-  console.log(
-    `[${dirIndex + 1}/${skillSourceDirs.length}] 处理目录: ${skillsDir}`
-  );
+  console.log(`[${dirIndex + 1}/${skillSourceDirs.length}] 处理目录: ${skillsDir}`);
   console.log("-".repeat(60));
 
   // 切换到技能目录
@@ -73,20 +67,13 @@ skillSourceDirs.forEach((skillsDir, dirIndex) => {
 
   skills.forEach((skill) => {
     totalSkillCount++;
-    console.log(
-      `  [${dirSuccessCount + dirFailCount + 1}/${
-        skills.length
-      }] 安装: ${skill}`
-    );
+    console.log(`  [${dirSuccessCount + dirFailCount + 1}/${skills.length}] 安装: ${skill}`);
     try {
-      const result = execSync(
-        `eskill install ${skill} --link --global --force`,
-        {
-          encoding: "utf8",
-          stdio: "pipe",
-          timeout: 60000, // 60秒超时
-        }
-      );
+      const result = execSync(`eskill install ${skill} --link --global --force`, {
+        encoding: "utf8",
+        stdio: "pipe",
+        timeout: 60000 // 60秒超时
+      });
       console.log(result);
       dirSuccessCount++;
       totalSuccessCount++;
@@ -97,14 +84,12 @@ skillSourceDirs.forEach((skillsDir, dirIndex) => {
       // 记录失败的技能
       failedSkills.push({
         name: skill,
-        path: path.join(skillsDir, skill),
+        path: path.join(skillsDir, skill)
       });
     }
   });
 
-  console.log(
-    `  目录完成: 成功 ${dirSuccessCount} 个, 失败 ${dirFailCount} 个`
-  );
+  console.log(`  目录完成: 成功 ${dirSuccessCount} 个, 失败 ${dirFailCount} 个`);
   console.log("");
 });
 
