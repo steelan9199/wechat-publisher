@@ -1,0 +1,5 @@
+{
+  "appId": "飞书开放平台的企业自建应用的 App ID",
+  "appSecret": "飞书开放平台企业自建应用的 App Secret",
+  "tenant_access_token": "飞书多维表格 访问凭证"
+}
