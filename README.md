@@ -23,17 +23,16 @@
 
   - `chrome-devtools-skill/` - Chrome DevTools 网页分析工具
   - `create-symlink/` - 创建符号链接工具
-  - `empjs-skill/` - 技能包管理工具
+  - `feishu-bitable/` - 飞书多维表格操作工具
   - `generate-cover-prompt/` - 封面提示词生成工具
-  - `move-big-folder/` - 大文件夹迁移工具
   - `pyautogui-automation/` - 桌面自动化工具
   - `skill-creator-yashu/` - 技能创建工具
   - `skill-hide/` - 隐藏或恢复技能
   - `skill-optimizer-yashu/` - 分析和优化 Skill
   - `skill-refresh/` - 技能刷新工具
+  - `vscode-theme-colors/` - VSCode 主题颜色工具
   - `webp-to-jpg/` - WebP 图片转 JPG 工具
   - `wechat-content-optimizer/` - 微信内容优化工具
   - `wechat-publisher-yashu/` - 微信公众号发布工具
-  - `wechat-title-optimizer/` - 微信标题优化工具
 
 - `push.js` - 快速推送脚本
