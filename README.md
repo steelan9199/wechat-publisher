@@ -20,10 +20,10 @@
 ## 项目结构
 
 - `skills/` - 各种技能包
-
   - `chrome-devtools-skill/` - Chrome DevTools 网页分析工具
   - `create-symlink/` - 创建符号链接工具
   - `feishu-bitable/` - 飞书多维表格操作工具
+  - `feishu-docx/` - 飞书文档 Markdown 互转工具
   - `generate-cover-prompt/` - 封面提示词生成工具
   - `pyautogui-automation/` - 桌面自动化工具
   - `skill-creator-yashu/` - 技能创建工具
