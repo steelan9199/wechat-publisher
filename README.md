@@ -4,6 +4,12 @@
 
 **仓库地址:** https://github.com/steelan9199/wechat-publisher.git
 
+## 安装单个技能
+
+```
+npx skills add  https://github.com/steelan9199/wechat-publisher/tree/main/skills/feishu-docx
+```
+
 ## 快速推送脚本
 
 ### 🚀 使用方法: 运行和调试面板
