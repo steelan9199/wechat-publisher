@@ -1,0 +1,13 @@
+{
+  "name": "feishu-docx",
+  "version": "1.0.0",
+  "type": "module",
+  "devDependencies": {
+    "eslint": "^10.0.2",
+    "globals": "^17.3.0"
+  },
+  "dependencies": {
+    "marked": "^17.0.4",
+    "probe-image-size": "^7.2.3"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "appId": "cli_a74fda9e3ad8901c",
+  "appSecret": "oMPKb9GtzUKMKwZlZxqbDbi7TWIuyWAP",
+  "tenant_access_token": "t-g1043ifJD5CBJ7DLHUJFV4DXLHHQNDERI3EG5WDA",
+  "member_id": "ou_c7c36c578623b98085029b7879b6a080",
+  "transfer_owner": true,
+  "custom": {
+    "document_title": "技术文档",
+    "document_id": "",
+    "image": {
+      "max_width": 500,
+      "max_height": 500,
+      "align": 2
+    },
+    "table_column_widths": [
+      120,
+      120,
+      120
+    ],
+    "table_default_column_width": 150,
+    "heading_colors": {
+      "h1": null,
+      "h2": null,
+      "h3": null,
+      "h4": null,
+      "h5": null,
+      "h6": null
+    },
+    "inline_styles": {
+      "bold": {
+        "text_color": null
+      },
+      "italic": {
+        "text_color": null
+      },
+      "bold_italic": {
+        "text_color": null
+      }
+    }
+  }
+}
