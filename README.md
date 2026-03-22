@@ -33,14 +33,19 @@ npx skills add  https://github.com/steelan9199/wechat-publisher/tree/main/skills
   - `feishu-bitable/` - 飞书多维表格操作工具
   - `feishu-docx/` - 飞书文档 Markdown 互转工具
   - `generate-cover-prompt/` - 封面提示词生成工具
+  - `js-error-fixer/` - JavaScript 错误检查与修复工具
+  - `move-big-folder/` - C 盘大文件夹迁移工具
+  - `node-version-compatibility-tester/` - Node.js 版本兼容性测试工具
   - `pyautogui-automation/` - 桌面自动化工具
   - `skill-creator-yashu/` - 技能创建工具
   - `skill-hide/` - 隐藏或恢复技能
+  - `skill-laws/` - Skill 设计法则
   - `skill-optimizer-yashu/` - 分析和优化 Skill
   - `skill-refresh/` - 技能刷新工具
   - `vscode-theme-colors/` - VSCode 主题颜色工具
   - `webp-to-jpg/` - WebP 图片转 JPG 工具
   - `wechat-content-optimizer/` - 微信内容优化工具
   - `wechat-publisher-yashu/` - 微信公众号发布工具
+  - `wechat-title-optimizer/` - 公众号标题优化工具
 
 - `push.js` - 快速推送脚本
