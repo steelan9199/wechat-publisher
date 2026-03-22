@@ -1,18 +1,6 @@
 ---
 name: wechat-publisher-yashu
 description: 将本地 Markdown 文章发布到微信公众号草稿箱。当用户提到发布文章到公众号、上传 markdown 到微信公众号、或需要将本地文章同步到微信公众号时使用此技能。
-requirements:
-  runtime: nodejs>=24.13.0
-  module: esm
-  dependencies:
-    - cheerio@^1.1.2
-    - fastmcp@^3.23.1
-    - marked@^16.3.0
-    - mathjax-full@^3.2.1
-    - yargs@^18.0.0
-metadata:
-  author: 牙叔教程
-  version: "1.0"
 ---
 
 # 微信公众号文章发布工具
@@ -51,7 +39,7 @@ metadata:
 
 确保环境满足要求：
 
-- Node.js >= 24.13.0
+- Node.js >= 20.20.1
 - 安装依赖（已安装时会快速跳过）
 
 ```bash
@@ -88,7 +76,6 @@ npm install --prefix "/Users/yourname/.qoder/skills/wechat-publisher-yashu"
 2. 将 `markdownFilePath` 更新为用户提供的文章路径。
 3. **参数填充决策树（核心逻辑）**：
    针对 `prefix` (前缀) 和 `suffix` (后缀) 以及其他可选参数，**必须**严格执行以下判断流程：
-
    - **判断：用户是否明确指定了该字段的内容？**
      - **👉 是 (YES)**
        - **执行操作**：使用用户提供的内容覆盖对应字段。
@@ -181,7 +168,6 @@ node index.js --file xxx.md --app-id xxx --app-secret xxx
 #### 发布失败的原因及解决
 
 - **电脑 IP 不在公众号 IP 白名单中**
-
   - 解决：登录微信开发者平台 https://developers.weixin.qq.com/platform → 前往控制台 → 我的业务/公众号 → 开发秘钥 → IP 白名单 → 编辑添加电脑 IP
   - 获取电脑 IP：百度搜索 `ip`
 
@@ -194,21 +180,21 @@ node index.js --file xxx.md --app-id xxx --app-secret xxx
 
 ### 常见问题
 
-| 问题 | 原因 | 解决方案 |
-|------|------|----------|
-| `Access denied` | 尝试直接写入技能目录下的文件，超出工作目录权限 | 使用 Node.js 脚本间接写入 |
-| 中文/特殊字符转义错误 | 命令行解析中文标题、问号等字符时出错 | 使用临时 JS 脚本文件避免命令行转义 |
-| 引号嵌套问题 | PowerShell 或 CMD 中引号嵌套导致解析失败 | 使用 JS 文件存储配置对象 |
+| 问题                  | 原因                                           | 解决方案                           |
+| --------------------- | ---------------------------------------------- | ---------------------------------- |
+| `Access denied`       | 尝试直接写入技能目录下的文件，超出工作目录权限 | 使用 Node.js 脚本间接写入          |
+| 中文/特殊字符转义错误 | 命令行解析中文标题、问号等字符时出错           | 使用临时 JS 脚本文件避免命令行转义 |
+| 引号嵌套问题          | PowerShell 或 CMD 中引号嵌套导致解析失败       | 使用 JS 文件存储配置对象           |
 
 ### 推荐的配置文件更新方法
 
 **方法：使用临时 Node.js 脚本**
 
-在项目工作目录下创建临时脚本，然后通过 Node.js 执行：
+在技能目录下创建临时脚本 `update-config.js`，然后通过 Node.js 执行：
 
 ```javascript
-// update-config.js
-const fs = require('fs');
+// update-config.mjs
+import { writeFileSync } from "fs";
 
 const config = {
   markdownFilePath: "Markdown文件的绝对路径",
@@ -222,16 +208,18 @@ const config = {
   theme: "主题名称（如：blue）",
 };
 
-fs.writeFileSync("技能目录/config.json", JSON.stringify(config, null, 2));
+writeFileSync("技能目录/config.json", JSON.stringify(config, null, 2));
 console.log("Config updated successfully");
 ```
 
 执行命令：
+
 ```bash
 node "update-config.js的绝对路径"
 ```
 
 **优势：**
+
 - 避免中文和特殊字符（如 `？`）的转义问题
 - 避免引号嵌套复杂性
 - 代码清晰易读，便于调试

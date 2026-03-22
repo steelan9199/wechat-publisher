@@ -75,4 +75,4 @@ description: 自动测试指定技能在不同Node.js LTS版本下的兼容性�
 
 ## 用户可以使用类似下面的提示词使用该技能
 
-> 使用当前项目下的这个技能`skills\node-version-compatibility-tester` 对当前项目下的技能`skills\feishu-docx`进行node不同版本的兼容性测试
+> 使用当前项目下的这个技能`skills\node-version-compatibility-tester` 对当前项目下的技能`skills\wechat-publisher-yashu`进行node不同版本的兼容性测试
