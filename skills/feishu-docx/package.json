@@ -9,5 +9,8 @@
   "dependencies": {
     "marked": "^17.0.4",
     "probe-image-size": "^7.2.3"
+  },
+  "engines": {
+    "node": ">=20.20.1"
   }
 }
