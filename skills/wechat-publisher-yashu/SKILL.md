@@ -1,6 +1,7 @@
 ---
 name: wechat-publisher-yashu
 description: 将本地 Markdown 文章发布到微信公众号草稿箱。当用户提到发布文章到公众号、上传 markdown 到微信公众号、或需要将本地文章同步到微信公众号时使用此技能。
+version: 1.0.1
 ---
 
 # 微信公众号文章发布工具
