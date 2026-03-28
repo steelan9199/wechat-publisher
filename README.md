@@ -12,6 +12,12 @@
 npx skills add  https://github.com/steelan9199/wechat-publisher/tree/main/skills/feishu-docx
 ```
 
+## 安装所有技能
+
+```
+npx skills add steelan9199/wechat-publisher
+```
+
 ## 快速推送脚本
 
 ### 🚀 使用方法: 运行和调试面板
