@@ -41,7 +41,6 @@ npx skills add  https://github.com/steelan9199/wechat-publisher/tree/main/skills
   - `skill-hide/` - 隐藏或恢复技能
   - `skill-laws/` - Skill 设计法则
   - `skill-optimizer-yashu/` - 分析和优化 Skill
-  - `skill-refresh/` - 技能刷新工具
   - `vscode-theme-colors/` - VSCode 主题颜色工具
   - `webp-to-jpg/` - WebP 图片转 JPG 工具
   - `wechat-content-optimizer/` - 微信内容优化工具
