@@ -46,7 +46,6 @@ npx skills add steelan9199/wechat-publisher
   - `skill-creator-yashu/` - 技能创建工具
   - `skill-hide/` - 隐藏或恢复技能
   - `skill-laws/` - Skill 设计法则
-  - `skill-optimizer-yashu/` - 分析和优化 Skill
   - `vscode-theme-colors/` - VSCode 主题颜色工具
   - `webp-to-jpg/` - WebP 图片转 JPG 工具
   - `wechat-content-optimizer/` - 微信内容优化工具
