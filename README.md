@@ -36,11 +36,14 @@ npx skills add steelan9199/wechat-publisher
 - `skills/` - 各种技能包
   - `chrome-devtools-skill/` - Chrome DevTools 网页分析工具
   - `create-symlink/` - 创建符号链接工具
+  - `expert-task-clarification/` - 专家级任务澄清工具
   - `feishu-bitable/` - 飞书多维表格操作工具
   - `feishu-docx/` - 飞书文档 Markdown 互转工具
   - `generate-cover-prompt/` - 封面提示词生成工具
   - `js-error-fixer/` - JavaScript 错误检查与修复工具
+  - `json-to-markdown-files/` - JSON 转 Markdown 文件工具
   - `move-big-folder/` - C 盘大文件夹迁移工具
+  - `music/` - AI 音乐提示词生成工具
   - `node-version-compatibility-tester/` - Node.js 版本兼容性测试工具
   - `pyautogui-automation/` - 桌面自动化工具
   - `skill-creator-yashu/` - 技能创建工具
