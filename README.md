@@ -38,6 +38,7 @@ npx skills add steelan9199/wechat-publisher
   - `create-symlink/` - 创建符号链接工具
   - `elite-intent-architect/` - 顶级意图架构与需求对齐工具
   - `expert-task-clarification/` - 专家级任务澄清工具
+  - `flat-color-painting-segmentation/` - 纯色平涂卡通插画手绘分割工具
   - `feishu-bitable/` - 飞书多维表格操作工具
   - `feishu-docx/` - 飞书文档 Markdown 互转工具
   - `generate-cover-prompt/` - 封面提示词生成工具
