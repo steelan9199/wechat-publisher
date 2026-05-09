@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 /**
- * backup.mjs — 项目代码自动备份脚本（含递归依赖检测 + 自动编号）
+ * backup.mjs — 通用 JS 项目自动备份脚本
  *
- * 功能：从 main.js 开始，递归检测所有 require 依赖并完整备份
- * 使用 Node.js v24.15.0 (ES Modules)
+ * 自动发现项目入口文件，递归检测所有 require 依赖并完整备份到 project-backup/
+ * 脚本可在任意位置运行，通过 -d 参数或 cwd 定位项目根目录。
+ *
  * 用法:
- *   node backup.mjs                    # 自动生成编号（如"07中文测试"）
- *   node backup.mjs "我的备份"         # 自动添加编号（如"07我的备份"）
+ *   node backup.mjs "备份名称"                       # 使用 cwd 自动发现项目
+ *   node backup.mjs "备份名称" -d <项目根目录>        # 指定项目根目录
+ *   node backup.mjs "备份名称" -e <入口文件>          # 指定入口文件
+ *   node backup.mjs                                 # 仅用编号
  */
 
 import fs from "node:fs";
@@ -16,82 +19,149 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const SKILL_DIR = __dirname;
-const PROJECT_ROOT = path.resolve(SKILL_DIR, "..", "..", "..");
-const BACKUP_ROOT = path.join(PROJECT_ROOT, "project-backup");
-const ENTRY_FILE = "main.js";
-const MAX_DEPTH = 10;
+// ==================== 命令行参数解析 ====================
 
-const REQUIRE_REGEX = /require\(["'](\.\/)?([^"']+)["']\)/g;
+function parseArgs() {
+  const args = process.argv.slice(2);
+  const result = { userName: null, projectRoot: null, entryFile: null };
 
-function getNextBackupNumber() {
-  if (!fs.existsSync(BACKUP_ROOT)) {
-    return "01";
+  let i = 0;
+  while (i < args.length) {
+    if ((args[i] === "-d" || args[i] === "--dir") && i + 1 < args.length) {
+      result.projectRoot = path.resolve(args[i + 1]);
+      i += 2;
+    } else if ((args[i] === "-e" || args[i] === "--entry") && i + 1 < args.length) {
+      result.entryFile = args[i + 1];
+      i += 2;
+    } else if (!args[i].startsWith("-")) {
+      result.userName = args[i];
+      i += 1;
+    } else {
+      console.warn(`⚠ 未知参数: ${args[i]}`);
+      i += 1;
+    }
   }
 
-  const items = fs.readdirSync(BACKUP_ROOT, { withFileTypes: true });
-  const subdirs = items.filter((item) => item.isDirectory()).map((item) => item.name);
+  return result;
+}
+
+const cliArgs = parseArgs();
+
+// ==================== 项目根目录自动发现 ====================
+
+function findProjectRoot(startDir) {
+  let dir = path.resolve(startDir);
+  for (let i = 0; i < 20; i++) {
+    if (fs.existsSync(path.join(dir, "package.json"))) return dir;
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return path.resolve(startDir);
+}
+
+const PROJECT_ROOT = cliArgs.projectRoot ? findProjectRoot(cliArgs.projectRoot) : findProjectRoot(process.cwd());
+
+// ==================== 入口文件自动发现 ====================
+
+function findEntryFile() {
+  if (cliArgs.entryFile) {
+    const p = path.resolve(PROJECT_ROOT, cliArgs.entryFile);
+    if (fs.existsSync(p)) return { path: cliArgs.entryFile, source: "命令行指定" };
+    console.warn(`⚠ 指定的入口文件不存在: ${cliArgs.entryFile}`);
+  }
+
+  const pkgPath = path.join(PROJECT_ROOT, "package.json");
+  if (fs.existsSync(pkgPath)) {
+    try {
+      const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf-8"));
+      if (pkg.main) {
+        const p = path.resolve(PROJECT_ROOT, pkg.main);
+        if (fs.existsSync(p)) return { path: pkg.main, source: "package.json#main" };
+      }
+    } catch {}
+  }
+
+  const candidates = [
+    "main.js",
+    "index.js",
+    "app.js"
+  ];
+  for (const c of candidates) {
+    if (fs.existsSync(path.join(PROJECT_ROOT, c))) return { path: c, source: "自动检测" };
+  }
+
+  return null;
+}
+
+const entryInfo = findEntryFile();
+const ENTRY_FILE = entryInfo ? entryInfo.path : null;
+const BACKUP_ROOT = path.join(PROJECT_ROOT, "project-backup");
+const MAX_DEPTH = 10;
+
+// 匹配相对路径 require: "./xxx", "../xxx", 以及裸 .js 文件名如 "config.js"
+// 自动过滤 npm 包（如 require("fs")、require("lodash") 等无后缀/无路径的）
+const REQUIRE_REGEX = /require\(["'](\.\.?\/[^"']+|[^"']+\.js)["']\)/g;
+
+// ==================== 核心功能 ====================
+
+function getNextBackupNumber() {
+  if (!fs.existsSync(BACKUP_ROOT)) return "01";
 
   let maxNum = 0;
-  for (const dir of subdirs) {
-    const match = dir.match(/^(\d+)/);
-    if (match) {
-      const num = parseInt(match[1], 10);
-      if (num > maxNum) {
-        maxNum = num;
+  const items = fs.readdirSync(BACKUP_ROOT, { withFileTypes: true });
+  for (const item of items) {
+    if (item.isDirectory()) {
+      const match = item.name.match(/^(\d+)/);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num > maxNum) maxNum = num;
       }
     }
   }
 
-  const nextNum = maxNum + 1;
-  return nextNum.toString().padStart(2, "0");
+  return (maxNum + 1).toString().padStart(2, "0");
 }
 
-function getRecursiveDependencies(entryFile) {
-  const result = {
-    files: [],
-    tree: new Map(),
-    circular: []
-  };
+function extractDependencies(filePath) {
+  const content = fs.readFileSync(filePath, "utf-8");
+  const lines = content.split("\n").slice(0, 100);
+  const deps = new Set();
 
+  for (const line of lines) {
+    const matches = [...line.matchAll(REQUIRE_REGEX)];
+    for (const match of matches) {
+      deps.add(match[1]);
+    }
+  }
+
+  return [...deps];
+}
+
+function getRecursiveDependencies(entryFileAbs) {
+  const result = { files: [], tree: new Map(), circular: [] };
   const visited = new Set();
-  const queue = [{ file: entryFile, depth: 0 }];
+  const queue = [{ file: entryFileAbs, depth: 0 }];
 
   while (queue.length > 0) {
     const { file, depth } = queue.shift();
 
     if (depth > MAX_DEPTH) {
-      console.log(`  ⚠ 达到最大深度 ${MAX_DEPTH}，停止递归: ${file}`);
+      console.log(`  ⚠ 达到最大深度 ${MAX_DEPTH}: ${path.relative(PROJECT_ROOT, file)}`);
       continue;
     }
 
     if (!fs.existsSync(file)) {
-      console.log(`  ⚠ 文件不存在: ${file}`);
+      console.log(`  ⚠ 文件不存在: ${path.relative(PROJECT_ROOT, file)}`);
       continue;
     }
 
-    if (visited.has(file)) {
-      continue;
-    }
+    if (visited.has(file)) continue;
 
     visited.add(file);
     result.files.push(file);
 
-    const content = fs.readFileSync(file, "utf-8");
-    const lines = content.split("\n").slice(0, 50);
-
-    const dependencies = [];
-    for (const line of lines) {
-      const matches = [...line.matchAll(REQUIRE_REGEX)];
-      for (const match of matches) {
-        const prefix = match[1];
-        const depFile = match[2];
-        if (depFile && depFile.length > 0) {
-          dependencies.push((prefix || "./") + depFile);
-        }
-      }
-    }
-
+    const dependencies = extractDependencies(file);
     result.tree.set(file, dependencies);
 
     const indent = "  ".repeat(depth);
@@ -102,13 +172,11 @@ function getRecursiveDependencies(entryFile) {
       console.log(`${indent}├─ ${relPath} (深度:${depth})`);
     }
 
-    if (dependencies.length > 0) {
-      for (const dep of dependencies) {
-        const depPath = path.resolve(path.dirname(file), dep);
-        const relDepPath = path.relative(PROJECT_ROOT, depPath);
-        console.log(`${indent}│  └─ 依赖: ${relDepPath}`);
-        queue.push({ file: depPath, depth: depth + 1 });
-      }
+    for (const dep of dependencies) {
+      const depPath = path.resolve(path.dirname(file), dep);
+      const relDepPath = path.relative(PROJECT_ROOT, depPath);
+      console.log(`${indent}│  └─ 依赖: ${relDepPath}`);
+      queue.push({ file: depPath, depth: depth + 1 });
     }
   }
 
@@ -166,9 +234,22 @@ function printReport(backupName, backupPath, files, copied, skipped, totalSize) 
   }
 }
 
+// ==================== 主函数 ====================
+
 function main() {
-  const userName = process.argv[2];
+  console.log(`🔍 项目根目录: ${PROJECT_ROOT}`);
+
+  if (!ENTRY_FILE) {
+    console.error("❌ 错误: 未找到入口文件！");
+    console.error("   请在项目根目录运行，或使用 -e 参数指定入口文件:");
+    console.error('   node backup.mjs "备份名" -e main.js');
+    process.exit(1);
+  }
+
+  console.log(`📄 入口文件: ${ENTRY_FILE} (来源: ${entryInfo.source})`);
+
   const nextNum = getNextBackupNumber();
+  const userName = cliArgs.userName;
   const backupName = userName ? `${nextNum}${userName}` : nextNum;
 
   if (userName) {
@@ -184,21 +265,15 @@ function main() {
   console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
   const entryFilePath = path.join(PROJECT_ROOT, ENTRY_FILE);
-
-  if (!fs.existsSync(entryFilePath)) {
-    console.error(`❌ 入口文件不存在: ${entryFilePath}`);
-    process.exit(1);
-  }
-
   const deps = getRecursiveDependencies(entryFilePath);
 
   console.log("");
   console.log("📊 检测结果:");
   console.log(`  总文件数: ${deps.files.length}`);
-  console.log(`  循环依赖: ${deps.circular.length} 个`);
   if (deps.circular.length > 0) {
-    for (const circular of deps.circular) {
-      console.log(`  ↺ ${path.relative(PROJECT_ROOT, circular)}`);
+    console.log(`  循环依赖: ${deps.circular.length} 个`);
+    for (const c of deps.circular) {
+      console.log(`  ↺ ${path.relative(PROJECT_ROOT, c)}`);
     }
   }
 
@@ -220,10 +295,7 @@ function main() {
     if (fs.existsSync(file)) {
       const relPath = path.relative(PROJECT_ROOT, file);
       const dest = path.join(backupPath, relPath);
-      const destDir = path.dirname(dest);
-
-      fs.mkdirSync(destDir, { recursive: true });
-
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
       copyFile(file, dest);
       totalSize += fs.statSync(file).size / 1024;
       copied++;
