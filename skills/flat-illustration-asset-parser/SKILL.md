@@ -32,6 +32,11 @@ description: "解析纯色平涂插画图片，输出 SAM3 提取提示词与儿
 - **正面教材 (Good)**：`Light brown nose`（直接说要什么即可）。
 - **正面教材 (Good)**：`Dark blue decorative parts of the denim jacket, including collar, pocket flaps, and front placket`（直接指定衣物特征和部件，不牵扯穿衣服的人）。
 - **位置约束**：除非画面中有多个同类且极其相似的物体，SAM3 靠自身特征无法分辨时才允许加入最少限度的位置描述（如左/右），否则一律直呼其名。提示词必须是英文。
+ - **禁止相对性语义污染 (No Relative/Comparative Semantics)**：SAM3 无法理解隐式参照系，提示词中**绝对禁止**使用任何比较级或相对性尺寸/程度词汇，因为 SAM3 没有"跟什么比"的上下文。被禁词汇包括：
+   - 中文：`中等`、`较大`、`较小`、`偏大`、`偏小`、`稍微`、`略微`
+   - 英文：`medium`、`large`、`small`、`big`、`tiny`、`relatively`、`slightly`、`somewhat`、`fairly`
+     反面教材 (Bad)：`Medium pink wavy hills`（"中等"要求 SAM3 隐式比较，无参照系会导致提取区域偏移或错误）。
+     正面教材 (Good)：`Pink wavy hills`（直接去掉比较词，纯颜色+形状+物体名，SAM3 可精准定位）。
 
 ### 5. 单层覆盖绘制法则 (Painter's Algorithm)
 
@@ -62,6 +67,7 @@ description: "解析纯色平涂插画图片，输出 SAM3 提取提示词与儿
 | 4                         | 04       | 外套 (Jacket)             | ...                                               | [如: 暗红色]               | [触发防撞平替，如: 橙色]             |
 | ...                       | ...      | ...                       | ...                                               | ...                        | ...                                  |
 | 9 (最后画/最顶一层)       | 09       | 眼睛 (Eyes)               | ...                                               | ...                        | ...                                  |
+
 
 ---
 
