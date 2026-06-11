@@ -35,6 +35,7 @@ npx skills add steelan9199/wechat-publisher
 
 - `skills/` - 各种技能包
   - `chrome-devtools-skill/` - Chrome DevTools 网页分析工具
+  - `context-handoff/` - 对话上下文交接文档生成工具
   - `create-symlink/` - 创建符号链接工具
   - `elite-intent-architect/` - 顶级意图架构与需求对齐工具
   - `expert-task-clarification/` - 专家级任务澄清工具
