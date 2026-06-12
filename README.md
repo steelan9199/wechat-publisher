@@ -42,6 +42,7 @@ npx skills add steelan9199/wechat-publisher
   - `feishu-bitable/` - 飞书多维表格操作工具
   - `feishu-docx/` - 飞书文档 Markdown 互转工具
   - `generate-cover-prompt/` - 封面提示词生成工具
+  - `guizang-ppt-lite/` - 高级质感单文件 HTML 网页 PPT 生成工具
   - `js-error-fixer/` - JavaScript 错误检查与修复工具
   - `json-to-markdown-files/` - JSON 转 Markdown 文件工具
   - `move-big-folder/` - C 盘大文件夹迁移工具
