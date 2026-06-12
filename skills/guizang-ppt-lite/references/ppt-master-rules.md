@@ -1,6 +1,6 @@
 # PPT Master Rules · 大师级演示文稿生成规则
 
-本文件是 `guizang-ppt-premium-lite` 的强制生成规范。生成任何 PPT 前，先按本规则做演示设计，再写 HTML。
+本文件是 `guizang-ppt-lite` 的强制生成规范。生成任何 PPT 前，先按本规则做演示设计，再写 HTML。
 
 ## 1. 核心原则
 
@@ -96,6 +96,44 @@ Level 4: 注释、来源、页脚
 - 同一组元素必须共享边线或中心线。
 - 分割线、卡片、标题和正文必须服务结构，而不是装饰。
 - 不得出现看似随机的漂浮元素。
+
+### 4.5 横向翻页机制（硬约束）
+
+PPT 必须为**横向翻页**，页面水平排列，左/右键切换。HTML 实现必须遵循以下规则：
+
+**必须使用的模式：**
+
+| 层级 | 要求                                                                                 |
+| ---- | ------------------------------------------------------------------------------------ |
+| HTML | `<div id="deck">` 作为所有 slide 的容器，`display: flex`，页面水平排列               |
+| CSS  | `.slide` 设 `min-width: 100vw` / `flex: 0 0 100vw`，翻页用 `transform: translateX()` |
+| JS   | `deck.style.transform = translateX(-N * 100vw)`，每次切换精确移动一个视口宽度        |
+| 容器 | `#deck` 宽度由 JS 动态计算：`deck.style.width = slideCount * 100 + "vw"`             |
+| 主体 | `body { overflow: hidden }` 完全禁用原生滚动，翻页不依赖浏览器滚动机制               |
+
+**禁止的模式：**
+
+| 禁止项                                                   | 原因                                                |
+| -------------------------------------------------------- | --------------------------------------------------- |
+| `scroll-snap-type: y mandatory`                          | 导致纵向滚动而非横向翻页                            |
+| `scroll-snap-type: x mandatory`                          | 浏览器吸附无法像素级精确对齐，会露出下一页内容      |
+| `scroll-snap-align: start`                               | 依赖浏览器滚动，对齐不可靠                          |
+| `scroll-behavior: smooth`                                | 让滚动行为不可控                                    |
+| `scrollIntoView()`                                       | 无法做到精确的 `100vw` 对齐，页面会卡在两个视口之间 |
+| `IntersectionObserver` 监听滚动切换页码                  | 在有吸附偏移时误判当前页                            |
+| `.ppt-safe-frame { width: 100vw; height: 100vh }` 无容器 | 页面纵向堆叠而非水平排列                            |
+
+### 4.6 动效引擎脚本（硬约束）
+
+模板 `assets/template.html` 中的 `<script type="module">` Motion One 动效引擎脚本**必须逐字完整复制**到生成的目标 HTML 中，禁止以下行为：
+
+| 禁止项                   | 原因                                                              |
+| ------------------------ | ----------------------------------------------------------------- |
+| 手写或"简化"模块脚本     | 必然遗漏 `playSlide(0)` 初始化调用，导致首屏加载后文字消失        |
+| 只复制部分逻辑           | `window.__playSlide` 注册和首屏初始化紧密耦合                     |
+| 删除 `playSlide(0)` 调用 | 模板底部同步 `go(0)` 先于模块脚本执行，无此补调则首屏动效永不触发 |
+
+> **技术原因**：页面底部的同步 `<script>` 调用 `go(0)` 时，`<script type="module">` 尚未执行完毕，`window.__playSlide` 未定义。模块脚本完成后必须补调 `playSlide(0)` 以触发生效页的入场动画。详见 `assets/template.html` 末尾的注释。
 
 ## 5. 叙事节奏规则
 

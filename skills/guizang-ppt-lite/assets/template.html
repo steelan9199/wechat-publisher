@@ -105,6 +105,82 @@
         background: var(--ink);
       }
 
+      /* ============ PPT Master Guards · 通用版式护栏 ============
+     目的:防止生成页面出现随机布局、视觉重心沉底、低对比、内容裁切。
+     使用规则:核心内容放入 .ppt-safe-frame；关键结论使用 .ppt-focal；行动号召使用 .ppt-action-frame。 */
+      .ppt-safe-frame {
+        flex: 1;
+        min-height: 0;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        gap: clamp(24px, 3.2vh, 52px);
+        align-content: start;
+      }
+      .ppt-balanced-frame {
+        flex: 1;
+        min-height: 0;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        gap: clamp(20px, 2.8vh, 44px);
+        align-content: start;
+      }
+      .ppt-action-frame {
+        flex: 1;
+        min-height: 0;
+        display: grid;
+        grid-template-columns: 5fr 7fr;
+        gap: 4vw;
+        align-items: start;
+        padding-bottom: 8vh;
+      }
+      .ppt-focal {
+        max-width: 12ch;
+        line-height: 0.96;
+        letter-spacing: -0.035em;
+      }
+      .surface-light,
+      .slide.dark .surface-light {
+        background: var(--paper);
+        color: var(--ink);
+      }
+      .surface-ink,
+      .slide.light .surface-ink {
+        background: var(--ink);
+        color: var(--paper);
+      }
+      .ppt-support {
+        max-width: 62ch;
+      }
+      .ppt-no-sink {
+        align-self: start !important;
+        margin-top: 0 !important;
+      }
+      .text-readable,
+      .slide.dark .text-readable {
+        color: var(--ink);
+        opacity: 1;
+        font-weight: 400;
+      }
+      .text-readable.on-dark,
+      .slide.dark .text-readable.on-dark {
+        color: var(--paper);
+        opacity: 1;
+      }
+      .text-readable.size-body {
+        font-size: max(18px, 1.05vw);
+        line-height: 1.55;
+      }
+      .no-glass,
+      .slide.dark .no-glass {
+        background: var(--paper) !important;
+        color: var(--ink) !important;
+        backdrop-filter: none !important;
+      }
+      .no-glass.on-dark {
+        background: var(--ink) !important;
+        color: var(--paper) !important;
+      }
+
       /* 默认页：遮罩较厚，保证文字可读 */
       .slide::before {
         content: "";
