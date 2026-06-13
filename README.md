@@ -47,7 +47,6 @@ npx skills add steelan9199/wechat-publisher
   - `js-error-fixer/` - JavaScript 错误检查与修复工具
   - `js-project-refactor/` - JavaScript 项目架构重构与模块化工具
   - `json-to-markdown-files/` - JSON 转 Markdown 文件工具
-  - `logo-generator-skill/` - Logo 创意方向与图像提示词生成工具
   - `move-big-folder/` - C 盘大文件夹迁移工具
   - `music/` - AI 音乐提示词生成工具
   - `node-version-compatibility-tester/` - Node.js 版本兼容性测试工具
