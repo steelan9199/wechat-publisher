@@ -1,6 +1,6 @@
 # Skills 项目
 
-个人技能包和工具集合。
+网络搜集的各种skill.
 
 **仓库地址:** https://github.com/steelan9199/wechat-publisher.git
 
@@ -34,6 +34,7 @@ npx skills add steelan9199/wechat-publisher
 ## 项目结构
 
 - `skills/` - 各种技能包
+  - `backup-project/` - JS 项目代码备份工具
   - `chrome-devtools-skill/` - Chrome DevTools 网页分析工具
   - `context-handoff/` - 对话上下文交接文档生成工具
   - `create-symlink/` - 创建符号链接工具
@@ -44,7 +45,9 @@ npx skills add steelan9199/wechat-publisher
   - `generate-cover-prompt/` - 封面提示词生成工具
   - `guizang-ppt-lite/` - 高级质感单文件 HTML 网页 PPT 生成工具
   - `js-error-fixer/` - JavaScript 错误检查与修复工具
+  - `js-project-refactor/` - JavaScript 项目架构重构与模块化工具
   - `json-to-markdown-files/` - JSON 转 Markdown 文件工具
+  - `logo-generator-skill/` - Logo 创意方向与图像提示词生成工具
   - `move-big-folder/` - C 盘大文件夹迁移工具
   - `music/` - AI 音乐提示词生成工具
   - `node-version-compatibility-tester/` - Node.js 版本兼容性测试工具
