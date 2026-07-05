@@ -39,6 +39,12 @@ node "<skill目录>/scripts/optimize.js" <markdown文件路径> --config "<skill
 | **结尾转化** | 总结/互动/行动/福利/金句，给读者行动理由 |
 | **排版格式** | 重点加粗、适当引用、列表呈现、层次分明 |
 
+#### 3.1 Markdown语法优化
+
+- 尽量使用标准的Markdown语法。
+- 我写的Markdown渲染器支持Obsidian的大部分Markdown语法， 如`**加粗**`、`*斜体*`、`==删除线==`等。因为我写文章就是使用的Obsidian的Markdown语法。
+- Obsidian 是一款 基于本地文件 的笔记软件，所有数据以纯文本 .md（Markdown）文件形式存储在我的电脑上。
+
 ### 4. 保存优化后的文件
 
 将优化后的内容写入新文件：
