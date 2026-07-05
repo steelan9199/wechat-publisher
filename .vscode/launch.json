@@ -7,22 +7,6 @@
       "request": "launch",
       "program": "${workspaceFolder}/push.js",
       "console": "integratedTerminal"
-    },
-    {
-      "name": "✏️ Push with Custom Message",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/push.js",
-      "args": ["${input:commitMessage}"],
-      "console": "integratedTerminal"
-    }
-  ],
-  "inputs": [
-    {
-      "id": "commitMessage",
-      "type": "promptString",
-      "description": "Enter commit message",
-      "default": "Update"
     }
   ]
 }

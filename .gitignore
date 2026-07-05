@@ -1,12 +1,4 @@
 .trae
-coze
-收藏的skill
-skills/I2V_Script_Asset_Architect
-skills/skill-optimizer-yashu/
-skills/skill-refresh
-skills/skill-hide/.skill-config.json
-skills/feishu-bitable/config.default.json.bak
-skills/feishu-bitable/license-key.txt.bak
 test
 技能目录.md
 
@@ -14,9 +6,6 @@ skills/.agent
 skills/.shared
 
 .qoder
-skills/wechat-publisher-yashu/config.json
-skills/wechat-publisher-yashu/wechat-token.json
-skills/wechat-publisher-yashu/.license-key.txt.backup
 
 SKILL.md.hide
 skills/empjs-skill/

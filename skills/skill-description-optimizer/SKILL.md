@@ -37,6 +37,8 @@ metadata:
 
 ## 核心法则：Description 五要素
 
+本 Skill 仅用于优化 Skill 的 `description` 字段值。优化后的 `description` 字段值中禁止使用英文冒号 `:`，否则部分 AI 软件可能无法识别该技能；如需冒号语义，统一使用中文冒号 `：`。
+
 一条优秀的、低级AI兼容的 `description` 必须包含以下五要素：
 
 | #   | 要素             | 作用                     | 示例                                         |

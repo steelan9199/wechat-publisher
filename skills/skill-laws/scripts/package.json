@@ -1,0 +1,12 @@
+{
+  "name": "skill-laws-scripts",
+  "version": "1.0.0",
+  "description": "Skill Laws 脚本",
+  "type": "module",
+  "scripts": {
+    "test": "node clear_temp.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0"
+  }
+}
