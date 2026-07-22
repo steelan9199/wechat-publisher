@@ -14,7 +14,6 @@ skills/empjs-skill/
 node_modules/
 
 # Environment specific files
-.env
 .env.local
 .env.development.local
 .env.test.local

@@ -1,0 +1,18 @@
+{
+  "name": "feishu-docx",
+  "description": "飞书云文档和本地markdown互转",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "marked": "^17.0.4",
+    "probe-image-size": "^7.2.3"
+  },
+  "author": "牙叔教程",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.20.8"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.0"
+  }
+}

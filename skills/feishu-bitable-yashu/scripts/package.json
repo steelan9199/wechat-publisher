@@ -1,0 +1,20 @@
+{
+  "name": "feishu-bitable-scripts-nodejs",
+  "version": "1.0.0",
+  "description": "飞书多维表格 API 的 Node.js 脚本集",
+  "type": "module",
+  "keywords": [
+    "feishu",
+    "bitable",
+    "nodejs",
+    "lark"
+  ],
+  "author": "牙叔教程",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.20.8"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.0"
+  }
+}

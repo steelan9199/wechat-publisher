@@ -1,6 +1,0 @@
-{
-  "type": "module",
-  "engines": {
-    "node": ">=20.20.1"
-  }
-}

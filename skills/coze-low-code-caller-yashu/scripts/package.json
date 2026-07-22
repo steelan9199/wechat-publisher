@@ -1,0 +1,15 @@
+{
+  "name": "coze-scripts",
+  "version": "1.0.0",
+  "description": "Coze API 调用脚本",
+  "type": "module",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "engines": {
+    "node": ">=18.20.8"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0"
+  }
+}

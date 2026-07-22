@@ -1,0 +1,61 @@
+{
+  "toolModules": {
+    "folders": [
+      "utils",
+      "util",
+      "helpers",
+      "helper",
+      "common",
+      "shared",
+      "libs",
+      "lib",
+      "tools",
+      "tool",
+      "config",
+      "constants"
+    ],
+    "files": [
+      "utils.js",
+      "util.js",
+      "helpers.js",
+      "helper.js",
+      "common.js",
+      "shared.js",
+      "constants.js",
+      "config.js",
+      "tools.js",
+      "tool.js"
+    ]
+  },
+  "sourceDir": "请填写私有技能目录的绝对路径",
+  "targetDir": "请填写公开技能目录的绝对路径",
+  "globalWhitelist": [
+    "SKILL.md",
+    "scripts",
+    "references",
+    "config",
+    "assets",
+    "tools",
+    "themes",
+    "prompt",
+    "config.default.json",
+    "package.json",
+    "package-lock.json",
+    "tsconfig.json",
+    ".gitignore"
+  ],
+  "hardBlacklist": {
+    "dirsAnyLevel": [
+      "node_modules",
+      "scripts-backup"
+    ],
+    "filesAnyLevel": [
+      "license-key.txt",
+      ".publish-include"
+    ],
+    "patterns": [
+      ".cache_*.tmp",
+      "*.bak"
+    ]
+  }
+}

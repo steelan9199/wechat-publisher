@@ -1,0 +1,6 @@
+{
+  "toolModules": {
+    "folders": [],
+    "files": ["utils.js", "upload-multipart.js"]
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "toolModules": {
+    "folders": [
+      "utils",
+      "util",
+      "helpers",
+      "helper",
+      "common",
+      "shared",
+      "libs",
+      "lib",
+      "tools",
+      "tool",
+      "config",
+      "constants"
+    ],
+    "files": [
+      "utils.js",
+      "util.js",
+      "helpers.js",
+      "helper.js",
+      "common.js",
+      "shared.js",
+      "constants.js",
+      "config.js",
+      "tools.js",
+      "tool.js"
+    ]
+  },
+  "sourceDir": "d:/skill/private-skills/.trae/skills",
+  "targetDir": "D:\\software\\skills\\skills",
+  "globalWhitelist": [
+    "SKILL.md",
+    "scripts",
+    "references",
+    "config",
+    "assets",
+    ".env",
+    "config.default.json"
+  ],
+  "skillBlacklist": [
+    "coze-low-code-caller-yashu",
+    "feishu-bitable-yashu",
+    "feishu-docx-yashu",
+    "wechat-publisher-yashu",
+    "js-obfuscator-yashu",
+    "license-checker-yashu",
+    "qa-memo-yashu",
+    "skill-laws-yashu"
+  ],
+  "hardBlacklist": {
+    "dirsAnyLevel": [
+      "node_modules",
+      "scripts-backup"
+    ],
+    "filesAnyLevel": [
+      "readme.md",
+      "license-key.txt",
+      ".publish-include"
+    ],
+    "patterns": [
+      ".cache_*.tmp",
+      "*.bak",
+      "*.d.ts"
+    ]
+  }
+}

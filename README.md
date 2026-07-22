@@ -57,9 +57,7 @@ npx skills add steelan9199/wechat-publisher
   - `nodejs-cross-platform-checker/` - Node.js 跨平台兼容性检查工具
   - `pyautogui-automation/` - 桌面自动化工具
   - `retest-generator/` - 技能复测脚本生成工具
-  - `skill-checker/` - Skill 功能完整性检测工具
   - `skill-description-optimizer/` - 技能 description 字段优化工具
-  - `skill-laws/` - Skill 设计法则
   - `webp-to-jpg/` - WebP 图片转 JPG 工具
   - `wechat-content-optimizer/` - 微信内容优化工具
   - `wechat-publisher-yashu/` - 微信公众号发布工具

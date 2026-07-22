@@ -1,0 +1,41 @@
+{
+  "appId": "飞书开放平台的企业自建应用的 App ID",
+  "appSecret": "飞书开放平台企业自建应用的 App Secret",
+  "tenant_access_token": "t-g1047mfuCVLHGDRFJ6B2W6BC7ERE7ECHJJV6AJQ4",
+  "member_id": "ou_c7c36c578623b98085029b7879b6a080",
+  "transfer_owner": true,
+  "custom": {
+    "document_title": "技术文档",
+    "document_id": "",
+    "image": {
+      "max_width": 500,
+      "max_height": 500,
+      "align": 2
+    },
+    "table_column_widths": [
+      120,
+      120,
+      120
+    ],
+    "table_default_column_width": 150,
+    "heading_colors": {
+      "h1": null,
+      "h2": null,
+      "h3": null,
+      "h4": null,
+      "h5": null,
+      "h6": null
+    },
+    "inline_styles": {
+      "bold": {
+        "text_color": null
+      },
+      "italic": {
+        "text_color": null
+      },
+      "bold_italic": {
+        "text_color": null
+      }
+    }
+  }
+}

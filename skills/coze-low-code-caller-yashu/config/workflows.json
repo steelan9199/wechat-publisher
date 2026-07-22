@@ -1,0 +1,41 @@
+{
+  "workflows": [
+    {
+      "id": "7651917400032067594",
+      "name": "getTime",
+      "description": "获取当前时间",
+      "recent_durations": [
+        "23秒",
+        "25秒",
+        "14秒",
+        "15秒",
+        "15秒",
+        "10秒"
+      ]
+    },
+    {
+      "id": "7660773743531409423",
+      "name": "imageEdit",
+      "description": "图片编辑",
+      "recent_durations": [
+        "33秒",
+        "40秒",
+        "38秒",
+        "52秒"
+      ]
+    },
+    {
+      "id": "7660769150181294116",
+      "name": "generateImage",
+      "description": "生成图片",
+      "recent_durations": [
+        "38秒",
+        "47秒",
+        "58秒",
+        "36秒",
+        "35秒",
+        "44秒"
+      ]
+    }
+  ]
+}

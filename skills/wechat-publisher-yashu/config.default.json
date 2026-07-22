@@ -1,11 +1,11 @@
 {
-  "markdownFilePath": "",
-  "title": "",
+  "markdownFilePath": "D:/skill/private-skills/.trae/skills/wechat-publisher-yashu/Markdown 语法测试/复杂语法综合测试.md",
+  "title": "复杂语法综合测试",
   "AUTHOR": "牙叔教程",
-  "prefix": "本文由AI创作\n",
-  "suffix": "## 扣子智能体教程\nhttps://space.bilibili.com/26079586",
+  "prefix": "",
+  "suffix": "",
   "APP_ID": "微信开发者平台的 AppID",
   "APP_SECRET": "微信开发者平台的 AppSecret",
-  "coverFilePath": "./cover.jpg",
+  "coverFilePath": "D:/skill/private-skills/.trae/skills/wechat-publisher-yashu/cover.jpg",
   "theme": "blue"
 }
