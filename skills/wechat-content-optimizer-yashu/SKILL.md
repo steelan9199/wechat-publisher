@@ -12,6 +12,7 @@ description: 优化本地 Markdown 文件中的公众号文章内容，使其更
 ### 1. 接收用户请求
 
 用户提供：
+
 - Markdown 文件路径（必需）
 - 特定优化需求（可选）
 
@@ -29,15 +30,15 @@ node "<skill目录>/scripts/optimize.js" <markdown文件路径> --config "<skill
 
 基于 references/optimization-guide.md 中的优化指南，从以下维度优化：
 
-| 维度 | 优化要点 |
-|------|----------|
+| 维度           | 优化要点                                 |
+| -------------- | ---------------------------------------- |
 | **开头吸引力** | 前3秒抓住读者，用痛点/悬念/数据/场景切入 |
-| **段落顺序** | 调整段落位置，重要内容前置，逻辑更顺畅 |
-| **段落节奏** | 短段落（手机不超过4行）、多留白、易扫读 |
-| **语言表达** | 口语化、亲切、用"你"称呼、具象化抽象概念 |
-| **小标题** | 用问句/数字/对比/利益驱动，引导阅读 |
-| **结尾转化** | 总结/互动/行动/福利/金句，给读者行动理由 |
-| **排版格式** | 重点加粗、适当引用、列表呈现、层次分明 |
+| **段落顺序**   | 调整段落位置，重要内容前置，逻辑更顺畅   |
+| **段落节奏**   | 短段落（手机不超过4行）、多留白、易扫读  |
+| **语言表达**   | 口语化、亲切、用"你"称呼、具象化抽象概念 |
+| **小标题**     | 用问句/数字/对比/利益驱动，引导阅读      |
+| **结尾转化**   | 总结/互动/行动/福利/金句，给读者行动理由 |
+| **排版格式**   | 重点加粗、适当引用、列表呈现、层次分明   |
 
 #### 3.1 Markdown语法优化
 
@@ -54,6 +55,7 @@ node "<skill目录>/scripts/optimize.js" <markdown文件路径> --config "<skill
 ### 5. 汇报优化结果
 
 向用户说明：
+
 - 优化后的文件路径
 - 主要优化了哪些方面
 - 优化的原因和预期效果
@@ -109,6 +111,7 @@ node "<skill目录>/scripts/optimize.js" <markdown文件路径> --config "<skill
 参考文件：references/optimization-guide.md
 
 需要时阅读该文件获取：
+
 - 各维度详细优化技巧
 - 常见内容类型优化要点
 - 优化前后对比示例
@@ -121,12 +124,12 @@ node "<skill目录>/scripts/optimize.js" <markdown文件路径> --config "<skill
 ```json
 {
   "options": {
-    "optimizeStructure": true,    // 优化文章结构
-    "optimizeLanguage": true,     // 优化语言表达
-    "optimizeFormatting": true,   // 优化排版格式
-    "addEmojis": false,           // 是否添加 emoji
-    "optimizeHeadings": true,     // 优化小标题
-    "optimizeOrder": true         // 优化段落顺序
+    "optimizeStructure": true, // 优化文章结构
+    "optimizeLanguage": true, // 优化语言表达
+    "optimizeFormatting": true, // 优化排版格式
+    "addEmojis": false, // 是否添加 emoji
+    "optimizeHeadings": true, // 优化小标题
+    "optimizeOrder": true // 优化段落顺序
   },
   "audience": {
     "ageRange": "16-50岁",
@@ -134,9 +137,9 @@ node "<skill目录>/scripts/optimize.js" <markdown文件路径> --config "<skill
     "readingDevice": "mobile"
   },
   "output": {
-    "backup": true,               // 是否备份原文件
-    "overwrite": false,           // 是否覆盖原文件
-    "suffix": ".optimized"        // 新文件后缀
+    "backup": true, // 是否备份原文件
+    "overwrite": false, // 是否覆盖原文件
+    "suffix": ".optimized" // 新文件后缀
   }
 }
 ```
@@ -148,6 +151,7 @@ node "<skill目录>/scripts/optimize.js" <markdown文件路径> --config "<skill
 用户：帮我优化这篇文章 F:/docs/article.md
 
 执行：
+
 1. 运行脚本读取文件
 2. 分析内容结构
 3. 按6个维度优化
@@ -159,6 +163,7 @@ node "<skill目录>/scripts/optimize.js" <markdown文件路径> --config "<skill
 用户：这篇文章开头太枯燥了，帮我改得吸引人一点，文件是 F:/blog/post.md
 
 执行：
+
 1. 重点优化开头部分
 2. 保持其他内容不变
 3. 提供2-3个开头版本供选择
@@ -168,6 +173,7 @@ node "<skill目录>/scripts/optimize.js" <markdown文件路径> --config "<skill
 用户：这篇文章读起来太正式了，帮我改得口语化一些，像聊天一样
 
 执行：
+
 1. 识别正式/生硬表达
 2. 替换为口语化表达
 3. 增加语气词和过渡句
@@ -180,10 +186,12 @@ node "<skill目录>/scripts/optimize.js" <markdown文件路径> --config "<skill
 3. **技术内容准确**：专业术语优化后确保准确性
 4. **代码块保留**：技术文章中的代码保持原样
 5. **链接图片保留**：不修改原文的链接和图片引用
+6. **标题字符限制**：文章标题不能包含下列字符：`* " \ / < > : | ?`（这些是 Windows 文件系统保留字符，可能导致保存或显示异常）
 
 ## 优化效果预期
 
 优化后的文章应该：
+
 - 开头3秒抓住读者注意力
 - 段落短小，手机阅读无压力
 - 语言亲切，像朋友推荐
