@@ -1,0 +1,8 @@
+{
+  "name": "skill-image-pixel-viewer",
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=18.20.8"
+  }
+}

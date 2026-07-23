@@ -1,0 +1,30 @@
+{
+  "toolModules": {
+    "folders": [
+      "utils",
+      "util",
+      "helpers",
+      "helper",
+      "common",
+      "shared",
+      "libs",
+      "lib",
+      "tools",
+      "tool",
+      "config",
+      "constants"
+    ],
+    "files": [
+      "utils.js",
+      "util.js",
+      "helpers.js",
+      "helper.js",
+      "common.js",
+      "shared.js",
+      "constants.js",
+      "config.js",
+      "tools.js",
+      "tool.js"
+    ]
+  }
+}

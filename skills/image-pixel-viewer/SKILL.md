@@ -1,0 +1,94 @@
+---
+name: image-pixel-viewer
+description: 在浏览器中启动图片像素查看器，实时显示鼠标所指像素的坐标和颜色。激活条件：用户消息须包含以下关键词之一:`显示图片像素查看器`、`显示图片像素信息`、`显示图片颜色信息`、`查看图片像素`、`关闭图片像素查看器`。
+metadata:
+  author: "yashu"
+  updated: "2026-07-23 14:36:00"
+  version: "1.0.0"
+---
+
+# 图片像素查看器
+
+## 功能概述
+
+在浏览器中显示用户指定图片，鼠标在图片上移动时实时显示鼠标所指像素的真实坐标（X, Y）、RGB 颜色值、HEX 颜色值和颜色色块预览。点击图片可复制当前坐标和颜色到剪贴板。支持随时切换图片，服务器常驻复用。
+
+## 环境说明
+
+- **技能目录**：`$SKILL_DIR` 指代本 Skill 所在目录（包含 SKILL.md 的文件夹）。⚠️ `$SKILL_DIR` 仅为文档占位符，不是环境变量，执行命令时必须替换为实际绝对路径。
+- **端口**：固定使用 18098
+- **脚本目录**：`$SKILL_DIR/scripts/`
+- **网页文件**：`$SKILL_DIR/web/index.html`
+- **Node.js**：需要已安装 Node.js（>= 18.20.8）
+- 本 Skill 运行命令时采用**条件执行**（前一条成功才执行下一条），跨平台规则如下：
+  - **bash/zsh**（Linux/macOS）：`cmd1 && cmd2`
+  - **PowerShell 5**（Windows）：`cmd1; if ($?) { cmd2 }`（PowerShell 5 不支持 `&&`）
+  - **PowerShell 7+**：`&&` 和 `; if ($?) { cmd2 }` 均可，为最大兼容性推荐 `; if ($?) { cmd2 }`
+  - **禁止单 `&`**
+
+## 执行步骤
+
+### 意图判定
+
+| 用户消息特征 | 执行动作 |
+|---|---|
+| 包含"显示"/"查看" + 图片路径/像素/颜色 | 进入【显示/切换图片】流程 |
+| 包含"关闭"/"停止" + 像素查看器 | 进入【关闭服务器】流程 |
+
+### 显示/切换图片
+
+| 步骤 | 执行动作 | 具体命令/操作 |
+|---|---|---|
+| 1 | 提取图片路径 | 从用户消息中提取图片的绝对路径（如 `D:\photos\test.png`）。若用户未提供路径，询问用户提供图片绝对路径后停止。 |
+| 2 | 检测服务器状态 | 运行健康检查命令探测服务器是否已启动（见下方【服务器检测命令】）。返回 `{"status":"ok"}` 说明已在运行；返回"连接失败"说明未启动。 |
+| 3 | 判断是否需要启动 | 若步骤 2 返回 `{"status":"ok"}`，服务器已在运行，跳到步骤 5。若连接失败，继续步骤 4。 |
+| 4 | 启动服务器 | 先读取 [服务器脚本说明]($SKILL_DIR/references/server-api.md) 了解服务器行为和接口。然后将 `$SKILL_DIR` 替换为实际绝对路径，运行 `cd "$SKILL_DIR/scripts"; if ($?) { node server.js }`。**必须使用非阻塞方式执行**（对应工具的 `blocking: false`），因为服务器是长驻进程，阻塞执行会卡住终端。 |
+| 5 | 等待服务器就绪 | 运行 `Start-Sleep -Seconds 2`（Windows）或 `sleep 2`（Linux/macOS），等待服务器完成启动。**此命令必须单独执行，禁止与后续命令拼接**，否则静默等待期间终端无输出会导致后续命令的输出丢失。等待结束后再次运行步骤 2 的健康检查命令确认服务器已就绪。 |
+| 6 | 打开浏览器 | 将图片路径进行 URL 编码后拼成访问地址 `http://localhost:18098/?img=<URL编码后的路径>`，运行浏览器打开命令（见下方【浏览器打开命令】）。 |
+
+#### 服务器检测命令
+
+| 平台 | 命令 |
+|---|---|
+| Windows (PowerShell) | `try { (Invoke-WebRequest -Uri "http://localhost:18098/health" -UseBasicParsing -TimeoutSec 2).Content } catch { "连接失败" }` |
+| Linux/macOS (bash) | `curl -s --max-time 2 http://localhost:18098/health \|\| echo "连接失败"` |
+
+> **为什么需要检测服务器状态**：服务器采用常驻复用策略，首次启动后保持运行。如果不检测直接启动，会导致端口冲突报错（`EADDRINUSE`）。检测到已运行则直接复用，避免重复启动。
+
+#### 浏览器打开命令
+
+| 平台 | 命令 |
+|---|---|
+| Windows (PowerShell) | `Start-Process "http://localhost:18098/?img=<URL编码后的路径>"` |
+| macOS | `open "http://localhost:18098/?img=<URL编码后的路径>"` |
+| Linux | `xdg-open "http://localhost:18098/?img=<URL编码后的路径>"` |
+
+> **图片路径 URL 编码**：图片绝对路径中包含反斜杠（`\`）、冒号（`:`）、中文等特殊字符，必须进行 URL 编码。例如 `D:\photos\test.png` 编码为 `D%3A%5Cphotos%5Ctest.png`。PowerShell 中可运行 `[uri]::EscapeDataString("D:\photos\test.png")` 获取编码结果。
+
+### 关闭服务器
+
+| 步骤 | 执行动作 | 具体命令 |
+|---|---|---|
+| 1 | 查找并终止占用 18098 端口的进程 | Windows: `Get-NetTCPConnection -LocalPort 18098 -ErrorAction SilentlyContinue \| Select-Object -ExpandProperty OwningProcess \| ForEach-Object { Stop-Process -Id $_ -Force }`；Linux/macOS: `lsof -ti:18098 \| xargs kill` |
+| 2 | 确认已关闭 | 再次运行【服务器检测命令】，确认返回"连接失败" |
+
+## 输出格式
+
+- **显示/切换图片**：告知用户服务器状态（新启动/已复用），并告知浏览器已打开，可移动鼠标查看像素信息
+- **关闭服务器**：告知用户服务器已关闭
+- **缺少图片路径**：提示用户提供图片的绝对路径
+
+## 错误处理
+
+| 错误场景 | 错误表现 | 处理方式 |
+|---|---|---|
+| 图片路径无效 | 浏览器中显示"图片不存在" | 检查路径是否正确，提示用户确认路径 |
+| 端口被其他程序占用 | 服务器启动报 `EADDRINUSE` | 提示用户端口 18098 被占用，可手动关闭占用程序 |
+| Node.js 未安装 | `node` 命令不存在 | 提示用户安装 Node.js（>= 18.20.8） |
+| 图片格式不支持 | 浏览器中显示"不支持的文件类型" | 提示用户支持的格式：PNG、JPG、JPEG、GIF、BMP、SVG、WEBP |
+
+## 全业务脚本索引清单
+
+| 脚本 | 功能 |
+|---|---|
+| `$SKILL_DIR/scripts/server.js` | 启动 HTTP 服务器（端口 18098），提供健康检查接口、图片读取接口和网页文件服务 |

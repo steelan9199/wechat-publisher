@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图片像素查看器</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+        overflow: hidden;
+      }
+
+      .image-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      #targetImage {
+        display: block;
+        max-width: calc(100vw - 40px);
+        max-height: calc(100vh - 40px);
+        object-fit: contain;
+        cursor: crosshair;
+        border-radius: 4px;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+      }
+
+      .info-tooltip {
+        position: fixed;
+        display: none;
+        background: rgba(30, 30, 35, 0.92);
+        color: #f0f0f0;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-family:
+          "JetBrains Mono", "Consolas", "Monaco", "Courier New", monospace;
+        font-size: 13px;
+        line-height: 1.7;
+        pointer-events: none;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        white-space: nowrap;
+      }
+
+      .info-tooltip .info-row {
+        display: flex;
+        align-items: center;
+      }
+
+      .info-tooltip .color-swatch {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border-radius: 3px;
+        margin-right: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .status-bar {
+        position: fixed;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(30, 30, 35, 0.85);
+        color: #f0f0f0;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+        font-size: 13px;
+        z-index: 999;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="image-container">
+      <img id="targetImage" src="" alt="目标图片" />
+    </div>
+
+    <div class="info-tooltip" id="tooltip">
+      <div class="info-row">
+        <span id="coordsText">X: 0, Y: 0</span>
+      </div>
+      <div class="info-row">
+        <span class="color-swatch" id="colorSwatch"></span>
+        <span id="rgbText">RGB(0, 0, 0)</span>
+      </div>
+      <div class="info-row">
+        <span id="hexText">#000000</span>
+      </div>
+    </div>
+
+    <div class="status-bar" id="statusBar"></div>
+
+    <script>
+      const img = document.getElementById("targetImage");
+      const tooltip = document.getElementById("tooltip");
+      const coordsText = document.getElementById("coordsText");
+      const rgbText = document.getElementById("rgbText");
+      const hexText = document.getElementById("hexText");
+      const colorSwatch = document.getElementById("colorSwatch");
+      const statusBar = document.getElementById("statusBar");
+
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d", { willReadFrequently: true });
+      let canvasReady = false;
+      let colorEnabled = true;
+
+      let currentData = {
+        coords: "X: 0, Y: 0",
+        rgb: "RGB(0, 0, 0)",
+        hex: "#000000",
+      };
+
+      function showStatus(msg) {
+        statusBar.textContent = msg;
+        statusBar.style.display = "block";
+      }
+
+      function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).catch(() =>
+            fallbackCopy(text),
+          );
+        } else {
+          fallbackCopy(text);
+        }
+      }
+
+      function fallbackCopy(text) {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand("copy");
+        } catch (err) {}
+        document.body.removeChild(textarea);
+      }
+
+      function testCanvasReadiness() {
+        try {
+          const testPixel = ctx.getImageData(0, 0, 1, 1).data;
+          canvasReady = true;
+          colorEnabled = true;
+          showStatus("图片加载成功。鼠标移动查看坐标和颜色，点击图片可复制");
+          setTimeout(() => (statusBar.style.display = "none"), 4000);
+        } catch (err) {
+          canvasReady = true;
+          colorEnabled = false;
+          showStatus(
+            "坐标可用，但颜色读取受限。请通过 http://localhost:18098/ 访问",
+          );
+        }
+      }
+
+      function loadImageWithFetch(url) {
+        fetch(url)
+          .then((response) => {
+            if (!response.ok && response.status !== 0) {
+              throw new Error("HTTP " + response.status);
+            }
+            return response.blob();
+          })
+          .then((blob) => createImageBitmap(blob))
+          .then((bitmap) => {
+            canvas.width = bitmap.width;
+            canvas.height = bitmap.height;
+            ctx.drawImage(bitmap, 0, 0);
+            if (bitmap.close) bitmap.close();
+            testCanvasReadiness();
+          })
+          .catch((err) => {
+            console.debug("fetch 方式失败，回退到直接加载:", err.message);
+            loadWithImg();
+          });
+      }
+
+      function loadWithImg() {
+        function drawToCanvas() {
+          if (img.naturalWidth === 0) {
+            showStatus("图片加载失败，请检查图片路径");
+            return;
+          }
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          ctx.drawImage(img, 0, 0);
+          testCanvasReadiness();
+        }
+
+        if (img.complete && img.naturalWidth > 0) {
+          drawToCanvas();
+        } else {
+          img.addEventListener("load", drawToCanvas);
+        }
+      }
+
+      // 从 URL 参数读取图片路径并加载
+      const urlParams = new URLSearchParams(window.location.search);
+      const imgPath = urlParams.get("img");
+      if (imgPath) {
+        const apiUrl = "/api/image?path=" + encodeURIComponent(imgPath);
+        img.src = apiUrl;
+        loadImageWithFetch(apiUrl);
+      } else {
+        showStatus("未指定图片路径。请在 URL 中添加 ?img=图片绝对路径");
+      }
+
+      let rafId = null;
+      let lastMouseEvent = null;
+
+      function updateTooltip() {
+        rafId = null;
+        const e = lastMouseEvent;
+        if (!e || !canvasReady) return;
+
+        tooltip.style.display = "block";
+
+        const rect = img.getBoundingClientRect();
+        const offsetX = e.clientX - rect.left;
+        const offsetY = e.clientY - rect.top;
+
+        const scaleX = img.naturalWidth / rect.width;
+        const scaleY = img.naturalHeight / rect.height;
+        const realX = Math.max(
+          0,
+          Math.min(Math.round(offsetX * scaleX), img.naturalWidth - 1),
+        );
+        const realY = Math.max(
+          0,
+          Math.min(Math.round(offsetY * scaleY), img.naturalHeight - 1),
+        );
+
+        coordsText.textContent = `X: ${realX}, Y: ${realY}`;
+        currentData.coords = `X: ${realX}, Y: ${realY}`;
+
+        if (colorEnabled) {
+          try {
+            const pixel = ctx.getImageData(realX, realY, 1, 1).data;
+            const r = pixel[0];
+            const g = pixel[1];
+            const b = pixel[2];
+            const hex =
+              "#" +
+              [r, g, b]
+                .map((v) => v.toString(16).padStart(2, "0"))
+                .join("")
+                .toUpperCase();
+            rgbText.textContent = `RGB(${r}, ${g}, ${b})`;
+            hexText.textContent = hex;
+            colorSwatch.style.background = `rgb(${r}, ${g}, ${b})`;
+            currentData.rgb = `RGB(${r}, ${g}, ${b})`;
+            currentData.hex = hex;
+          } catch (err) {
+            colorEnabled = false;
+            rgbText.textContent = "颜色读取受限";
+            hexText.textContent = "见底部提示";
+          }
+        }
+
+        const tooltipRect = tooltip.getBoundingClientRect();
+        let tooltipX = e.clientX - tooltipRect.width / 2;
+        let tooltipY = e.clientY - tooltipRect.height - 12;
+
+        if (tooltipY < 8) {
+          tooltipY = e.clientY + 12;
+        }
+        if (tooltipX < 8) tooltipX = 8;
+        if (tooltipX + tooltipRect.width > window.innerWidth - 8) {
+          tooltipX = window.innerWidth - tooltipRect.width - 8;
+        }
+
+        tooltip.style.left = tooltipX + "px";
+        tooltip.style.top = tooltipY + "px";
+      }
+
+      img.addEventListener("mousemove", function (e) {
+        lastMouseEvent = e;
+        if (rafId === null) {
+          rafId = requestAnimationFrame(updateTooltip);
+        }
+      });
+
+      img.addEventListener("click", function () {
+        const text = `${currentData.coords}\n${currentData.rgb}\n${currentData.hex}`;
+        copyToClipboard(text);
+        showStatus("已复制: " + text.replace(/\n/g, "  "));
+        setTimeout(() => {
+          if (statusBar.textContent.startsWith("已复制"))
+            statusBar.style.display = "none";
+        }, 2500);
+      });
+
+      img.addEventListener("mouseleave", function () {
+        tooltip.style.display = "none";
+        if (rafId !== null) {
+          cancelAnimationFrame(rafId);
+          rafId = null;
+        }
+      });
+    </script>
+  </body>
+</html>
