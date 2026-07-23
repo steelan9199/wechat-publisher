@@ -6,10 +6,10 @@
 
 ## 安装单个技能
 
-`feishu-docx`是技能的名字, 也是技能文件夹的名字, 修改名字就可以了.
+`feishu-bitable-yashu`是技能的名字, 也是技能文件夹的名字, 修改名字就可以了.
 
 ```
-npx skills add  https://github.com/steelan9199/wechat-publisher/tree/main/skills/feishu-docx
+npx skills add  https://github.com/steelan9199/wechat-publisher/tree/main/skills/feishu-bitable-yashu
 ```
 
 ## 安装所有技能
