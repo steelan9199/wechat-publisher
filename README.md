@@ -48,6 +48,7 @@ npx skills add steelan9199/wechat-publisher
   - `format-json/` - Markdown JSON 代码块格式化工具
   - `generate-cover-prompt-yashu/` - 封面提示词生成工具
   - `guizang-ppt-lite/` - 高级质感单文件 HTML 网页 PPT 生成工具
+  - `image-pixel-viewer/` - 浏览器图片像素实时查看工具
   - `js-error-fixer/` - JavaScript 错误检查与修复工具
   - `js-project-refactor/` - JavaScript 项目架构重构与模块化工具
   - `json-to-markdown-files/` - JSON 转 Markdown 文件工具
