@@ -69,6 +69,7 @@ npx skills add steelan9199/wechat-publisher
   - `skills-list-available-yashu/` - 可用技能列表查询工具
   - `task-sop-architect-yashu/` - 任务 SOP 执行方案生成工具
   - `token-auditor-yashu/` - Token 消耗审计与优化工具
+  - `video-course-recorder/` - Win11 视频课程录制一键启停助手
   - `webp-to-jpg/` - WebP 图片转 JPG 工具
   - `wechat-content-optimizer-yashu/` - 微信公众号内容优化工具
   - `wechat-publisher-yashu/` - 微信公众号发布工具
