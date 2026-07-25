@@ -165,6 +165,7 @@ cd "$SKILL_DIR/scripts"; if ($?) { node clear_temp.js }
 
 1. 使用 skill [wechat-title-optimizer-yashu] 优化公众号文章标题、提升文章点击率
 2. 使用 skill [wechat-content-optimizer-yashu] 优化公众号文章内容、提升阅读体验
+3. 使用 skill [generate-cover-prompt-yashu] 为公众号文章生成封面提示词
 
 ## 错误处理
 
