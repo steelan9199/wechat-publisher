@@ -128,7 +128,7 @@ description: 生成公众号文章封面图片的AI提示词。智能分析文�
 ```
 
 ## 使用说明
-1. 打开即梦：https://jimeng.jianying.com/ai-tool/home?activeTab=activity
+1. 打开即梦：https://jimeng.jianying.com/ai-tool/home?activeTab=activity， 或者豆包：https://www.doubao.com/chat/
 2. 将上方提示词粘贴到输入框
 3. 点击生成，选择最符合文章主题的封面图片
 ```
