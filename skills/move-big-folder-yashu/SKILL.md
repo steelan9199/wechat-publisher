@@ -146,6 +146,7 @@ $size = (Get-ChildItem -Path "源文件夹路径" -Recurse -File -ErrorAction Si
    - `C:\Users\{用户名}\NTUSER.DAT` 等注册表文件
    - `C:\Boot`、`C:\Recovery`、`C:\System Volume Information`
    - 任何与 Windows 启动/引导相关的文件夹
+   - 输入法相关文件夹（如 `*WeType*`、`*Sogou*`、`*InputMethod*`、`*IME*` 等）：输入法通过 TSF 注入到几乎所有进程中，文件被大量进程锁定，极难彻底关闭，迁移后大概率因无法删除原文件而失败，不建议迁移
 
 **示例输出格式：**
 
