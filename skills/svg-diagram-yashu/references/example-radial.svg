@@ -1,0 +1,46 @@
+<svg viewBox="0 0 680 480" width="100%" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>内容分发引擎中心辐射图（改进版 B · 中心节点改为圆形）</title>
+  <desc>改进点：中心节点改为圆形 r=42（天然辐射原点）；6 外围节点严格 60° 等角分布 R=180；连线从中心圆周上精确 60° 间隔的 6 点出发，方向统一；删掉冗余箭头 marker；不画虚线圆辅助装饰；副标题用 #888780 与连线颜色区分。</desc>
+
+  <text x="340" y="34" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">内容分发引擎 · 中心辐射</text>
+
+  <g stroke="#5F5E5A" stroke-width="1.5" fill="none">
+    <line x1="340" y1="218" x2="340" y2="102"/>
+    <line x1="376.4" y1="239" x2="464.7" y2="188.1"/>
+    <line x1="376.4" y1="281" x2="464.7" y2="331.9"/>
+    <line x1="340" y1="302" x2="340" y2="418"/>
+    <line x1="303.6" y1="281" x2="215.3" y2="331.9"/>
+    <line x1="303.6" y1="239" x2="215.3" y2="188.1"/>
+  </g>
+
+  <g>
+    <circle cx="340" cy="260" r="42" fill="#FAEEDA" stroke="#BA7517" stroke-width="1.5"/>
+    <text x="340" y="252" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">分发引擎</text>
+    <text x="340" y="270" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="11" fill="#888780">统一调度</text>
+  </g>
+
+  <g>
+    <rect x="285" y="58" width="110" height="44" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="340" y="80" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">推荐系统</text>
+  </g>
+  <g>
+    <rect x="441" y="148" width="110" height="44" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="496" y="170" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">搜索引擎</text>
+  </g>
+  <g>
+    <rect x="441" y="328" width="110" height="44" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="496" y="350" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">订阅推送</text>
+  </g>
+  <g>
+    <rect x="285" y="418" width="110" height="44" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="340" y="440" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">热门榜单</text>
+  </g>
+  <g>
+    <rect x="129" y="328" width="110" height="44" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="184" y="350" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">分享转发</text>
+  </g>
+  <g>
+    <rect x="129" y="148" width="110" height="44" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="184" y="170" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">个人主页</text>
+  </g>
+</svg>

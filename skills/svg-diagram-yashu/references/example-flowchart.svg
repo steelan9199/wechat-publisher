@@ -1,44 +1,63 @@
-<svg viewBox="0 0 680 360" width="100%" role="img">
-  <title>手机截图 · 流程图</title>
-  <desc>从用户在 AI 客户端说话，到图片被打开的线性流程。</desc>
+<svg viewBox="0 0 680 600" width="100%" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>内容发布审核流程图</title>
+  <desc>纵向流程图：用户提交内容后，机审判断是否含敏感词，含则拦截通知（异常分支用红色高亮），不含则发布上线，最终记录日志结束。形状区分语义：椭圆起止、矩形处理、菱形判断。</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
       <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </marker>
   </defs>
 
-  <text x="340" y="28" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">手机截图 · 流程图</text>
+  <text x="340" y="34" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">内容发布审核流程</text>
 
-  <g>
-    <rect x="220" y="48" width="240" height="48" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
-    <text x="340" y="72" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">用户在 AI 客户端说"手机截图"</text>
+  <g stroke="#5F5E5A" stroke-width="1.5" fill="none">
+    <line x1="340" y1="114" x2="340" y2="150" marker-end="url(#arrow)"/>
+    <line x1="340" y1="198" x2="340" y2="230" marker-end="url(#arrow)"/>
+    <line x1="250" y1="266" x2="200" y2="330" marker-end="url(#arrow)"/>
+    <line x1="430" y1="266" x2="480" y2="330" marker-end="url(#arrow)"/>
+    <path d="M200,378 L200,410 L340,410 L340,450" marker-end="url(#arrow)"/>
+    <path d="M480,378 L480,410 L340,410" fill="none"/>
+    <line x1="340" y1="494" x2="340" y2="520" marker-end="url(#arrow)"/>
   </g>
 
-  <line x1="340" y1="96" x2="340" y2="108" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
-
-  <g>
-    <rect x="220" y="108" width="240" height="48" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
-    <text x="340" y="132" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">AI 运行 request_screenshot.py</text>
+  <g font-family="sans-serif" font-size="12" fill="#5F5E5A">
+    <text x="222" y="298" text-anchor="middle" dominant-baseline="central" paint-order="stroke fill" stroke="#ffffff" stroke-width="3" stroke-linejoin="round">是</text>
+    <text x="458" y="298" text-anchor="middle" dominant-baseline="central" paint-order="stroke fill" stroke="#ffffff" stroke-width="3" stroke-linejoin="round">否</text>
   </g>
 
-  <line x1="340" y1="156" x2="340" y2="168" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <circle cx="340" cy="410" r="4" fill="#5F5E5A"/>
 
   <g>
-    <rect x="220" y="168" width="240" height="48" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
-    <text x="340" y="192" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">HTTP GET /screenshot</text>
+    <rect x="295" y="70" width="90" height="44" rx="22" fill="#EAF3DE" stroke="#3B6D11" stroke-width="0.5"/>
+    <text x="340" y="92" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">开始</text>
   </g>
 
-  <line x1="340" y1="216" x2="340" y2="228" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
-
   <g>
-    <rect x="220" y="228" width="240" height="48" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
-    <text x="340" y="252" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">WS 下发 capture → 手机截屏回传</text>
+    <rect x="270" y="150" width="140" height="48" rx="4" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="340" y="174" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">用户提交内容</text>
   </g>
 
-  <line x1="340" y1="276" x2="340" y2="288" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <g>
+    <path d="M340,230 L430,266 L340,302 L250,266 Z" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
+    <text x="340" y="266" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">是否含敏感词</text>
+  </g>
 
   <g>
-    <rect x="220" y="288" width="240" height="48" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-    <text x="340" y="312" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">image-pixel-viewer 打开图片</text>
+    <rect x="130" y="330" width="140" height="48" rx="4" fill="#FCEBEB" stroke="#A32D2D" stroke-width="0.5"/>
+    <text x="200" y="354" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">拦截并通知</text>
+  </g>
+
+  <g>
+    <rect x="410" y="330" width="140" height="48" rx="4" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="480" y="354" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">发布上线</text>
+  </g>
+
+  <g>
+    <rect x="270" y="450" width="140" height="44" rx="4" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="340" y="472" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">记录日志</text>
+  </g>
+
+  <g>
+    <rect x="295" y="520" width="90" height="44" rx="22" fill="#EAF3DE" stroke="#3B6D11" stroke-width="0.5"/>
+    <text x="340" y="542" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">结束</text>
   </g>
 </svg>

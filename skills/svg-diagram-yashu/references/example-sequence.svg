@@ -1,45 +1,86 @@
-<svg viewBox="0 0 680 340" width="100%" role="img">
-  <title>手机截图 · 时序图</title>
-  <desc>AI 客户端、中继服务器、手机 autojs 三者之间按序号交互的消息流。</desc>
+<svg viewBox="0 0 680 425" width="100%" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>用户发布内容并获取推荐时序图</title>
+  <desc>三参与者（用户、客户端、服务端）的时序交互：用户提交内容后，客户端调用服务端创建并触发敏感词自检，返回结果后再请求推荐列表。消息自上而下按时间排列，返回消息用虚线，自调用画弧形。</desc>
+
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
       <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </marker>
   </defs>
 
-  <text x="340" y="28" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">手机截图 · 时序图</text>
+  <!-- 标题：放大、加粗，建立层级 -->
+  <text x="340" y="30" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="16" font-weight="600" fill="#111827">发布内容并获取推荐 · 时序</text>
 
+  <!-- 阶段分组背景：填充左侧空白、明确两阶段 -->
   <g>
-    <rect x="40" y="44" width="160" height="40" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
-    <text x="120" y="64" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">AI 客户端</text>
-  </g>
-  <g>
-    <rect x="260" y="44" width="160" height="40" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
-    <text x="340" y="64" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">中继服务器</text>
-  </g>
-  <g>
-    <rect x="480" y="44" width="160" height="40" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
-    <text x="560" y="64" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">手机 autojs</text>
+    <rect x="40" y="100" width="600" height="190" fill="#F9FAFB" stroke="none" opacity="0.6"/>
+    <rect x="40" y="295" width="600" height="90" fill="#F3F4F6" stroke="none" opacity="0.6"/>
+    <text x="52" y="116" font-family="sans-serif" font-size="11" fill="#6B7280" font-style="italic">① 发布阶段</text>
+    <text x="52" y="311" font-family="sans-serif" font-size="11" fill="#6B7280" font-style="italic">② 推荐阶段</text>
   </g>
 
-  <line x1="120" y1="84" x2="120" y2="316" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="4 4"/>
-  <line x1="340" y1="84" x2="340" y2="316" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="4 4"/>
-  <line x1="560" y1="84" x2="560" y2="316" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="4 4"/>
+  <!-- 生命线：染色虚线，与角色色绑定 -->
+  <g stroke-width="1" stroke-dasharray="4 4" fill="none" opacity="0.5">
+    <line x1="160" y1="88" x2="160" y2="400" stroke="#BA7517"/>
+    <line x1="340" y1="88" x2="340" y2="400" stroke="#185FA5"/>
+    <line x1="520" y1="88" x2="520" y2="400" stroke="#0F6E56"/>
+  </g>
 
-  <line x1="128" y1="120" x2="252" y2="120" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="190" y="112" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#444441">① HTTP GET /screenshot</text>
+  <!-- 流程终止标记 × -->
+  <g stroke-width="1.5" fill="none" opacity="0.55">
+    <line x1="155" y1="394" x2="165" y2="406" stroke="#BA7517"/>
+    <line x1="165" y1="394" x2="155" y2="406" stroke="#BA7517"/>
+    <line x1="335" y1="394" x2="345" y2="406" stroke="#185FA5"/>
+    <line x1="345" y1="394" x2="335" y2="406" stroke="#185FA5"/>
+    <line x1="515" y1="394" x2="525" y2="406" stroke="#0F6E56"/>
+    <line x1="525" y1="394" x2="515" y2="406" stroke="#0F6E56"/>
+  </g>
 
-  <line x1="348" y1="160" x2="472" y2="160" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="410" y="152" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#444441">② WS {action:capture}</text>
-
-  <line x1="472" y1="200" x2="348" y2="200" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="410" y="192" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#444441">③ 回传 base64 截图</text>
-
-  <line x1="252" y1="240" x2="128" y2="240" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="190" y="232" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#444441">④ 返回 PNG 路径</text>
-
+  <!-- 角色框：缩小字号，让标题压住层级 -->
   <g>
-    <rect x="40" y="276" width="160" height="32" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-    <text x="120" y="292" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" font-weight="500" fill="#1f2937">⑤ image-pixel-viewer 打开</text>
+    <rect x="115" y="52" width="90" height="36" rx="6" fill="#FAEEDA" stroke="#BA7517" stroke-width="1"/>
+    <text x="160" y="70" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" font-weight="500" fill="#1f2937">用户</text>
+  </g>
+  <g>
+    <rect x="295" y="52" width="90" height="36" rx="6" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+    <text x="340" y="70" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" font-weight="500" fill="#1f2937">客户端</text>
+  </g>
+  <g>
+    <rect x="475" y="52" width="90" height="36" rx="6" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+    <text x="520" y="70" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" font-weight="500" fill="#1f2937">服务端</text>
+  </g>
+
+  <!-- 激活条：分段，准确表达空闲/活跃 -->
+  <rect x="335" y="125" width="10" height="162" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.5"/>
+  <rect x="335" y="329" width="10" height="42" fill="#B5D4F4" stroke="#185FA5" stroke-width="0.5"/>
+  <rect x="515" y="167" width="10" height="120" fill="#9FE1CB" stroke="#0F6E56" stroke-width="0.5"/>
+  <rect x="515" y="329" width="10" height="42" fill="#9FE1CB" stroke="#0F6E56" stroke-width="0.5"/>
+
+  <!-- 自调用包裹框：突出业务关键节点 -->
+  <rect x="525" y="205" width="105" height="50" rx="4" fill="#0F6E56" fill-opacity="0.08" stroke="#0F6E56" stroke-width="0.6" stroke-dasharray="2 3" opacity="0.7"/>
+
+  <!-- 实线消息（请求）：加粗 + 加深 -->
+  <g stroke="#374151" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="160" y1="125" x2="333" y2="125" marker-end="url(#arrow)"/>
+    <line x1="340" y1="167" x2="513" y2="167" marker-end="url(#arrow)"/>
+    <!-- 自调用：路径放大到 32px 高，矩形折线 -->
+    <path d="M520,213 L560,213 L560,245 L527,245" marker-end="url(#arrow)"/>
+    <line x1="345" y1="329" x2="513" y2="329" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- 虚线消息（响应）：加粗 + 加深 -->
+  <g stroke="#374151" stroke-width="2" fill="none" stroke-dasharray="5 4" stroke-linecap="round">
+    <line x1="515" y1="287" x2="347" y2="287" marker-end="url(#arrow)"/>
+    <line x1="515" y1="371" x2="347" y2="371" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- 消息标签：统一贴箭头上方 8px -->
+  <g font-family="sans-serif" font-size="12" fill="#374151">
+    <text x="247" y="117" text-anchor="middle" dominant-baseline="central">提交内容</text>
+    <text x="427" y="159" text-anchor="middle" dominant-baseline="central">createPost()</text>
+    <text x="570" y="229" text-anchor="start" dominant-baseline="central" font-size="11" fill="#0F6E56" font-weight="600">敏感词检测</text>
+    <text x="430" y="279" text-anchor="middle" dominant-baseline="central">200 OK + postId</text>
+    <text x="430" y="321" text-anchor="middle" dominant-baseline="central">请求推荐</text>
+    <text x="430" y="363" text-anchor="middle" dominant-baseline="central">推荐列表</text>
   </g>
 </svg>

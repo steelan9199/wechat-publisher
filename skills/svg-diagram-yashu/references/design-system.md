@@ -1,8 +1,9 @@
-# SVG 图设计规范（技能内置，自包含）
+# SVG 图设计规范
 
 本文件是 svg-diagram 技能的内置设计规范，列出手绘 SVG 图表的全部硬性约束。
-技能完全自包含——不依赖任何外部 AI 客户端命令，所有绘图知识都在本文件与示例内。
 请严格按本规范绘制，以保证图表风格一致、在浅色 / 深色主题下都清晰可读。
+
+> 配套知识：`svg-drawing-knowledge.md` 讲解本规范之外的三类底层知识——SVG 渲染机制、坐标几何计算、配色判断（含配色规则详解）。成图前务必同读。
 
 ## Canvas
 
@@ -40,9 +41,9 @@ stroke, 800–900 text on light bg.
 | amber  | #FAEEDA | #FAC775 | #EF9F27 | #BA7517 | #854F0B | #633806 | #412402 |
 | red    | #FCEBEB | #F7C1C1 | #F09595 | #E24B4A | #A32D2D | #791F1F | #501313 |
 
-- Light mode node: 50 fill + 600 stroke + 800 title / 600 subtitle.
-- Dark mode node: 800 fill + 200 stroke + 100 title / 200 subtitle.
-- Caps per diagram: ≤2 color ramps.
+- Light mode node: 50 fill + 600 stroke + #1f2937 title / #5F5E5A subtitle（标题色已统一为 #1f2937，详见 svg-drawing-knowledge.md §3）。
+- Dark mode node: 800 fill + 200 stroke + #E6E6E6 title / #A8A8A8 subtitle.
+- 色系数量：无固定上限，由图要区分的有意义类别数决定（如架构的分组、思维导图的各主分支）。完整规则见 svg-drawing-knowledge.md §3。
 
 ## Flatness rules
 

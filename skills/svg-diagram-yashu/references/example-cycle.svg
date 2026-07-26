@@ -1,0 +1,42 @@
+<svg viewBox="0 0 680 480" width="100%" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>内容创作迭代环循环图</title>
+  <desc>四个阶段（选题、创作、发布、复盘）围绕中心呈环形排列，用圆弧曲线箭头顺时针连接形成闭环。每个阶段用不同色系区分，中心标注循环名称"迭代环"。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <text x="340" y="34" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="16" font-weight="600" fill="#1f2937">内容创作 · 迭代环</text>
+
+  <text x="340" y="250" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="20" font-weight="700" fill="#444441">迭代环</text>
+  <text x="340" y="274" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" fill="#5F5E5A">持续优化</text>
+
+  <g stroke="#5F5E5A" stroke-width="1.5" fill="none">
+    <path d="M368,128 A 135,135 0 0 1 472,232" marker-end="url(#arrow)"/>
+    <path d="M472,288 A 135,135 0 0 1 368,392" marker-end="url(#arrow)"/>
+    <path d="M312,392 A 135,135 0 0 1 208,288" marker-end="url(#arrow)"/>
+    <path d="M208,232 A 135,135 0 0 1 312,128" marker-end="url(#arrow)"/>
+  </g>
+
+  <g>
+    <rect x="275" y="72" width="130" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="340" y="90" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">选题</text>
+    <text x="340" y="108" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">找方向</text>
+  </g>
+  <g>
+    <rect x="435" y="232" width="130" height="56" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+    <text x="500" y="250" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">创作</text>
+    <text x="500" y="268" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">出内容</text>
+  </g>
+  <g>
+    <rect x="275" y="392" width="130" height="56" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
+    <text x="340" y="410" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">发布</text>
+    <text x="340" y="428" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">上线</text>
+  </g>
+  <g>
+    <rect x="115" y="232" width="130" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+    <text x="180" y="250" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">复盘</text>
+    <text x="180" y="268" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">看数据</text>
+  </g>
+</svg>
