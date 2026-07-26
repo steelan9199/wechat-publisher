@@ -56,7 +56,7 @@ metadata:
 | 6 | 等待服务器就绪 | 运行 `Start-Sleep -Seconds 2`（Windows）或 `sleep 2`（Linux/macOS），等待服务器完成启动。然后再次运行步骤 3 的健康检查确认就绪。 |
 | 7 | 检查手机连接 | 从步骤 3/6 的健康检查返回中读取 `phone` 字段。若为 `disconnected`，提示用户在手机上运行 AutoJS 脚本，任务结束。 |
 | 8 | 触发截图 | 运行 `node "$SKILL_DIR/scripts/trigger.js"`。脚本输出图片的绝对路径。 |
-| 9 | 打开图片 | 拿到图片路径后，调用 `image-pixel-viewer` 技能打开该图片（若有该技能）。若无 image-pixel-viewer，则用系统默认方式打开图片。 |
+| 9 | 打开图片 | 拿到图片路径后，调用 `image-pixel-viewer-yashu` 技能打开该图片（若有该技能）。若无 image-pixel-viewer-yashu，则用系统默认方式打开图片。 |
 
 #### 服务器检测命令
 

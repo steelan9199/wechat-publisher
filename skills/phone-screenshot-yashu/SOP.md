@@ -16,7 +16,7 @@
     → AI 运行触发脚本 (trigger.js)
     → 中继服务器 (server.js) 通过 WebSocket 通知手机截屏
     → 手机 AutoJS 截屏，将 PNG 二进制数据直传回电脑
-    → 电脑保存图片，调用 image-pixel-viewer 打开
+    → 电脑保存图片，调用 image-pixel-viewer-yashu 打开
 ```
 
 ### 1.2 架构图
@@ -59,7 +59,7 @@
 | 3 | 手机截屏 | 本地 API | `captureScreen()` → 保存 PNG → 读取 byte[] |
 | 4 | 手机 → 服务器 | WebSocket Binary | PNG 二进制数据（okio.ByteString） |
 | 5 | 服务器 → AI | HTTP Response | `{"success":true,"path":"...png"}` |
-| 6 | AI → image-pixel-viewer | 技能调用 | 打开图片路径 |
+| 6 | AI → image-pixel-viewer-yashu | 技能调用 | 打开图片路径 |
 
 ### 1.4 关键设计决策
 
@@ -232,7 +232,7 @@ http://localhost:9421/health
 
 1. 在 AI 聊天软件中输入"手机截图"
 2. AI 自动执行触发脚本，获取截图
-3. 截图自动用 image-pixel-viewer 打开（或系统默认图片查看器）
+3. 截图自动用 image-pixel-viewer-yashu 打开（或系统默认图片查看器）
 
 ### 4.2 手动测试
 
@@ -271,7 +271,7 @@ AI 软件需要做的：
 1. **识别用户意图**：当用户说"手机截图"等关键词时触发
 2. **执行触发脚本**：运行 `node trigger.js`
 3. **读取输出**：脚本输出图片的绝对路径
-4. **打开图片**：调用 image-pixel-viewer 技能，或用系统默认方式打开
+4. **打开图片**：调用 image-pixel-viewer-yashu 技能，或用系统默认方式打开
 
 ### 5.2 WorkBuddy 集成
 
@@ -293,7 +293,7 @@ AI 软件需要做的：
 2. 如果服务器未启动，运行: node "技能路径/scripts/server.js"（后台运行）
 3. 如果手机未连接，提醒用户运行 AutoJS 脚本
 4. 运行: node "技能路径/scripts/trigger.js"
-5. 拿到输出的图片路径后，用 image-pixel-viewer 打开
+5. 拿到输出的图片路径后，用 image-pixel-viewer-yashu 打开
 ```
 
 ### 5.4 其他 AI 软件集成
@@ -397,7 +397,7 @@ AI 软件需要做的：
 | 端口 | 用途 | 协议 |
 |------|------|------|
 | 9421 | 中继服务器（HTTP + WebSocket 共用） | HTTP + WS |
-| 18098 | image-pixel-viewer 图片查看器 | HTTP |
+| 18098 | image-pixel-viewer-yashu 图片查看器 | HTTP |
 
 ### B. 快速启动清单
 
