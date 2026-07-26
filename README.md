@@ -60,6 +60,7 @@ npx skills add steelan9199/wechat-publisher
   - `path-locator-checker-yashu/` - 脚本路径定位写法检查与修复工具
   - `pyautogui-automation/` - 桌面自动化工具
   - `retest-generator/` - 技能复测脚本生成工具
+  - `self-contained-auditor-yashu/` - 自包含技能评审器（检查技能知识是否全部内置、不依赖宿主私有接口）
   - `skill-description-optimizer-yashu/` - 技能 description 字段优化工具
   - `skill-failed-cleanup-yashu/` - 技能安装失败残留文件夹清理工具
   - `skill-get-link-yashu/` - 技能 GitHub 链接生成与剪贴板复制工具
@@ -67,7 +68,7 @@ npx skills add steelan9199/wechat-publisher
   - `skill-publish-yashu/` - 私有技能发布到公开目录工具
   - `skill-tester-yashu/` - 技能真实运行测试与报告工具
   - `skills-list-available-yashu/` - 可用技能列表查询工具
-  - `svg-diagram-yashu/` - 扁平 SVG 图生成工具（架构图/流程图/时序图/状态机）
+  - `svg-diagram-yashu/` - 扁平 SVG 图生成工具（架构图/流程图/时序图/状态机），支持 SVG 转 PNG 图片
   - `task-sop-architect-yashu/` - 任务 SOP 执行方案生成工具
   - `token-auditor-yashu/` - Token 消耗审计与优化工具
   - `video-course-recorder/` - Win11 视频课程录制一键启停助手
