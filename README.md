@@ -48,7 +48,7 @@ npx skills add steelan9199/wechat-publisher
   - `format-json/` - Markdown JSON 代码块格式化工具
   - `generate-cover-prompt-yashu/` - 封面提示词生成工具
   - `guizang-ppt-lite/` - 高级质感单文件 HTML 网页 PPT 生成工具
-  - `image-pixel-viewer/` - 浏览器图片像素实时查看工具
+  - `image-pixel-viewer-yashu/` - 浏览器图片像素实时查看工具
   - `js-error-fixer/` - JavaScript 错误检查与修复工具
   - `js-project-refactor/` - JavaScript 项目架构重构与模块化工具
   - `json-to-markdown-files/` - JSON 转 Markdown 文件工具
@@ -58,6 +58,7 @@ npx skills add steelan9199/wechat-publisher
   - `nodejs-cross-platform-checker-yashu/` - Node.js 跨平台兼容性检查工具
   - `paragraph-reorder-yashu/` - 文章段落主题聚类重排工具
   - `path-locator-checker-yashu/` - 脚本路径定位写法检查与修复工具
+  - `phone-screenshot-yashu/` - 手机截图工具
   - `pyautogui-automation/` - 桌面自动化工具
   - `retest-generator/` - 技能复测脚本生成工具
   - `self-contained-auditor-yashu/` - 自包含技能评审器（检查技能知识是否全部内置、不依赖宿主私有接口）

@@ -1,0 +1,9 @@
+{
+  "name": "phone-screenshot-server",
+  "version": "1.0.0",
+  "description": "PC WebSocket + HTTP relay server for phone screenshot capture",
+  "type": "module",
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
