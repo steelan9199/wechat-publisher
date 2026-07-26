@@ -67,6 +67,7 @@ npx skills add steelan9199/wechat-publisher
   - `skill-publish-yashu/` - 私有技能发布到公开目录工具
   - `skill-tester-yashu/` - 技能真实运行测试与报告工具
   - `skills-list-available-yashu/` - 可用技能列表查询工具
+  - `svg-diagram-yashu/` - 扁平 SVG 图生成工具（架构图/流程图/时序图/状态机）
   - `task-sop-architect-yashu/` - 任务 SOP 执行方案生成工具
   - `token-auditor-yashu/` - Token 消耗审计与优化工具
   - `video-course-recorder/` - Win11 视频课程录制一键启停助手

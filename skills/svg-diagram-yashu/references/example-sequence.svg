@@ -1,0 +1,45 @@
+<svg viewBox="0 0 680 340" width="100%" role="img">
+  <title>手机截图 · 时序图</title>
+  <desc>AI 客户端、中继服务器、手机 autojs 三者之间按序号交互的消息流。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <text x="340" y="28" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">手机截图 · 时序图</text>
+
+  <g>
+    <rect x="40" y="44" width="160" height="40" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
+    <text x="120" y="64" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">AI 客户端</text>
+  </g>
+  <g>
+    <rect x="260" y="44" width="160" height="40" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+    <text x="340" y="64" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">中继服务器</text>
+  </g>
+  <g>
+    <rect x="480" y="44" width="160" height="40" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+    <text x="560" y="64" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">手机 autojs</text>
+  </g>
+
+  <line x1="120" y1="84" x2="120" y2="316" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="4 4"/>
+  <line x1="340" y1="84" x2="340" y2="316" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="4 4"/>
+  <line x1="560" y1="84" x2="560" y2="316" stroke="#B4B2A9" stroke-width="0.5" stroke-dasharray="4 4"/>
+
+  <line x1="128" y1="120" x2="252" y2="120" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="190" y="112" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#444441">① HTTP GET /screenshot</text>
+
+  <line x1="348" y1="160" x2="472" y2="160" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="410" y="152" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#444441">② WS {action:capture}</text>
+
+  <line x1="472" y1="200" x2="348" y2="200" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="410" y="192" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#444441">③ 回传 base64 截图</text>
+
+  <line x1="252" y1="240" x2="128" y2="240" stroke="#5F5E5A" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="190" y="232" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#444441">④ 返回 PNG 路径</text>
+
+  <g>
+    <rect x="40" y="276" width="160" height="32" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
+    <text x="120" y="292" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" font-weight="500" fill="#1f2937">⑤ image-pixel-viewer 打开</text>
+  </g>
+</svg>
