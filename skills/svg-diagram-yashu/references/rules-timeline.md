@@ -252,15 +252,15 @@
 
 **分隔线作用**：把"定性描述"和"定量数据"在视觉上分开，避免文字堆成一坨。
 
-### 8.7 字体回退链
+### 8.7 字体栈
 
-中文环境下必须写明中文字体优先：
+时间线与全局一致，统一用 `design-system.md` 规定的字体栈：
 
 ```
-font-family="PingFang SC, Microsoft YaHei, sans-serif"
+font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif"
 ```
 
-只用 `sans-serif` 会导致跨平台渲染时回退到系统默认字体，中英文混排时字形不一致。
+该栈已含 Apple 系统预装的中文 PingFang SC（仅按名引用、不嵌入文件），中英文混排字形一致；`-apple-system` / `BlinkMacSystemFont` 在 macOS / Chrome 下调用系统 UI 字体，`sans-serif` 作最终兜底，跨机渲染稳定且无字体侵权风险。
 
 ### 8.8 时间标签：锚点一致 + 描边防重叠
 
@@ -355,4 +355,4 @@ font-family="PingFang SC, Microsoft YaHei, sans-serif"
 - [ ] 时间标签是否加了白描边？（`paint-order="stroke fill"`，描边宽 ≈ 字号 1/3）
 - [ ] 终点外圈半径是否过大挤压了月份文字？（r ≤ 主圆点 r + 4）
 - [ ] 时间轴末端是否有不必要的流向箭头？（终点事件应去掉）
-- [ ] 字体回退是否写明了 PingFang SC / Microsoft YaHei？
+- [ ] 是否使用了全局字体栈（含 PingFang SC）？

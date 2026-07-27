@@ -3,8 +3,8 @@
   <desc>艾森豪威尔矩阵：横轴紧急程度（左不紧急→右紧急），纵轴重要程度（下不重要→上重要）。四个象限为立即做、计划做、委托、删除。8 个选题以圆点分布，突发热点为强调项。</desc>
 
   <!-- 标题 + 副标题（层级强化） -->
-  <text x="340" y="25" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="17" font-weight="600" fill="#1f2937">选题优先级 · 四象限矩阵</text>
-  <text x="340" y="45" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="11" fill="#888780">艾森豪威尔矩阵 · 8 个候选选题分布</text>
+  <text x="340" y="25" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="17" font-weight="600" fill="#1f2937">选题优先级 · 四象限矩阵</text>
+  <text x="340" y="45" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" fill="#888780">艾森豪威尔矩阵 · 8 个候选选题分布</text>
 
   <!-- 四象限背景（饱和度从 ~10% 提到 ~22%） -->
   <rect x="80" y="80" width="260" height="220" fill="#F5E0BC" stroke="none"/>
@@ -19,7 +19,7 @@
   </g>
 
   <!-- 象限标签（13px→15px，weight 500→600） -->
-  <g font-family="sans-serif" font-size="15" font-weight="600">
+  <g font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="15" font-weight="600">
     <text x="95" y="100" text-anchor="start" dominant-baseline="central" fill="#633806">计划做</text>
     <text x="585" y="100" text-anchor="end" dominant-baseline="central" fill="#27500A">立即做</text>
     <text x="95" y="505" text-anchor="start" dominant-baseline="central" fill="#444441">删除</text>
@@ -27,10 +27,10 @@
   </g>
 
   <!-- 空象限说明（避免"漏点"误读） -->
-  <text x="210" y="410" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="11" fill="#9C9A92" font-style="italic">暂无可删除项</text>
+  <text x="210" y="410" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" fill="#9C9A92" font-style="italic">暂无可删除项</text>
 
   <!-- 坐标轴标签（"不重要"从底部中心挪到左下，对齐"不紧急"） -->
-  <g font-family="sans-serif" font-size="12" fill="#5F5E5A">
+  <g font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">
     <text x="75" y="300" text-anchor="end" dominant-baseline="central">不紧急</text>
     <text x="605" y="300" text-anchor="start" dominant-baseline="central">紧急</text>
     <text x="340" y="65" text-anchor="middle" dominant-baseline="central">↑ 重要程度</text>
@@ -66,10 +66,10 @@
   <g stroke="#A32D2D" stroke-width="0.8" fill="none">
     <path d="M540 172 L575 195 L605 195"/>
   </g>
-  <text x="608" y="195" text-anchor="start" dominant-baseline="central" font-family="sans-serif" font-size="10" fill="#A32D2D" font-weight="500">优先处理</text>
+  <text x="608" y="195" text-anchor="start" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="10" fill="#A32D2D" font-weight="500">优先处理</text>
 
   <!-- 数据点标签 -->
-  <g font-family="sans-serif" font-size="11" fill="#3F3F3D">
+  <g font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" fill="#3F3F3D">
     <text x="190" y="135" text-anchor="start" dominant-baseline="central">行业长文</text>
     <text x="165" y="200" text-anchor="start" dominant-baseline="central">系列连载</text>
     <text x="250" y="260" text-anchor="start" dominant-baseline="central">跨界合作</text>
@@ -79,5 +79,5 @@
     <text x="515" y="485" text-anchor="start" dominant-baseline="central">日常签到</text>
   </g>
   <!-- 突发热点标签（红色强调） -->
-  <text x="552" y="160" text-anchor="start" dominant-baseline="central" font-family="sans-serif" font-size="11" fill="#A32D2D" font-weight="600">突发热点</text>
+  <text x="552" y="160" text-anchor="start" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" fill="#A32D2D" font-weight="600">突发热点</text>
 </svg>

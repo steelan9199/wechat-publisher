@@ -25,7 +25,7 @@ SVG 是**矢量 + 坐标系**格式，浏览器 / Edge 按坐标逐元素绘制�
 - **`<g>` 分组**：仅用于逻辑分组，不影响渲染；组内每个元素仍需各自设置 `fill / stroke`（SVG 不靠 CSS 继承，本技能强制每个图形显式设 `fill`）。
 - **为什么强制扁平（无渐变 / 阴影 / 模糊 / 发光）**：一是风格统一；二是导出 PNG 用的 Edge 无头截图对滤镜支持不一，纯色最稳、跨环境一致。
 - **为什么禁注释 / 禁旋转文字**：注释在 SVG 里虽非语法错误，但本规范禁用以保持文件纯净、避免被某些解析器误读；旋转文字在窄框里会溢出、且难以阅读。
-- **字体兜底**：本技能只用 `font-family="sans-serif"`，不引外部字体——因为导出 PNG 的 Edge 环境未必装了某指定字体，sans-serif 永远有兜底，保证跨机一致。
+- **字体兜底**：本技能字体栈为 `font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif"`，不引入外部字体文件（无 @font-face / woff / ttf）。`-apple-system` 与 `BlinkMacSystemFont` 是浏览器调用系统 UI 字体的关键字，`PingFang SC` 是 Apple 系统预装中文字体（仅按名引用、不嵌入文件），`sans-serif` 作最终兜底——导出 PNG 的 Edge 环境未必装了某指定字体，系统字体栈 + sans-serif 兜底保证跨机一致，也不构成字体侵权。
 
 ---
 

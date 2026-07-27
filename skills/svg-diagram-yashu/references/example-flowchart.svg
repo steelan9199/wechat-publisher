@@ -7,7 +7,7 @@
     </marker>
   </defs>
 
-  <text x="340" y="34" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">内容发布审核流程</text>
+  <text x="340" y="34" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">内容发布审核流程</text>
 
   <g stroke="#5F5E5A" stroke-width="1.5" fill="none">
     <line x1="340" y1="114" x2="340" y2="150" marker-end="url(#arrow)"/>
@@ -19,7 +19,7 @@
     <line x1="340" y1="494" x2="340" y2="520" marker-end="url(#arrow)"/>
   </g>
 
-  <g font-family="sans-serif" font-size="12" fill="#5F5E5A">
+  <g font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">
     <text x="222" y="298" text-anchor="middle" dominant-baseline="central" paint-order="stroke fill" stroke="#ffffff" stroke-width="3" stroke-linejoin="round">是</text>
     <text x="458" y="298" text-anchor="middle" dominant-baseline="central" paint-order="stroke fill" stroke="#ffffff" stroke-width="3" stroke-linejoin="round">否</text>
   </g>
@@ -28,36 +28,36 @@
 
   <g>
     <rect x="295" y="70" width="90" height="44" rx="22" fill="#EAF3DE" stroke="#3B6D11" stroke-width="0.5"/>
-    <text x="340" y="92" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">开始</text>
+    <text x="340" y="92" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="13" font-weight="500" fill="#1f2937">开始</text>
   </g>
 
   <g>
     <rect x="270" y="150" width="140" height="48" rx="4" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-    <text x="340" y="174" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">用户提交内容</text>
+    <text x="340" y="174" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="13" font-weight="500" fill="#1f2937">用户提交内容</text>
   </g>
 
   <g>
     <path d="M340,230 L430,266 L340,302 L250,266 Z" fill="#F1EFE8" stroke="#5F5E5A" stroke-width="0.5"/>
-    <text x="340" y="266" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">是否含敏感词</text>
+    <text x="340" y="266" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="13" font-weight="500" fill="#1f2937">是否含敏感词</text>
   </g>
 
   <g>
     <rect x="130" y="330" width="140" height="48" rx="4" fill="#FCEBEB" stroke="#A32D2D" stroke-width="0.5"/>
-    <text x="200" y="354" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">拦截并通知</text>
+    <text x="200" y="354" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="13" font-weight="500" fill="#1f2937">拦截并通知</text>
   </g>
 
   <g>
     <rect x="410" y="330" width="140" height="48" rx="4" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-    <text x="480" y="354" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">发布上线</text>
+    <text x="480" y="354" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="13" font-weight="500" fill="#1f2937">发布上线</text>
   </g>
 
   <g>
     <rect x="270" y="450" width="140" height="44" rx="4" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-    <text x="340" y="472" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">记录日志</text>
+    <text x="340" y="472" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="13" font-weight="500" fill="#1f2937">记录日志</text>
   </g>
 
   <g>
     <rect x="295" y="520" width="90" height="44" rx="22" fill="#EAF3DE" stroke="#3B6D11" stroke-width="0.5"/>
-    <text x="340" y="542" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="13" font-weight="500" fill="#1f2937">结束</text>
+    <text x="340" y="542" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="13" font-weight="500" fill="#1f2937">结束</text>
   </g>
 </svg>

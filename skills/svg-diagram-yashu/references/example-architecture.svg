@@ -7,9 +7,9 @@
     </marker>
   </defs>
 
-  <text x="340" y="34" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">自媒体内容平台 · 分层架构</text>
+  <text x="340" y="34" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">自媒体内容平台 · 分层架构</text>
 
-  <g font-family="sans-serif" font-size="12" fill="#5F5E5A">
+  <g font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">
     <text x="42" y="98" text-anchor="start" dominant-baseline="central">接入层</text>
     <text x="42" y="228" text-anchor="start" dominant-baseline="central">业务层</text>
     <text x="42" y="348" text-anchor="start" dominant-baseline="central">服务层</text>
@@ -29,69 +29,69 @@
   </g>
 
   <path d="M560,496 L655,496 L655,540 L25,540 L25,320 L200,320" fill="none" stroke="#0F6E56" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
-  <text x="340" y="534" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#0F6E56">行为数据回流，反哺推荐与选题</text>
+  <text x="340" y="534" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#0F6E56">行为数据回流，反哺推荐与选题</text>
 
   <g>
     <rect x="125" y="70" width="150" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-    <text x="200" y="88" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">Web 端</text>
-    <text x="200" y="106" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">PC 浏览器</text>
+    <text x="200" y="88" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">Web 端</text>
+    <text x="200" y="106" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">PC 浏览器</text>
   </g>
   <g>
     <rect x="305" y="70" width="150" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-    <text x="380" y="88" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">App 端</text>
-    <text x="380" y="106" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">iOS / Android</text>
+    <text x="380" y="88" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">App 端</text>
+    <text x="380" y="106" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">iOS / Android</text>
   </g>
   <g>
     <rect x="485" y="70" width="150" height="56" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
-    <text x="560" y="88" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">小程序</text>
-    <text x="560" y="106" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">微信生态</text>
+    <text x="560" y="88" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">小程序</text>
+    <text x="560" y="106" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">微信生态</text>
   </g>
 
   <g>
     <rect x="125" y="200" width="150" height="56" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
-    <text x="200" y="218" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">选题中心</text>
-    <text x="200" y="236" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">热点 + 素材库</text>
+    <text x="200" y="218" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">选题中心</text>
+    <text x="200" y="236" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">热点 + 素材库</text>
   </g>
   <g>
     <rect x="305" y="200" width="150" height="56" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
-    <text x="380" y="218" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">创作中心</text>
-    <text x="380" y="236" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">图文 + 视频</text>
+    <text x="380" y="218" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">创作中心</text>
+    <text x="380" y="236" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">图文 + 视频</text>
   </g>
   <g>
     <rect x="485" y="200" width="150" height="56" rx="8" fill="#FAEEDA" stroke="#BA7517" stroke-width="0.5"/>
-    <text x="560" y="218" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">审核中心</text>
-    <text x="560" y="236" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">机审 + 人审</text>
+    <text x="560" y="218" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">审核中心</text>
+    <text x="560" y="236" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">机审 + 人审</text>
   </g>
 
   <g>
     <rect x="125" y="320" width="150" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
-    <text x="200" y="338" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">AI 生成</text>
-    <text x="200" y="356" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">文案 / 配图</text>
+    <text x="200" y="338" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">AI 生成</text>
+    <text x="200" y="356" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">文案 / 配图</text>
   </g>
   <g>
     <rect x="305" y="320" width="150" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
-    <text x="380" y="338" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">推荐引擎</text>
-    <text x="380" y="356" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">千人千面</text>
+    <text x="380" y="338" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">推荐引擎</text>
+    <text x="380" y="356" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">千人千面</text>
   </g>
   <g>
     <rect x="485" y="320" width="150" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
-    <text x="560" y="338" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">数据分析</text>
-    <text x="560" y="356" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">阅读 / 转化</text>
+    <text x="560" y="338" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">数据分析</text>
+    <text x="560" y="356" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">阅读 / 转化</text>
   </g>
 
   <g>
     <rect x="125" y="440" width="150" height="56" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
-    <text x="200" y="458" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">用户库</text>
-    <text x="200" y="476" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">画像 + 标签</text>
+    <text x="200" y="458" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">用户库</text>
+    <text x="200" y="476" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">画像 + 标签</text>
   </g>
   <g>
     <rect x="305" y="440" width="150" height="56" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
-    <text x="380" y="458" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">内容库</text>
-    <text x="380" y="476" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">素材 + 正文</text>
+    <text x="380" y="458" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">内容库</text>
+    <text x="380" y="476" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">素材 + 正文</text>
   </g>
   <g>
     <rect x="485" y="440" width="150" height="56" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
-    <text x="560" y="458" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">行为库</text>
-    <text x="560" y="476" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="12" fill="#5F5E5A">埋点 + 日志</text>
+    <text x="560" y="458" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">行为库</text>
+    <text x="560" y="476" text-anchor="middle" dominant-baseline="central" font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">埋点 + 日志</text>
   </g>
 </svg>

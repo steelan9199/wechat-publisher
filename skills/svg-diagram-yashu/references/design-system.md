@@ -14,7 +14,7 @@
 
 ## Typography
 
-- Fonts: `font-family="sans-serif"`.
+- Fonts: `font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif"`.
 - Two weights only: `400` (regular), `500` (medium). Never 600/700.
 - Sizes: title 14px/500, subtitle 13px/400, body 13px/400, caption 12px/400.
   No font below 11px.
@@ -81,16 +81,16 @@ Use `marker-end="url(#arrow)"` on connector lines; color follows
 <g>
   <rect x="100" y="20" width="180" height="44" rx="8" fill="#E6F1FB" stroke="#185FA5" stroke-width="0.5"/>
   <text x="190" y="42" text-anchor="middle" dominant-baseline="central"
-    font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">T-cells</text>
+    font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">T-cells</text>
 </g>
 
 <!-- two-line -->
 <g>
   <rect x="100" y="20" width="200" height="56" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
   <text x="200" y="38" text-anchor="middle" dominant-baseline="central"
-    font-family="sans-serif" font-size="14" font-weight="500" fill="#1f2937">Dendritic cells</text>
+    font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="500" fill="#1f2937">Dendritic cells</text>
   <text x="200" y="56" text-anchor="middle" dominant-baseline="central"
-    font-family="sans-serif" font-size="12" fill="#5F5E5A">Detect foreign antigens</text>
+    font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" fill="#5F5E5A">Detect foreign antigens</text>
 </g>
 ```
 

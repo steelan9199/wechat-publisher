@@ -4,10 +4,10 @@
 
   <!-- 主标题 + 副标题 -->
   <text x="340" y="28" text-anchor="middle" dominant-baseline="central"
-        font-family="PingFang SC, Microsoft YaHei, sans-serif"
+        font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif"
         font-size="20" font-weight="700" fill="#1f2937">创作者一年 · 大事记</text>
   <text x="340" y="50" text-anchor="middle" dominant-baseline="central"
-        font-family="PingFang SC, Microsoft YaHei, sans-serif"
+        font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif"
         font-size="12" fill="#5F5E5A">4 个关键节点 · 起步 → 成长 → 收获</text>
 
   <!-- 阶段背景带（时间轴下方，半透明色块标示阶段区间；起步期右端留 10px 缓冲，避开 7 月圆点） -->
@@ -17,7 +17,7 @@
   </g>
 
   <!-- 阶段标签（统一左对齐到各自阶段起点附近，避开圆点） -->
-  <g font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="10" font-weight="600" dominant-baseline="central">
+  <g font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="10" font-weight="600" dominant-baseline="central">
     <text x="80"  y="237" fill="#185FA5">起步期</text>
     <text x="280" y="237" fill="#0F6E56">成长期</text>
   </g>
@@ -42,7 +42,7 @@
   <circle cx="580" cy="220" r="9" fill="#BA7517" stroke="#FFFFFF" stroke-width="2.5"/>
 
   <!-- 月份标签（紧贴圆点；加白描边 paint-order="stroke fill" 避免与连接线重叠干扰） -->
-  <g font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central"
+  <g font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="central"
      stroke="#FFFFFF" stroke-width="4" paint-order="stroke fill" stroke-linejoin="round">
     <text x="100" y="200" fill="#185FA5">3 月</text>
     <text x="260" y="238" fill="#0F6E56">7 月</text>
@@ -55,14 +55,14 @@
     <rect x="45" y="70" width="110" height="100" rx="10" fill="#FFFFFF" stroke="#185FA5" stroke-width="1.5"/>
     <circle cx="60" cy="85" r="10" fill="#185FA5"/>
     <text x="60" y="85" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">1</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">1</text>
     <text x="100" y="110" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="600" fill="#1f2937">公众号起步</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="600" fill="#1f2937">公众号起步</text>
     <text x="100" y="130" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="11" fill="#5F5E5A">发布首篇文章</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" fill="#5F5E5A">发布首篇文章</text>
     <line x1="60" y1="143" x2="140" y2="143" stroke="#E5E2D8" stroke-width="1"/>
     <text x="100" y="158" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="11" fill="#888780">粉丝 0 → 200</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" fill="#888780">粉丝 0 → 200</text>
   </g>
 
   <!-- 卡片 2: 7 月 · 成长（下方） -->
@@ -70,14 +70,14 @@
     <rect x="205" y="270" width="110" height="100" rx="10" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.5"/>
     <circle cx="220" cy="285" r="10" fill="#0F6E56"/>
     <text x="220" y="285" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">2</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">2</text>
     <text x="260" y="310" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="600" fill="#1f2937">首次破万</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="600" fill="#1f2937">首次破万</text>
     <text x="260" y="330" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="11" fill="#5F5E5A">单篇阅读破万</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" fill="#5F5E5A">单篇阅读破万</text>
     <line x1="220" y1="343" x2="300" y2="343" stroke="#E5E2D8" stroke-width="1"/>
     <text x="260" y="358" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="11" fill="#888780">粉丝 5K → 15K</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" fill="#888780">粉丝 5K → 15K</text>
   </g>
 
   <!-- 卡片 3: 9 月 · 成长（上方） -->
@@ -85,14 +85,14 @@
     <rect x="365" y="70" width="110" height="100" rx="10" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.5"/>
     <circle cx="380" cy="85" r="10" fill="#0F6E56"/>
     <text x="380" y="85" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">3</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">3</text>
     <text x="420" y="110" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="600" fill="#1f2937">商业合作</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="600" fill="#1f2937">商业合作</text>
     <text x="420" y="130" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="11" fill="#5F5E5A">接到首个广告</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" fill="#5F5E5A">接到首个广告</text>
     <line x1="380" y1="143" x2="460" y2="143" stroke="#E5E2D8" stroke-width="1"/>
     <text x="420" y="158" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="11" fill="#888780">月收入破 5K</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" fill="#888780">月收入破 5K</text>
   </g>
 
   <!-- 卡片 4: 12 月 · 收获（下方，终点加粗描边） -->
@@ -100,13 +100,13 @@
     <rect x="525" y="270" width="110" height="100" rx="10" fill="#FFFFFF" stroke="#BA7517" stroke-width="2"/>
     <circle cx="540" cy="285" r="10" fill="#BA7517"/>
     <text x="540" y="285" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">4</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" font-weight="700" fill="#FFFFFF">4</text>
     <text x="580" y="310" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="14" font-weight="600" fill="#1f2937">年度复盘</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="14" font-weight="600" fill="#1f2937">年度复盘</text>
     <text x="580" y="330" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="11" fill="#5F5E5A">粉丝破十万</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" fill="#5F5E5A">粉丝破十万</text>
     <line x1="540" y1="343" x2="620" y2="343" stroke="#E5E2D8" stroke-width="1"/>
     <text x="580" y="358" text-anchor="middle" dominant-baseline="central"
-          font-family="PingFang SC, Microsoft YaHei, sans-serif" font-size="11" fill="#888780">年收入 6 位数</text>
+          font-family="-apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif" font-size="11" fill="#888780">年收入 6 位数</text>
   </g>
 </svg>
