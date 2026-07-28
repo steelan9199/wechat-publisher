@@ -9,7 +9,7 @@
 `feishu-bitable-yashu`是技能的名字, 也是技能文件夹的名字, 修改名字就可以了.
 
 ```
-npx skills add  https://github.com/steelan9199/wechat-publisher/tree/main/skills/feishu-bitable-yashu
+npx skills add  https://github.com/steelan9199/wechat-publisher/tree/main/skills/skill-doc-bloat-checker-yashu
 ```
 
 ## 安装所有技能
@@ -52,6 +52,7 @@ npx skills add steelan9199/wechat-publisher
   - `js-error-fixer/` - JavaScript 错误检查与修复工具
   - `js-project-refactor/` - JavaScript 项目架构重构与模块化工具
   - `json-to-markdown-files/` - JSON 转 Markdown 文件工具
+  - `md-typeset-yashu/` - Markdown 文件排版优化工具
   - `move-big-folder-yashu/` - C 盘大文件夹迁移工具
   - `music/` - AI 音乐提示词生成工具
   - `node-version-compatibility-tester-yashu/` - Node.js 版本兼容性测试工具
@@ -62,6 +63,7 @@ npx skills add steelan9199/wechat-publisher
   - `pyautogui-automation/` - 桌面自动化工具
   - `retest-generator/` - 技能复测脚本生成工具
   - `self-contained-auditor-yashu/` - 自包含技能评审器（检查技能知识是否全部内置、不依赖宿主私有接口）
+  - `skill-bloat-auditor-yashu/` - 技能文档废话检查与诊断报告工具
   - `skill-description-optimizer-yashu/` - 技能 description 字段优化工具
   - `skill-failed-cleanup-yashu/` - 技能安装失败残留文件夹清理工具
   - `skill-get-link-yashu/` - 技能 GitHub 链接生成与剪贴板复制工具
