@@ -1,5 +1,5 @@
 ---
-name: skill-doc-bloat-checker
+name: skill-doc-bloat-checker-yashu
 description: 检查指定技能文档中的废话文字并输出诊断报告。激活条件：用户消息须包含以下关键词之一：`检查技能废话`、`这个技能文档有没有多余内容`、`清理技能文档废话`、`审查技能文档废话`、`清理技能文档历史说明`。
 agent_created: true
 ---
