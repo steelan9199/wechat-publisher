@@ -43,29 +43,29 @@ description: 本技能提供扣子(Coze)低代码平台的智能体与工作流�
 
 #### 智能体脚本（Bot）
 
-| 脚本                | 功能     | 用途                                       |
-| ------------------- | -------- | ------------------------------------------ |
-| `create_session.js` | 创建会话 | 开启与智能体的对话                         |
-| `send_message.js`   | 发送消息 | 向智能体发送问题                           |
-| `check_status.js`   | 查询状态 | 检查任务执行状态，完成时自动记录端到端耗时 |
-| `get_messages.js`   | 获取回复 | 获取智能体的最终回答                       |
+| 脚本                | 功能     | 用途                                       | 预计耗时 |
+| ------------------- | -------- | ------------------------------------------ | -------- |
+| `create_session.js` | 创建会话 | 开启与智能体的对话                         | 约 3 秒  |
+| `send_message.js`   | 发送消息 | 向智能体发送问题                           | 约 3 秒  |
+| `check_status.js`   | 查询状态 | 检查任务执行状态，完成时自动记录端到端耗时 | 约 3 秒  |
+| `get_messages.js`   | 获取回复 | 获取智能体的最终回答                       | 约 3 秒  |
 
 #### 工作流脚本（Workflow）
 
-| 脚本                       | 功能               | 用途                                             |
-| -------------------------- | ------------------ | ------------------------------------------------ |
-| `get_workflow_info.js`     | 查询工作流基本信息 | 获取开始节点输入参数和结束节点输出参数定义       |
-| `run_workflow.js`          | 执行工作流（异步） | 触发工作流，返回 execute_id 和 debug_url         |
-| `check_workflow_result.js` | 查询异步运行结果   | 获取结束节点的输出数据，成功时自动记录端到端耗时 |
+| 脚本                       | 功能               | 用途                                             | 预计耗时 |
+| -------------------------- | ------------------ | ------------------------------------------------ | -------- |
+| `get_workflow_info.js`     | 查询工作流基本信息 | 获取开始节点输入参数和结束节点输出参数定义       | 约 3 秒  |
+| `run_workflow.js`          | 执行工作流（异步） | 触发工作流，返回 execute_id 和 debug_url         | 约 3 秒  |
+| `check_workflow_result.js` | 查询异步运行结果   | 获取结束节点的输出数据，成功时自动记录端到端耗时 | 约 3 秒  |
 
 > 工作流统一使用异步执行（`is_async: true`）。执行后需轮询 `check_workflow_result.js` 获取结果。
 
 #### 公共脚本
 
-| 脚本             | 功能         | 用途                            |
-| ---------------- | ------------ | ------------------------------- |
-| `upload_file.js` | 上传文件     | 上传图片/文档等给智能体或工作流 |
-| `clear_temp.js`  | 清理临时文件 | 清理 temp 目录中的临时文件      |
+| 脚本             | 功能         | 用途                            | 预计耗时   |
+| ---------------- | ------------ | ------------------------------- | ---------- |
+| `upload_file.js` | 上传文件     | 上传图片/文档等给智能体或工作流 | 约 5-10 秒 |
+| `clear_temp.js`  | 清理临时文件 | 清理 temp 目录中的临时文件      | 约 1 秒    |
 
 ## 前置条件
 
@@ -138,9 +138,7 @@ description: 本技能提供扣子(Coze)低代码平台的智能体与工作流�
 > - ✅ PowerShell：`cd dir; if ($?) { node xxx.js }`
 > - ✅ bash/zsh：`cd dir && node xxx.js`
 
-## 自然语言调用（推荐）
-
-当用户请求包含`调用扣子`、`测试扣子`、`执行扣子工作流`、`调用扣子Bot`、`进行扣子对话`、`执行coze工作流`等触发词时，执行以下步骤：
+## 执行步骤
 
 1. 确认已在【前置条件】中完成 `.env`、`bots.json` 和 `workflows.json` 的读取
 2. 理解用户意图，通过对比 `bots.json` / `workflows.json` 中每个对象的 `name` 和 `description` 与用户任务的匹配度，选择最合适的智能体或工作流，并向用户说明选择理由
@@ -208,9 +206,11 @@ description: 本技能提供扣子(Coze)低代码平台的智能体与工作流�
 
 ### AI 需要等待多长时间？
 
-**优先参考 `recent_durations` 历史耗时：** 读取 `$SKILL_DIR/config/bots.json`（智能体）或 `$SKILL_DIR/config/workflows.json`（工作流），找到目标智能体/工作流的 `recent_durations` 数组。该数组记录了最近 6 次成功调用的端到端耗时（如 `"28秒"`、`"1分15秒"`），AI 可据此预估本次需要等待的时间，合理设置轮询间隔和最大轮询次数。
+**首次查询等待时长（取 `recent_durations` 最小值）：** 读取 `$SKILL_DIR/config/bots.json`（智能体）或 `$SKILL_DIR/config/workflows.json`（工作流），找到目标智能体/工作流的 `recent_durations` 数组。该数组记录了最近 6 次成功调用的端到端耗时（如 `"28秒"`、`"1分15秒"`）。**取数组中的最小值**（最短耗时），解析 `"X秒"`/`"X分Y秒"` 格式为秒数，作为首次查询的等待时长。调用发起脚本（`send_message.js` 或 `run_workflow.js`）后，等待该时长再调用查询脚本进行首次轮询。
 
-**从 `.env` 文件中读取 `POLLING_INTERVAL` 配置项**（单位：秒）：
+> **边界**：`recent_durations` 为空数组或不存在时（首次执行），从 `.env` 读取 `POLLING_INTERVAL` 作为首次查询等待时长；若 `.env` 不存在，则默认 5 秒。
+
+**后续轮询间隔（从 `.env` 读取 `POLLING_INTERVAL`）：**
 
 ```plaintext
 # 轮询间隔时间（单位：秒），默认5秒
@@ -218,7 +218,9 @@ POLLING_INTERVAL=5
 ```
 
 - **默认值**：5 秒
-- **可自定义**：用户可以修改此值来调整等待时间
+- **可自定义**：用户可以修改此值来调整后续轮询间隔
+
+**不设超时上限**：查询日志会体现任务成功或失败，任务最终会结束，无需超时熔断。重复查询直至任务完成或失败即可。
 
 ### AI 在哪里检查它需要等待多长时间？
 
@@ -243,53 +245,47 @@ POLLING_INTERVAL=5
 
 ### 实现方式
 
-脚本本身**不包含自动等待逻辑**，需要 AI 自行实现轮询。**两次轮询之间必须等待 `POLLING_INTERVAL` 秒**，等待命令必须作为**独立的一条命令**执行，不能与轮询脚本拼接在同一条命令里。等待命令因平台而异：PowerShell 用 `Start-Sleep -Seconds N`，bash/zsh 用 `sleep N`（跨平台等待命令对照表详见 `skill-laws-yashu` 的【轮询操作的等待规则】章节）。
+脚本本身**不包含自动等待逻辑**，需要 AI 自行实现轮询。等待命令必须作为**独立的一条命令**执行，不能与轮询脚本拼接在同一条命令里。等待命令因平台而异：PowerShell 用 `Start-Sleep -Seconds N`，bash/zsh 用 `sleep N`
 
 ```powershell
-# 示例：智能体轮询（PowerShell，分三条独立命令执行）
-cd $SKILL_DIR/scripts; if ($?) { node check_status.js <conversation_id> <chat_id> }
+# 示例：智能体轮询（PowerShell）
+前一次查询: cd $SKILL_DIR/scripts; if ($?) { node check_status.js <conversation_id> <chat_id> }
 # 检查输出，如果 in_progress，先单独执行等待命令，再发起下一次查询
-Start-Sleep -Seconds 5
-cd $SKILL_DIR/scripts; if ($?) { node check_status.js <conversation_id> <chat_id> }
+等待: Start-Sleep -Seconds <POLLING_INTERVAL>
+后一次查询: cd $SKILL_DIR/scripts; if ($?) { node check_status.js <conversation_id> <chat_id> }
 
-# 示例：工作流轮询（PowerShell，分三条独立命令执行）
-cd $SKILL_DIR/scripts; if ($?) { node check_workflow_result.js <workflow_id> <execute_id> }
+# 示例：工作流轮询（PowerShell）
+前一次查询: cd $SKILL_DIR/scripts; if ($?) { node check_workflow_result.js <workflow_id> <execute_id> }
 # 检查输出，如果 Running，先单独执行等待命令，再发起下一次查询
-Start-Sleep -Seconds 5
-cd $SKILL_DIR/scripts; if ($?) { node check_workflow_result.js <workflow_id> <execute_id> }
+等待: Start-Sleep -Seconds <POLLING_INTERVAL>
+后一次查询: cd $SKILL_DIR/scripts; if ($?) { node check_workflow_result.js <workflow_id> <execute_id> }
 ```
 
 ```bash
-# 示例：智能体轮询（bash/zsh，分三条独立命令执行）
-cd $SKILL_DIR/scripts && node check_status.js <conversation_id> <chat_id>
+# 示例：智能体轮询（bash/zsh）
+前一次查询: cd $SKILL_DIR/scripts && node check_status.js <conversation_id> <chat_id>
 # 检查输出，如果 in_progress，先单独执行等待命令，再发起下一次查询
-sleep 5
-cd $SKILL_DIR/scripts && node check_status.js <conversation_id> <chat_id>
+等待: sleep <POLLING_INTERVAL>
+后一次查询: cd $SKILL_DIR/scripts && node check_status.js <conversation_id> <chat_id>
 
-# 示例：工作流轮询（bash/zsh，分三条独立命令执行）
-cd $SKILL_DIR/scripts && node check_workflow_result.js <workflow_id> <execute_id>
+# 示例：工作流轮询（bash/zsh）
+前一次查询: cd $SKILL_DIR/scripts && node check_workflow_result.js <workflow_id> <execute_id>
 # 检查输出，如果 Running，先单独执行等待命令，再发起下一次查询
-sleep 5
-cd $SKILL_DIR/scripts && node check_workflow_result.js <workflow_id> <execute_id>
+等待: sleep <POLLING_INTERVAL>
+后一次查询: cd $SKILL_DIR/scripts && node check_workflow_result.js <workflow_id> <execute_id>
 ```
 
 > ⚠️ **【致命重要】等待命令必须作为独立命令执行，禁止与轮询脚本拼接在同一条命令里！**
 >
-> **等待是必须的**：两次轮询之间必须等待 `POLLING_INTERVAL` 秒（从 `.env` 读取，默认 5 秒），避免无意义的密集查询。
+> **等待是必须的**：两次轮询之间必须等待，避免无意义的密集查询。
 >
-> **但等待命令必须单独成一条命令**，绝对不能和轮询脚本写在同一条命令里。命令必须一条一条地单独执行，禁止用 `;`、`&&` 或 `if ($?)` 把等待命令与其他命令拼接。
+> **等待命令必须单独成一条命令**，禁止用 `;`、`&&` 或 `if ($?)` 把等待命令与其他命令拼接。
 >
-> **原因**：AI 客户端的终端输出捕获机制存在一个**时间阈值**。当单条命令总执行时间超过阈值时，阈值之后产生的输出不会被捕获到终端历史缓冲区，导致命令调用工具和状态检查工具都无法读取到这部分输出。**不同 AI 客户端的阈值可能不同**（例如 Trae IDE 约为 5 秒，其他大公司出品的 AI 编程客户端阈值相近），等待时间默认值 5 秒与多数客户端的阈值对齐。
->
-> **罪魁祸首是等待命令与脚本拼接**：把等待命令和脚本调用写在一条命令里，会把原本 1-2 秒的脚本调用拉长到 6+ 秒，越过客户端的输出捕获阈值，导致脚本输出（发生在等待之后）落在捕获窗口之外而丢失。表现现象是：命令执行成功（exit code 0），但返回的日志里只有命令行本身，没有任何脚本输出的 JSON 结果。
->
-> - ❌ **错误（拼接在一条命令里，PowerShell）**：`Start-Sleep -Seconds 5; cd $SKILL_DIR/scripts; if ($?) { node check_workflow_result.js <wf_id> <exec_id> }`（总时长 6+ 秒，输出丢失）
-> - ❌ **错误（拼接在一条命令里，bash）**：`sleep 5 && cd $SKILL_DIR/scripts && node check_workflow_result.js <wf_id> <exec_id>`（总时长 6+ 秒，输出丢失）
+> - ❌ **错误（拼接在一条命令里，PowerShell）**：`Start-Sleep -Seconds <POLLING_INTERVAL>; cd $SKILL_DIR/scripts; if ($?) { node check_workflow_result.js <wf_id> <exec_id> }`（错误写法）
+> - ❌ **错误（拼接在一条命令里，bash）**：`sleep <POLLING_INTERVAL> && cd $SKILL_DIR/scripts && node check_workflow_result.js <wf_id> <exec_id>`（错误写法）
 > - ✅ **正确（分两条独立命令执行）**：
->   - 第 1 条命令（仅等待）：PowerShell `Start-Sleep -Seconds 5` / bash `sleep 5`
->   - 第 2 条命令（仅执行脚本，1-2 秒，输出正常）：PowerShell `cd $SKILL_DIR/scripts; if ($?) { node check_workflow_result.js <wf_id> <exec_id> }` / bash `cd $SKILL_DIR/scripts && node check_workflow_result.js <wf_id> <exec_id>`
->
-> **轮询间隔的实现**：AI 通过多次独立的命令调用实现轮询。每次轮询完成后，若状态仍为进行中，必须**先单独执行一次等待命令**（PowerShell `Start-Sleep -Seconds <POLLING_INTERVAL>` / bash `sleep <POLLING_INTERVAL>`）进行等待，然后再发起下一次轮询调用。`POLLING_INTERVAL` 从 `.env` 读取（默认 5 秒）。**命令必须一条一条地单独执行，禁止拼接。**
+>   - 第 1 条命令（仅等待）：PowerShell `Start-Sleep -Seconds <POLLING_INTERVAL>` / bash `sleep <POLLING_INTERVAL>`
+>   - 第 2 条命令（仅执行脚本）：PowerShell `cd $SKILL_DIR/scripts; if ($?) { node check_workflow_result.js <wf_id> <exec_id> }` / bash `cd $SKILL_DIR/scripts && node check_workflow_result.js <wf_id> <exec_id>`
 
 ## ⚠️ 常见错误
 
