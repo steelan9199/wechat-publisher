@@ -1,0 +1,9 @@
+{
+  "name": "skill-deleter",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Delete skill folders from the skills manager directory",
+  "bin": {
+    "delete-skill": "./delete-skill.js"
+  }
+}

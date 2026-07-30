@@ -64,11 +64,13 @@ npx skills add steelan9199/wechat-publisher
   - `retest-generator/` - 技能复测脚本生成工具
   - `self-contained-auditor-yashu/` - 自包含技能评审器（检查技能知识是否全部内置、不依赖宿主私有接口）
   - `skill-bloat-auditor-yashu/` - 技能文档废话检查与诊断报告工具
+  - `skill-deleter/` - 技能文件夹删除工具
   - `skill-description-optimizer-yashu/` - 技能 description 字段优化工具
   - `skill-failed-cleanup-yashu/` - 技能安装失败残留文件夹清理工具
   - `skill-get-link-yashu/` - 技能 GitHub 链接生成与剪贴板复制工具
   - `skill-logic-conflict-checker-yashu/` - 技能文档逻辑冲突检查工具
   - `skill-publish-yashu/` - 私有技能发布到公开目录工具
+  - `skill-searcher/` - 技能文件夹搜索工具
   - `skill-tester-yashu/` - 技能真实运行测试与报告工具
   - `skills-list-available-yashu/` - 可用技能列表查询工具
   - `svg-diagram-yashu/` - 扁平 SVG 图生成工具（架构图/中心辐射图/流程图/时序图/思维导图/组织架构图/对比矩阵/时间线/循环图/鱼骨图），支持 SVG 转 PNG 图片
