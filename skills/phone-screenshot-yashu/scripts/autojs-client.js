@@ -13,6 +13,19 @@
  * 使用前: 修改下方 SERVER_IP 为你电脑的局域网 IP
  */
 
+// ==================== 截图权限 ====================
+
+// // 自动点击同意截图权限，如果你的手机申请截图权限的时候，弹框的同意按钮也叫“立即开始”，那么你可以取消下面三行代码的注释。
+// threads.start(function () {
+//   text("立即开始").clickable(true).findOne().click();
+// });
+
+//请求截图
+if (!requestScreenCapture()) {
+  toastLog("请求截图失败");
+  exit();
+}
+
 // ==================== 配置 ====================
 
 // ★★★ 改成你电脑的局域网 IP ★★★
@@ -32,24 +45,6 @@ var RECONNECT_INTERVAL = 3000;
 var ws = null;
 var isConnected = false;
 var reconnectTimer = null;
-
-// ==================== 截图权限 ====================
-
-// 首次运行需要用户在弹窗中授权
-console.show();
-console.log("=== 手机截图客户端 ===");
-console.log("正在请求截图权限...");
-console.log("（首次运行会弹窗，请点击「允许」）");
-console.log("");
-
-if (!requestScreenCapture(false)) {
-  console.error("截图权限获取失败！");
-  console.error("请到 AutoJS 设置中开启截图权限后重试。");
-  exit();
-}
-
-console.log("截图权限已获取");
-console.log("");
 
 // ==================== 连接服务器 ====================
 
