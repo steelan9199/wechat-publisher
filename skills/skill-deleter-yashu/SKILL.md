@@ -1,5 +1,5 @@
 ---
-name: "skill-deleter"
+name: "skill-deleter-yashu"
 description: "从技能管理目录中删除一个技能文件夹。当用户说『删掉技能』或『删除技能』并提供要删除的技能名字时调用。"
 ---
 
