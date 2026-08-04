@@ -1,7 +1,5 @@
 # 飞书云文档链接解析为 document_id
 
-> ⚠️ **强制规则**：执行脚本前必须先阅读本文档，严格按照参数名和格式编写参数文件，禁止凭记忆编写参数。
-
 ## 概述
 
 输入飞书云文档的链接，输出该文档对应的 `document_id`。支持以下两种链接格式：
@@ -10,6 +8,12 @@
 | ---------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | 云盘文档   | `https://{domain}.feishu.cn/docx/{document_id}` | document_id 直接从 URL 路径中提取                                                        |
 | 知识库文档 | `https://{domain}.feishu.cn/wiki/{wiki_token}`  | 需调用知识库接口获取节点信息，当 `obj_type` 为 `docx` 时，`obj_token` 即为 `document_id` |
+
+### document_id 与文件 token 的关系
+
+飞书云空间中的每个文件都有一个唯一的 **token** 作为标识。根据文件类型不同，该 token 在飞书官方 API 中的命名可能不同，常见的包括 `token`、`document_id`、`file_token`、`app_token`、`spreadsheetToken` 等，但本质上都是同一个概念——**文件 token**。
+
+本技能解析出的 `document_id` **就是飞书云文档的文件 token**（即 `file_token`）。在调用飞书其他 API（如下载文档、获取文档内容等）需要传入 `file_token` 或 `document_id` 参数时，可直接使用本技能解析得到的结果。
 
 ## 使用方式
 
@@ -65,15 +69,14 @@ cd $SKILL_DIR/scripts; if ($?) { node url-to-document-id.js --parameter-file-pat
   "msg": "解析成功",
   "data": {
     "document_id": "LBMLdKhq5xxxxxxxxxxxxx",
-    "url_type": "docx"
+    "obj_type": "docx"
   }
 }
 ```
 
-| 字段        | 说明                       |
-| ----------- | -------------------------- |
-| document_id | 飞书文档 ID                |
-| url_type    | 链接类型：`docx` 或 `wiki` |
+| 字段        | 说明                                                |
+| ----------- | --------------------------------------------------- |
+| document_id | 飞书文档 ID，即文件的 token（file_token）           |
 
 ### 失败
 

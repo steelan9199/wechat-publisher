@@ -8,7 +8,7 @@
 | 路径错误     | 文件路径找不到                                        | 使用完整绝对路径，分隔符使用 `/`                            |
 | 日期格式错误 | `DatetimeFieldConvFail: ... must be a unix timestamp` | 日期转为 Unix 时间戳（毫秒级），如 `1749504000000`          |
 | 参数传递错误 | `unrecognized arguments: --tenant-access-token`       | 将参数放入 JSON 配置文件，通过 `--parameter-file-path` 传递 |
-| 权限错误     | 应用未添加到多维表格                                  | 检查是否已在飞书多维表格中添加了企业自建应用                |
+| 权限错误 91403 Forbidden     | 应用未添加到多维表格                                  | 检查是否已在飞书多维表格中添加了企业自建应用                |
 | Token 过期   | `tenant_access_token expired`                         | 重新获取 `tenant_access_token`，有效期约 2 小时             |
 
 ---
