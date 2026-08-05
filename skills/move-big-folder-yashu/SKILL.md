@@ -1,11 +1,11 @@
 ---
 name: move-big-folder-yashu
-description: 将 C 盘大文件夹迁移到其他盘（D/E/F等），通过目录联接（Junction）保持原路径可用，释放 C 盘空间。当用户提到 C 盘空间不足、C 盘变红、迁移大文件夹、释放 C 盘空间、软链接迁移时使用此技能。Use when user mentions C drive full, move large folder, free up C drive space, symlink/junction migration.
+description: 将 C 盘大文件夹迁移到其他盘（D/E/F等），通过符号链接（Symbolic Link）保持原路径可用，释放 C 盘空间。当用户提到 C 盘空间不足、C 盘变红、迁移大文件夹、释放 C 盘空间、软链接迁移时使用此技能。Use when user mentions C drive full, move large folder, free up C drive space, symlink migration.
 ---
 
 # C 盘大文件夹迁移助手
 
-> 帮助用户将 C 盘中的大文件夹安全迁移到其他盘，通过**目录联接（Junction）**让所有程序照常运行，无感释放 C 盘空间并完美保留原权限。
+> 帮助用户将 C 盘中的大文件夹安全迁移到其他盘，通过**符号链接（Symbolic Link）**让所有程序照常运行，无感释放 C 盘空间并完美保留原权限。
 
 ## 核心原则
 
@@ -62,13 +62,13 @@ Remove-Item -Path "C:\Users\Administrator\AppData\Local\app_shell_cache_6383" -R
 
 > 注意：如果此步骤报错提示"文件正被使用"，说明相关软件未关闭。请彻底关闭软件后重试此命令。
 
-**第 3 步：创建目录联接（把 C 盘路径无缝指向目标盘）**
+**第 3 步：创建符号链接（把 C 盘路径无缝指向目标盘）**
 
 ```powershell
-New-Item -ItemType Junction -Path "C:\Users\Administrator\AppData\Local\app_shell_cache_6383" -Target "D:\CToD\Users\Administrator\AppData\Local\app_shell_cache_6383"
+New-Item -ItemType SymbolicLink -Path "C:\Users\Administrator\AppData\Local\app_shell_cache_6383" -Target "D:\CToD\Users\Administrator\AppData\Local\app_shell_cache_6383"
 ```
 
-> 创建联接（Junction）后，所有程序访问原来的 C 盘路径时，会自动跳转到目标盘，完全无感。
+> 创建符号链接（SymbolicLink）后，所有程序访问原来的 C 盘路径时，会自动跳转到目标盘，完全无感。
 
 ## 执行流程
 
@@ -197,13 +197,13 @@ if ($?) { Write-Host "✅ 第 2 步完成：原文件夹已删除" } else { Writ
 ```
 
 ```powershell
-# 第 3 步：创建 Junction（静默）
-Write-Host "正在执行第 3 步：创建目录联接..."
-New-Item -ItemType Junction -Path "C:\Users\Administrator\AppData\Local\app_shell_cache_6383" -Target "D:\CToD\Users\Administrator\AppData\Local\app_shell_cache_6383" -ErrorAction SilentlyContinue | Out-Null
-if ($?) { Write-Host "✅ 第 3 步完成：目录联接已创建" } else { Write-Host "❌ 第 3 步失败，请检查路径是否正确" }
+# 第 3 步：创建 SymbolicLink（静默）
+Write-Host "正在执行第 3 步：创建符号链接..."
+New-Item -ItemType SymbolicLink -Path "C:\Users\Administrator\AppData\Local\app_shell_cache_6383" -Target "D:\CToD\Users\Administrator\AppData\Local\app_shell_cache_6383" -ErrorAction SilentlyContinue | Out-Null
+if ($?) { Write-Host "✅ 第 3 步完成：符号链接已创建" } else { Write-Host "❌ 第 3 步失败，请检查路径是否正确" }
 ```
 
-### 第五步：验证联接状态
+### 第五步：验证符号链接状态
 
 三步全部成功后，运行验证命令并报告结果：
 
@@ -211,7 +211,7 @@ if ($?) { Write-Host "✅ 第 3 步完成：目录联接已创建" } else { Writ
 Get-Item "C:\Users\Administrator\AppData\Local\app_shell_cache_6383" | Select-Object Name, LinkType, Target
 ```
 
-- **成功**：输出显示 `LinkType` 为 `Junction`，`Target` 指向目标盘正确路径。向用户报告"迁移成功"。
+- **成功**：输出显示 `LinkType` 为 `SymbolicLink`，`Target` 指向目标盘正确路径。向用户报告"迁移成功"。
 - **失败**：报告问题并建议排查方向。
 
 ## 注意事项
@@ -226,6 +226,7 @@ Get-Item "C:\Users\Administrator\AppData\Local\app_shell_cache_6383" | Select-Ob
   - 游戏客户端数据
 - 纯系统临时垃圾（如 `AppData\Local\Temp`）**不建议迁移**，应建议用户直接清理。
 - 迁移前确保目标盘有**足够的剩余空间**。
+- **符号链接权限要求**：创建符号链接（SymbolicLink）必须以**管理员身份**运行 PowerShell；否则第 3 步会报"拒绝访问"或"客户端没有所需的特权"。若不想每次都用管理员，可在「设置 → 隐私和安全性 → 开发者选项」中开启「开发人员模式」，开启后普通用户也能创建符号链接。
 - **必须先确认目标盘符**：不能默认使用 D 盘，必须向用户询问并检测可用盘符及剩余空间。如果用户选择的盘符剩余空间不足，必须警告并建议更换。
 
 ## 批量迁移
