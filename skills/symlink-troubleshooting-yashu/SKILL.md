@@ -1,5 +1,5 @@
 ---
-name: "symlink-troubleshooting"
+name: "symlink-troubleshooting-yashu"
 description: "符号链接(Symlink)导致脚本运行失败的跨平台排查与修复指南。当任何技能运行 Node.js/Python/Shell 脚本时出现 ENOENT、realpathSync、lstat、No such file or directory、FileNotFoundError 等符号链接相关错误，立即查阅本技能文档获取根因分析和解决方案。支持 Windows/macOS/Linux。"
 ---
 
