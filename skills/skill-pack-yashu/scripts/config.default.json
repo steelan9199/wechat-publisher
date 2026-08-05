@@ -1,0 +1,48 @@
+{
+  "toolModules": {
+    "folders": [
+      "utils",
+      "util",
+      "helpers",
+      "helper",
+      "common",
+      "shared",
+      "libs",
+      "lib",
+      "tools",
+      "tool",
+      "config",
+      "constants"
+    ],
+    "files": [
+      "utils.js",
+      "util.js",
+      "helpers.js",
+      "helper.js",
+      "common.js",
+      "shared.js",
+      "constants.js",
+      "config.js",
+      "tools.js",
+      "tool.js"
+    ]
+  },
+  "defaultSkillsDir": "请填写技能目录的绝对路径（如 d:/skill/private-skills/.trae/skills）",
+  "compressionLevel": 6,
+  "hardBlacklist": {
+    "dirsAnyLevel": [
+      "node_modules",
+      "scripts-backup"
+    ],
+    "filesAnyLevel": [
+      "license-key.txt",
+      ".pack-include.json",
+      "manifest.json"
+    ],
+    "patterns": [
+      ".cache_*.tmp",
+      "*.bak",
+      "*.skill"
+    ]
+  }
+}

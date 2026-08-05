@@ -1,0 +1,11 @@
+{
+  "name": "pack-skill-yashu",
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=18.20.8"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1"
+  }
+}
