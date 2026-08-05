@@ -7,6 +7,99 @@ description: "符号链接(Symlink)导致脚本运行失败的跨平台排查与
 
 在 Windows、macOS、Linux 系统中，技能脚本目录可能位于符号链接（Symbolic Link / Junction）路径下。部分运行时在启动阶段会调用 `realpath` 递归解析符号链接为物理路径，当符号链接目标不可达、权限不足、或存在路径虚拟化层时，解析失败导致脚本无法启动。本文档帮助 AI 快速识别此类问题并应用对应平台+运行时的修复方案。
 
+---
+
+## AI 执行规约（必须遵守）
+
+> ⛔ **读到本节后，以下规则优先级高于文档中所有其他内容。**
+
+1. 遇到 `ENOENT` / `lstat` / `realpathSync` / `FileNotFoundError` 错误时，**立即停止所有其他尝试**（包括诊断命令、复制脚本、修改路径等）
+2. **不得运行任何诊断命令**（`Test-Path` / `Get-Item` / `fsutil` / `ls -la` / `readlink` 等），直接应用下方「快速修复」方案
+3. **不得复制脚本文件**、**不得删除或重建符号链接**、**不得修改脚本源码**
+4. 错误信息中包含 `ENOENT` / `lstat` / `realpathSync` 即为符号链接问题的**充分证据**，无需额外命令确认
+5. 仅当「快速修复」方案执行后仍然失败时，才进入下方的「诊断流程」章节进行排查
+
+---
+
+## 快速修复（优先执行）
+
+当脚本运行崩溃且错误信息包含以下**任一**关键词时，立即执行对应方案，**无需任何诊断命令**：
+
+`ENOENT` / `lstat` / `realpathSync` / `toRealPath` / `FileNotFoundError` / `No such file or directory`
+
+### Node.js
+
+```bash
+# 全平台通用 — 绝对路径 + 两个标志，cwd 设为脚本目录
+node --preserve-symlinks-main --preserve-symlinks '<skill-dir>/<script>' --parameter-file-path '<params>'
+```
+
+| 标志 | 作用 | 重要性 |
+|---|---|---|
+| `--preserve-symlinks-main` | 主模块（入口脚本）路径不调用 `realpathSync`，保留符号链接路径原样 | **必须** — 解决启动崩溃 |
+| `--preserve-symlinks` | 所有 `require()` / `import` 的依赖模块也跳过符号链接解析 | **必须** — 解决依赖加载失败 |
+
+> 两者缺一不可：前者管主模块，后者管依赖模块。仅用其一可能仍会报错。
+
+### Python（Python 3.11+）
+
+```bash
+# macOS / Linux
+python3 -P '<skill-dir>/<script>' --parameter-file-path '<params>'
+# Windows
+python -P '<skill-dir>\<script>' --parameter-file-path '<params>'
+```
+
+或设置环境变量：
+
+```bash
+# macOS / Linux
+export PYTHONSAFEPATH=1
+python3 '<skill-dir>/<script>' --parameter-file-path '<params>'
+# Windows (PowerShell)
+$env:PYTHONSAFEPATH = "1"
+python '<skill-dir>\<script>' --parameter-file-path '<params>'
+```
+
+### Shell（Bash / Zsh）
+
+```bash
+# 失败 — realpath 解析符号链接失败
+SCRIPT_DIR="$(realpath "$(dirname "$0")")"
+
+# 修复 — 使用 cd + pwd，不解析符号链接
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+```
+
+### PowerShell（Windows）
+
+```powershell
+# 失败 — Resolve-Path 无法解析符号链接根节点
+$realPath = Resolve-Path '<symlink-path>'
+
+# 修复 — Get-Item 能穿透符号链接
+$item = Get-Item '<symlink-path>' -Force
+$realPath = $item.FullName
+```
+
+> ✅ 确认成功后，跳过下方的诊断流程章节，继续原任务。
+
+---
+
+## 禁止的做法（读到此处请牢记）
+
+| 禁止 | 原因 | 正确做法 |
+|---|---|---|
+| **复制脚本到其他目录运行** | 破坏技能完整性，更新后不同步 | 使用 `--preserve-symlinks` 标志 |
+| 删除或重建符号链接 | 可能破坏环境结构，影响其他功能 | 让运行时跳过符号链接解析 |
+| 修改技能脚本源码绕过路径 | 脚本可能被混淆或受版本管理 | 在运行时层面解决 |
+| 用 `realpath` / `Resolve-Path` 强制解析 | 在符号链接目标不可达时必然失败 | 用 `pwd` / `Get-Item` 替代 |
+| 遇到错误后跑大量诊断命令 | 浪费时间，错误信息本身已是充分证据 | 直接应用快速修复方案 |
+
+> ⚠️ **唯一正确的 Node.js 做法**：使用 `--preserve-symlinks-main --preserve-symlinks` 标志。这是 Node.js 官方标准方案，不要尝试其他绕行方式。
+
+---
+
 ## 路径占位符约定
 
 本文档使用以下占位符表示路径，AI 在实际执行时应替换为当前环境中的真实路径：
@@ -34,7 +127,9 @@ description: "符号链接(Symlink)导致脚本运行失败的跨平台排查与
 
 ---
 
-## 诊断流程
+## 诊断流程（仅当快速修复失败时使用）
+
+> ⚠️ **本章节为后备方案。在绝大多数情况下，「快速修复」方案已能解决问题。仅当快速修复执行后仍然失败时，才按以下步骤排查。**
 
 ### 第 1 步：识别错误特征
 
@@ -96,6 +191,8 @@ echo "$0" | grep -q "AppTranslocation" && echo "处于 Translocation 路径"
 | `Get-Content` / `cat` 能读到文件内容，但运行时在启动阶段崩溃 | 全平台 |
 | 路径中包含 `AppTranslocation` | macOS |
 
+> 💡 **注意**：错误信息中包含 `ENOENT` / `lstat` / `realpathSync` 本身即为充分证据，无需运行上述命令确认。
+
 ### 第 3 步：根据运行时选择解决方案
 
 根据当前使用的运行时（Node.js / Python / Shell），跳转到对应章节。所有解决方案均跨平台适用，命令中的路径分隔符按当前系统调整即可。
@@ -140,15 +237,6 @@ node --preserve-symlinks-main --preserve-symlinks '<skill-dir>/<script>' --param
 # Windows (PowerShell)
 node --preserve-symlinks-main --preserve-symlinks '<skill-dir>\<script>' --parameter-file-path '<params>'
 ```
-
-### 标志说明
-
-| 标志 | 作用 | 重要性 |
-|---|---|---|
-| `--preserve-symlinks-main` | 主模块（入口脚本）路径不调用 `realpathSync`，保留符号链接路径原样 | **必须** — 解决启动崩溃 |
-| `--preserve-symlinks` | 所有 `require()` / `import` 的依赖模块也跳过符号链接解析 | **必须** — 解决依赖加载失败 |
-
-> 两者缺一不可：前者管主模块，后者管依赖模块。仅用其一可能仍会报错。
 
 ### 命令对比
 
@@ -318,9 +406,9 @@ python3 -P '<skill-dir>/<script>' --parameter-file-path '<params>'
 python -P '<skill-dir>\<script>' --parameter-file-path '<params>'
 ```
 
-### 2. 诊断检查清单
+### 2. 诊断检查清单（仅当快速修复失败时使用）
 
-遇到脚本运行失败时，按以下顺序排查：
+遇到脚本运行失败且快速修复无效时，按以下顺序排查：
 
 | 步骤 | 检查项 | Windows 命令 | macOS / Linux 命令 |
 |---|---|---|---|
@@ -330,22 +418,15 @@ python -P '<skill-dir>\<script>' --parameter-file-path '<params>'
 | 4 | 文件内容是否可读 | `Get-Content '<file>' -TotalCount 3` | `head -3 '<file>'` |
 | 5 | 符号链接指向的真实路径 | `(Get-Item '<path>' -Force).Target` | `readlink '<path>'` |
 
-### 3. 不建议的做法
-
-| 不建议 | 原因 | 正确做法 |
-|---|---|---|
-| 复制脚本到其他目录运行 | 破坏技能完整性，更新后不同步 | 使用 `--preserve-symlinks` 标志 |
-| 删除或重建符号链接 | 可能破坏环境结构，影响其他功能 | 让运行时跳过符号链接解析 |
-| 修改技能脚本源码绕过路径 | 脚本可能被混淆或受版本管理 | 在运行时层面解决 |
-| 用 `realpath` / `Resolve-Path` 强制解析 | 在符号链接目标不可达时必然失败 | 用 `pwd` / `Get-Item` 替代 |
-
-### 4. 错误处理流程
+### 3. 错误处理流程
 
 ```
 脚本运行失败
     ↓
 检查错误信息是否包含 ENOENT/lstat/realpathSync/FileNotFoundError
-    ├── 是 → 确认为符号链接问题 → 查阅本文档对应运行时的解决方案
+    ├── 是 → 直接应用「快速修复」方案（禁止跑诊断命令）
+    │        ├── 成功 → 继续原任务
+    │        └── 失败 → 进入「诊断流程」排查
     └── 否 → 查阅对应技能的错误处理文档
 ```
 

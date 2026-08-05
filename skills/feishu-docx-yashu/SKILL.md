@@ -274,6 +274,7 @@ metadata:
 | ---------------------------------------------------- | ------------------------------------------------------------------- |
 | 依赖缺失（`Cannot find package 'probe-image-size'`） | 运行 `cd $SKILL_DIR/scripts; if ($?) { npm install }` 安装依赖      |
 | 访问令牌过期（错误码 99991663）                      | 自动刷新令牌，更新参数文件后重试                                    |
+| 符号链接错误（`ENOENT`/`lstat`/`realpathSync`） | 立即加载 `symlink-troubleshooting-yashu` 技能，按其「快速修复」方案使用 `--preserve-symlinks-main --preserve-symlinks` 标志执行，禁止复制脚本  |
 | 其他错误码                                           | 查阅 [错误码说明]($SKILL_DIR/references/error-code.md) 匹配解决方案 |
 
 ## 标准执行流程
