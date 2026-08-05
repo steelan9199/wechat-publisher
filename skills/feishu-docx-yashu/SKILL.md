@@ -1,6 +1,6 @@
 ---
 name: feishu-docx-yashu
-description: 本技能用于飞书文档(Docx)与Markdown互转，以及飞书云空间文件夹管理。激活条件：用户消息须包含以下关键词之一:`本地Markdown转飞书云文档`、`飞书云文档转本地Markdown`、`解析飞书云文档链接`、`获取飞书云文档的指定文件夹的token`、`飞书云文档新建文件夹`、`飞书云文档移动文件夹`、`飞书云文档获取指定文件夹的文件清单`、`获取飞书云文档的文件元数据`、`获取飞书云文档我的空间根文件夹元数据`、`搜索云文档`、`搜索Wiki`、`移动知识库文档到云空间`、`移动Wiki到云盘`、`知识库文档移出`。
+description: 本技能用于飞书文档(Docx)与Markdown互转，以及飞书云空间文件夹管理。激活条件：用户消息须包含以下关键词之一:`本地Markdown转飞书云文档`、`飞书云文档转本地Markdown`、`解析飞书云文档链接`、`获取飞书云文档的指定文件夹的token`、`飞书云文档新建文件夹`、`飞书云文档移动文件夹`、`飞书云文档获取指定文件夹的文件清单`、`获取飞书云文档的文件元数据`、`获取飞书云文档我的空间根文件夹元数据`、`搜索云文档`、`移动知识库文档到云空间`、`移动Wiki到云盘`、`知识库文档移出`。
 metadata:
   author: "AI Assistant"
   updated: "2026-08-03 00:00:00"
@@ -16,7 +16,7 @@ metadata:
 飞书云文档中，放置文档的容器有两种类型：云盘和知识库。
 
 - 云盘：云盘内可创建文件夹，用于组织和管理文件。"云盘"是飞书 drive 的新名称（旧称"云空间"），本文档中两者同义，统一指代 cloud drive。
-- 知识库：知识库是独立于云盘的文档容器，用户可拥有多个知识库。与云盘通过文件夹组织文件不同，知识库通过知识空间和节点构建层级体系（详见下文「飞书云文档的知识库简介」）。
+- 知识库：知识库(Wiki)是独立于云盘的文档容器，用户可拥有多个知识库。与云盘通过文件夹组织文件不同，知识库通过知识空间和节点构建层级体系（详见下文「飞书云文档的知识库简介」）。
 
 用户新建云文档时，若未指定位置，文档默认存放在`我的文档库`中——这是系统默认的知识库。
 
@@ -32,7 +32,7 @@ metadata:
 
 ## 功能概述
 
-为 AI 大模型提供飞书文档与 Markdown 格式互相转换的能力，自动处理图片上传下载、格式转换等细节。支持文本、标题、列表、表格、图片、代码块、引用、Callout 等常见 Markdown 元素的转换。上传 Markdown 到飞书文档前，由 AI 在会话层预处理 Callout 格式（脚本仅校验不修正）。同时支持从飞书云文档链接（云盘 docx 链接或知识库 wiki 链接）解析出 document_id，该 document_id 即飞书云空间中文件的唯一标识 token（又称 file_token），可直接用于调用飞书其他文件相关 API。还提供飞书云空间文件夹管理能力：获取我的空间（根文件夹）元数据、获取文件夹 token（链接提取或名称查找）、获取文件夹元数据、获取文件夹中的文件清单、新建文件夹、移动文件或文件夹（含异步任务自动轮询）、删除文件或文件夹（含异步任务自动轮询）、批量删除文件（输入 token 列表，内置频率控制）、查询异步任务状态。同时支持根据文件 token 批量获取任意类型文件（云文档、多维表格、电子表格、文件夹等）的元数据（标题、所有者、创建/修改时间、密级、访问链接等）。还支持根据关键词搜索当前用户可见的云文档（支持 tenant_access_token 与 user_access_token）。同时支持根据关键词搜索当前用户可见的 Wiki 知识库节点，可按知识空间或指定节点范围搜索（需 user_access_token）。同时支持将知识空间（Wiki）节点移动至云空间文件夹（跨体系移动：知识库 → 云盘，含异步任务自动轮询）。
+为 AI 大模型提供飞书文档与 Markdown 格式互相转换的能力，自动处理图片上传下载、格式转换等细节。支持文本、标题、列表、表格、图片、代码块、引用、Callout 等常见 Markdown 元素的转换。上传 Markdown 到飞书文档前，由 AI 在会话层预处理 Callout 格式（脚本仅校验不修正）。同时支持从飞书云文档链接（云盘 docx 链接或知识库 wiki 链接）解析出 document_id，该 document_id 即飞书云空间中文件的唯一标识 token（又称 file_token），可直接用于调用飞书其他文件相关 API。还提供飞书云空间文件夹管理能力：获取我的空间（根文件夹）元数据、获取文件夹 token（链接提取或名称查找）、获取文件夹元数据、获取文件夹中的文件清单、新建文件夹、移动文件或文件夹（含异步任务自动轮询）、删除文件或文件夹（含异步任务自动轮询）、批量删除文件（输入 token 列表，内置频率控制）、查询异步任务状态。同时支持根据文件 token 批量获取任意类型文件（云文档、多维表格、电子表格、文件夹等）的元数据（标题、所有者、创建/修改时间、密级、访问链接等）。还支持根据关键词搜索当前用户可见的云文档（支持 tenant_access_token 与 user_access_token，可通过 wiki_filter 搜索知识库 Wiki）。同时支持将知识空间（Wiki）节点移动至云空间文件夹（跨体系移动：知识库 → 云盘，含异步任务自动轮询）。
 
 ## 环境说明
 
@@ -69,7 +69,7 @@ metadata:
 
 ## 全业务脚本索引清单
 
-按业务领域分为 6 类：飞书云文档和Markdown 互转、云盘管理、Wiki 知识库、跨体系移动、通用工具、临时文件清理。
+按业务领域分为 5 类：飞书云文档和Markdown 互转、云盘管理、跨体系移动、通用工具、临时文件清理。
 
 ### Markdown 互转
 
@@ -82,7 +82,7 @@ metadata:
 
 | 脚本                      | 功能                                                                                                                                                                                         | 预计耗时   |
 | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| `search-document.js`      | 根据关键词搜索当前用户可见的云文档（支持 tenant_access_token 与 user_access_token）。⚠️注：搜索云文档 API 不支持文件夹类型搜索，查找文件夹请使用 `get-files.js` 配合 `filter_type: "folder"` | 约 2 秒    |
+| `search-document.js`      | 根据关键词搜索当前用户可见的云文档。                                                         | 约 2 秒    |
 | `get-root-folder-meta.js` | 获取我的空间（根文件夹）的元数据（token、ID、所有者 ID）                                                                                                                                     | 约 2 秒    |
 | `get-folder-meta.js`      | 获取飞书云文档指定文件夹的元数据（ID、名称、创建者等）                                                                                                                                       | 约 2 秒    |
 | `get-file-meta.js`        | 根据文件 token 批量获取任意类型文件的元数据（标题、所有者、密级、URL 等）                                                                                                                    | 约 2 秒    |
@@ -92,12 +92,6 @@ metadata:
 | `delete-file.js`          | 删除飞书云文档指定文件或文件夹（含异步任务自动轮询）                                                                                                                                         | 约 2 秒    |
 | `batch-delete-file.js`    | 批量删除文件（输入 token 列表，内置频率控制，仅文件不含文件夹）                                                                                                                              | 视数量而定 |
 | `task-check.js`           | 飞书云文档查询异步任务状态（删除/移动文件夹任务）                                                                                                                                            | 约 2 秒    |
-
-### Wiki 知识库
-
-| 脚本             | 功能                                                                 | 预计耗时 |
-| ---------------- | -------------------------------------------------------------------- | -------- |
-| `search-wiki.js` | 根据关键词搜索当前用户可见的 Wiki 知识库节点（需 user_access_token） | 约 2 秒  |
 
 ### 跨体系移动（Wiki → 云盘）
 
@@ -144,7 +138,6 @@ metadata:
 | "飞书文档下载为Markdown"/"下载飞书文档为Markdown"/"飞书文档转Markdown" | 先读取 [飞书转Markdown指南]($SKILL_DIR/references/feishu-to-markdown.md)，再执行下载流程                                                                                                                                                                       |
 | "解析飞书文档链接"/"获取document_id"/"从链接提取文档ID"                | 先读取 [链接解析指南]($SKILL_DIR/references/url-to-document-id.md)，再执行解析流程                                                                                                                                                                             |
 | "搜索云文档"/"搜索文档"/"查找云文档"                                   | 先读取 [搜索云文档指南]($SKILL_DIR/references/search-document.md)，再执行搜索流程                                                                                                                                                                              |
-| "搜索Wiki"/"搜索知识库"/"查找Wiki"                                     | 先读取 [搜索Wiki指南]($SKILL_DIR/references/search-wiki.md)，再执行搜索流程                                                                                                                                                                                    |
 | "获取文件夹token"/"获取folder_token"/"从链接提取文件夹token"           | 先读取 [获取文件夹token指南]($SKILL_DIR/references/get-folder-token.md)，再执行获取流程                                                                                                                                                                        |
 | "获取文件夹元数据"/"获取folder_meta"/"查看文件夹信息"                  | 先读取 [获取文件夹元数据指南]($SKILL_DIR/references/get-folder-meta.md)，再执行查询流程                                                                                                                                                                        |
 | "获取我的空间"/"获取根文件夹"/"获取root_folder_meta"                   | 先读取 [获取我的空间元数据指南]($SKILL_DIR/references/get-root-folder-meta.md)，再执行查询流程                                                                                                                                                                 |
@@ -165,8 +158,7 @@ metadata:
 | [Markdown转飞书指南]($SKILL_DIR/references/markdown-to-feishu.md)        | Markdown 上传到飞书的详细步骤、参数说明、Callout 格式检查与自动修正规则                                            |
 | [飞书转Markdown指南]($SKILL_DIR/references/feishu-to-markdown.md)        | 飞书文档下载为 Markdown 的详细流程                                                                                 |
 | [链接解析指南]($SKILL_DIR/references/url-to-document-id.md)              | 飞书云文档链接解析为 document_id（文件 token）的详细流程                                                           |
-| [搜索云文档指南]($SKILL_DIR/references/search-document.md)               | 根据关键词搜索当前用户可见云文档的详细流程（需 user_access_token，支持分页与类型过滤）                             |
-| [搜索Wiki指南]($SKILL_DIR/references/search-wiki.md)                     | 根据关键词搜索当前用户可见 Wiki 知识库节点的详细流程（需 user_access_token，支持知识空间/节点范围过滤与分页）      |
+| [搜索云文档指南]($SKILL_DIR/references/search-document.md)               | 根据关键词搜索当前用户可见云文档的详细流程（支持 tenant_access_token 与 user_access_token，支持分页与类型过滤）    |
 | [获取文件夹token指南]($SKILL_DIR/references/get-folder-token.md)         | 获取文件夹 token 的两种方式（链接提取由 AI Agent 直接执行、名称查找由 AI Agent 调用 get-files 工具完成）的详细流程 |
 | [获取文件夹元数据指南]($SKILL_DIR/references/get-folder-meta.md)         | 获取文件夹元数据（ID、名称、创建者等）的详细流程                                                                   |
 | [获取我的空间元数据指南]($SKILL_DIR/references/get-root-folder-meta.md)  | 获取我的空间（根文件夹）元数据（token、ID、所有者 ID）的详细流程                                                   |
