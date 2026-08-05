@@ -1,6 +1,6 @@
 ---
 name: "symlink-troubleshooting-yashu"
-description: "符号链接(Symlink)导致脚本运行失败的跨平台排查与修复指南。当任何技能运行 Node.js/Python/Shell 脚本时出现 ENOENT、realpathSync、lstat、No such file or directory、FileNotFoundError 等符号链接相关错误，立即查阅本技能文档获取根因分析和解决方案。支持 Windows/macOS/Linux。"
+description: 符号链接(Symlink)、目录联接(Junction)或路径虚拟化层导致脚本与命令运行失败的跨平台排查与修复指南。激活条件（满足任一即触发）：①运行 Node.js/Python/Shell/PowerShell 脚本或命令时出现 ENOENT、lstat、realpathSync、toRealPath、FileNotFoundError、No such file or directory、Cannot find module、Cannot find path、Could not find a part of the path 等路径解析失败错误；②文件读取工具能正常访问某路径，但 PowerShell/命令行的 cd、Resolve-Path 或文件写入操作却报路径不存在；③Test-Path 对符号链接根节点返回 False 但对深层文件返回 True 的不一致现象；④已知环境存在磁盘迁移（如 C 盘到 D 盘）、Junction 或符号链接，且脚本执行或路径访问异常。支持 Windows/macOS/Linux，提供 Node.js(--preserve-symlinks-main --preserve-symlinks)、Python(-P/PYTHONSAFEPATH)、Shell(cd+pwd)、PowerShell(Get-Item) 四类运行时的快速修复方案。
 ---
 
 # 符号链接故障排查与修复指南（跨平台）
