@@ -80,14 +80,13 @@ metadata:
 
 ## 环境说明
 
-- **`$SKILL_DIR`**：本 Skill 所在的绝对目录，即 `SKILL.md` 文件所在文件夹。**⚠️ `$SKILL_DIR` 仅为文档占位符，不是环境变量**：执行命令时必须替换为实际绝对路径。在 PowerShell 中直接写 `$SKILL_DIR` 会被当作未定义变量解析为空字符串，导致 `cd $SKILL_DIR/scripts` 变成 `cd /scripts` 而报错"找不到路径"
-- **Shell 类型**：PowerShell 5（Windows）/ bash（Linux/Mac）。本 Skill 运行命令时采用**条件执行**（前一条成功才执行下一条），跨平台规则如下：
-  - **bash/zsh**（Linux/macOS）：`&&`（如 `cd $SKILL_DIR/scripts && node script.js`）
-  - **PowerShell 5**（Windows）：`; if ($?) { }`（如 `cd $SKILL_DIR/scripts; if ($?) { node script.js }`）
+- **`$SKILL_DIR`**：本 Skill 所在的绝对目录，即 `SKILL.md` 文件所在文件夹。**⚠️ `$SKILL_DIR` 仅为文档占位符，不是环境变量**：执行命令时必须替换为实际绝对路径，否则 bash 会将其解析为空字符串，导致 `cd $SKILL_DIR/scripts` 变成 `cd /scripts` 而报错"找不到路径"
+- **Shell 类型**：bash。本 Skill 运行命令时采用 **bash 条件执行**（前一条成功才执行下一条），规则如下：
+  - **条件执行**：`cmd1 && cmd2`（如 `cd $SKILL_DIR/scripts && node script.js`）
   - **禁止单 `&`**：在 bash 中 `&` 表示后台执行，语义完全不同
 - **脚本目录**：`$SKILL_DIR/scripts`
 - **Node 版本**：>=18.20.8
-- **依赖安装**：bash/zsh 用 `cd $SKILL_DIR/scripts && npm install`，PowerShell 用 `cd $SKILL_DIR/scripts; if ($?) { npm install }`
+- **依赖安装**：`cd $SKILL_DIR/scripts && npm install`
 - **配置文件**：`$SKILL_DIR/config.default.json`（存储 appId、appSecret、tenant_access_token，AI 可自动读写）
 
 ### ⚠️ 脚本已混淆，禁止读取源码
@@ -195,7 +194,7 @@ metadata:
 
 飞书 API 调用默认使用 `tenant_access_token`。获取方式参考 [认证与凭证管理指南]($SKILL_DIR/references/authentication.md) 或 [获取访问凭证 API]($SKILL_DIR/references/get_tenant_access_token.md)。
 
-令牌过期（错误码 99991663）时，运行 `cd $SKILL_DIR/scripts; if ($?) { node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径> }` 刷新令牌，更新参数文件后重试。
+令牌过期（错误码 99991663）时，运行 `cd $SKILL_DIR/scripts && node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径>` 刷新令牌，更新参数文件后重试。
 
 ## 跨功能公共规则
 
@@ -206,18 +205,14 @@ metadata:
 执行任何脚本前，**必须先 `cd` 到 `$SKILL_DIR/scripts` 目录**，再运行命令：
 
 ```bash
-# bash/zsh
 cd $SKILL_DIR/scripts && node record/get.js --parameter-file-path "参数文件绝对路径"
-
-# PowerShell 5
-cd $SKILL_DIR/scripts; if ($?) { node record/get.js --parameter-file-path "参数文件绝对路径" }
 ```
 
-| 写法                                                                                                                                | 是否允许 |
-| ----------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| `cd $SKILL_DIR/scripts && node record/get.js ...` (bash) / `cd $SKILL_DIR/scripts; if ($?) { node record/get.js ... }` (PowerShell) | ✅ 正确  |
-| `node $SKILL_DIR/scripts/record/get.js ...`                                                                                         | ❌ 禁止  |
-| `node scripts/record/get.js ...`                                                                                                    | ❌ 禁止  |
+| 写法                                              | 是否允许 |
+| ------------------------------------------------- | -------- |
+| `cd $SKILL_DIR/scripts && node record/get.js ...` | ✅ 正确  |
+| `node $SKILL_DIR/scripts/record/get.js ...`       | ❌ 禁止  |
+| `node scripts/record/get.js ...`                  | ❌ 禁止  |
 
 ### 2. 🚨 执行前必须读取对应参考文档（强制流程，不可跳过）
 
@@ -272,11 +267,11 @@ AI 调用脚本时自动管理临时参数文件：
 
 详细临时文件管理流程、工具函数用法与参数配置示例参见 [参数配置示例与最佳实践]($SKILL_DIR/references/examples.md)。
 
-### 5. 🚨 禁止 PowerShell 写文件
+### 5. 🚨 禁止用 Shell 命令写文件
 
-AI 在执行本 Skill 过程中**创建或修改任何文件（包括参数文件、配置文件等）**，**必须使用 Write 工具**。**禁止使用任何 PowerShell 文件写入命令**（`Set-Content`、`Out-File`、`>` 重定向、`[System.IO.File]::WriteAllText()` 等）。
+AI 在执行本 Skill 过程中**创建或修改任何文件（包括参数文件、配置文件等）**，**必须使用 Write 工具**。**禁止使用任何 Shell 文件写入命令**（`>` 重定向、`echo >`、`Set-Content`、`Out-File`、`[System.IO.File]::WriteAllText()` 等）。
 
-> **原因**：PowerShell 默认会在文件中添加 UTF-8 BOM（`EF BB BF`），这个不可见字符会导致：
+> **原因**：部分 Shell 写入命令会在文件中添加 UTF-8 BOM（`EF BB BF`），这个不可见字符会导致：
 >
 > - **JSON**：`JSON.parse()` 抛出 `Unexpected token` 异常
 > - **JS**：Node.js 无法加载带 BOM 的模块，报语法错误
@@ -346,7 +341,7 @@ AI 在执行本 Skill 过程中**创建或修改任何文件（包括参数文�
 → 进入第5步
 
 **第5步：【必经节点 2】cd 到 scripts 目录后执行**
-→ 运行 `cd $SKILL_DIR/scripts && node <script-path>.js --parameter-file-path "..."`（PowerShell 用 `; if ($?) { }`）
+运行 `cd $SKILL_DIR/scripts && node <script-path>.js --parameter-file-path "..."`
 → 数据表操作 → `table/` 脚本
 → 记录操作 → `record/` 脚本
 → 字段操作 → `field/` 脚本

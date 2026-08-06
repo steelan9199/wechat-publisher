@@ -42,11 +42,7 @@
 **运行以下命令**解析 URL：
 
 ```bash
-# bash/zsh
 cd $SKILL_DIR/scripts && node parse-bitable-url.js --parameter-file-path params.json
-
-# PowerShell 5
-cd $SKILL_DIR/scripts; if ($?) { node parse-bitable-url.js --parameter-file-path params.json }
 ```
 
 ## 输出结果

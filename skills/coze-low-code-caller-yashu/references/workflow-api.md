@@ -12,11 +12,11 @@
 
 工作流**统一使用异步执行**，调用流程如下：
 
-| 步骤 | 脚本                       | 功能               | 命令格式                                                                           | 输出字段                                                              |
-| ---- | -------------------------- | ------------------ | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| 1    | `get_workflow_info.js`     | 查询工作流信息     | `cd $SKILL_DIR/scripts; node get_workflow_info.js <workflow_id>`                   | `workflow_id`, `name`, `description`, `input`, `output`               |
-| 2    | `run_workflow.js`          | 执行工作流（异步） | `cd $SKILL_DIR/scripts; node run_workflow.js <workflow_id> <绝对路径/params.json>` | `execute_id`, `debug_url`                                             |
-| 3    | `check_workflow_result.js` | 查询异步运行结果   | `cd $SKILL_DIR/scripts; node check_workflow_result.js <workflow_id> <execute_id>`  | `execute_status`, `output`, `raw_output`, `debug_url`, `execute_time` |
+| 步骤 | 脚本                       | 功能               | 命令格式                                                                               | 输出字段                                                              |
+| ---- | -------------------------- | ------------------ | -------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
+| 1    | `get_workflow_info.js`     | 查询工作流信息     | `cd "$SKILL_DIR/scripts" && node get_workflow_info.js <workflow_id>`                   | `workflow_id`, `name`, `description`, `input`, `output`               |
+| 2    | `run_workflow.js`          | 执行工作流（异步） | `cd "$SKILL_DIR/scripts" && node run_workflow.js <workflow_id> <绝对路径/params.json>` | `execute_id`, `debug_url`                                             |
+| 3    | `check_workflow_result.js` | 查询异步运行结果   | `cd "$SKILL_DIR/scripts" && node check_workflow_result.js <workflow_id> <execute_id>`  | `execute_status`, `output`, `raw_output`, `debug_url`, `execute_time` |
 
 ---
 
@@ -36,7 +36,7 @@
 获取工作流需要哪些输入参数，以及会返回什么输出参数。
 
 ```bash
-cd $SKILL_DIR/scripts; node get_workflow_info.js 7651238514168545306
+cd "$SKILL_DIR/scripts" && node get_workflow_info.js 7651238514168545306
 ```
 
 **输出示例：**
@@ -85,7 +85,7 @@ cd $SKILL_DIR/scripts; node get_workflow_info.js 7651238514168545306
 ### 步骤 3：执行工作流
 
 ```bash
-cd $SKILL_DIR/scripts; node run_workflow.js 7651238514168545306 $SKILL_DIR/temp/workflow_params.json
+cd "$SKILL_DIR/scripts" && node run_workflow.js 7651238514168545306 $SKILL_DIR/temp/workflow_params.json
 ```
 
 **输出：**
@@ -104,7 +104,7 @@ cd $SKILL_DIR/scripts; node run_workflow.js 7651238514168545306 $SKILL_DIR/temp/
 循环执行本步骤，每次间隔 `POLLING_INTERVAL` 秒（默认 5 秒，可在 `$SKILL_DIR/.env` 中配置），直到状态变为 `Success` 或 `Fail`。
 
 ```bash
-cd $SKILL_DIR/scripts; node check_workflow_result.js 7651238514168545306 765xxxxxxxxxxxx
+cd "$SKILL_DIR/scripts" && node check_workflow_result.js 7651238514168545306 765xxxxxxxxxxxx
 ```
 
 **输出：**

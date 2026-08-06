@@ -26,12 +26,12 @@
 
 ## 调用流程
 
-| 步骤 | 脚本                | 功能     | 命令格式                                                                              | 输出字段                     |
-| ---- | ------------------- | -------- | ------------------------------------------------------------------------------------- | ---------------------------- |
-| 1    | `create_session.js` | 创建会话 | `cd $SKILL_DIR/scripts; node create_session.js <bot_id>`                              | `conversation_id`            |
-| 2    | `send_message.js`   | 发送消息 | `cd $SKILL_DIR/scripts; node send_message.js <conversation_id> <绝对路径/param.json>` | `chat_id`, `conversation_id` |
-| 3    | `check_status.js`   | 查询状态 | `cd $SKILL_DIR/scripts; node check_status.js <conversation_id> <chat_id>`             | `status`                     |
-| 4    | `get_messages.js`   | 获取回复 | `cd $SKILL_DIR/scripts; node get_messages.js <conversation_id> <chat_id>`             | `content`                    |
+| 步骤 | 脚本                | 功能     | 命令格式                                                                                  | 输出字段                     |
+| ---- | ------------------- | -------- | ----------------------------------------------------------------------------------------- | ---------------------------- |
+| 1    | `create_session.js` | 创建会话 | `cd "$SKILL_DIR/scripts" && node create_session.js <bot_id>`                              | `conversation_id`            |
+| 2    | `send_message.js`   | 发送消息 | `cd "$SKILL_DIR/scripts" && node send_message.js <conversation_id> <绝对路径/param.json>` | `chat_id`, `conversation_id` |
+| 3    | `check_status.js`   | 查询状态 | `cd "$SKILL_DIR/scripts" && node check_status.js <conversation_id> <chat_id>`             | `status`                     |
+| 4    | `get_messages.js`   | 获取回复 | `cd "$SKILL_DIR/scripts" && node get_messages.js <conversation_id> <chat_id>`             | `content`                    |
 
 ---
 
@@ -51,7 +51,7 @@
 开启与智能体的对话：
 
 ```bash
-cd $SKILL_DIR/scripts; node create_session.js 7651224745501376564
+cd "$SKILL_DIR/scripts" && node create_session.js 7651224745501376564
 ```
 
 **输出：**
@@ -99,7 +99,7 @@ cd $SKILL_DIR/scripts; node create_session.js 7651224745501376564
 #### 2.3 执行发送
 
 ```bash
-cd $SKILL_DIR/scripts; node send_message.js 7652343036010610715 $SKILL_DIR/temp/send_msg_param.json
+cd "$SKILL_DIR/scripts" && node send_message.js 7652343036010610715 $SKILL_DIR/temp/send_msg_param.json
 ```
 
 **输出：**
@@ -118,7 +118,7 @@ cd $SKILL_DIR/scripts; node send_message.js 7652343036010610715 $SKILL_DIR/temp/
 轮询检查任务执行状态：
 
 ```bash
-cd $SKILL_DIR/scripts; node check_status.js 7652343036010610715 7652343403598299174
+cd "$SKILL_DIR/scripts" && node check_status.js 7652343036010610715 7652343403598299174
 ```
 
 **输出：**
@@ -142,7 +142,7 @@ cd $SKILL_DIR/scripts; node check_status.js 7652343036010610715 7652343403598299
 当状态变为 `completed` 后，获取智能体的回复：
 
 ```bash
-cd $SKILL_DIR/scripts; node get_messages.js 7652343036010610715 7652343403598299174
+cd "$SKILL_DIR/scripts" && node get_messages.js 7652343036010610715 7652343403598299174
 ```
 
 **输出：**
@@ -210,9 +210,9 @@ cd $SKILL_DIR/scripts; node get_messages.js 7652343036010610715 7652343403598299
 
 ## 常见错误
 
-| 错误信息                                    | 原因                              | 正确用法                                                      |
-| ------------------------------------------- | --------------------------------- | ------------------------------------------------------------- |
-| `Cannot find module '...create_session.js'` | 未先 cd 到 scripts 目录就运行脚本 | 执行 `cd $SKILL_DIR/scripts; node create_session.js <bot_id>` |
-| `参数错误：JSON 中缺少或无效的 'path' 字段` | 参数文件格式错误                  | 使用 `{"path": "绝对路径"}` 格式                              |
-| `参数错误：第二个参数必须是 JSON 文件路径`  | 传递了 `.txt` 或其他非 JSON 文件  | 第二个参数必须是 JSON 文件的绝对路径                          |
-| `用户输入文件不存在`                        | path 指向的文件不存在             | 使用绝对路径，确保文件存在                                    |
+| 错误信息                                    | 原因                              | 正确用法                                                          |
+| ------------------------------------------- | --------------------------------- | ----------------------------------------------------------------- |
+| `Cannot find module '...create_session.js'` | 未先 cd 到 scripts 目录就运行脚本 | 执行 `cd "$SKILL_DIR/scripts" && node create_session.js <bot_id>` |
+| `参数错误：JSON 中缺少或无效的 'path' 字段` | 参数文件格式错误                  | 使用 `{"path": "绝对路径"}` 格式                                  |
+| `参数错误：第二个参数必须是 JSON 文件路径`  | 传递了 `.txt` 或其他非 JSON 文件  | 第二个参数必须是 JSON 文件的绝对路径                              |
+| `用户输入文件不存在`                        | path 指向的文件不存在             | 使用绝对路径，确保文件存在                                        |

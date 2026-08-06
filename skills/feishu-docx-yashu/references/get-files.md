@@ -15,7 +15,7 @@
 ### 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; if ($?) { node get-files.js --parameter-file-path <参数文件绝对路径> }
+cd "$SKILL_DIR/scripts" && node get-files.js --parameter-file-path <参数文件绝对路径>
 ```
 
 ### 参数文件格式
@@ -272,9 +272,9 @@ cd $SKILL_DIR/scripts; if ($?) { node get-files.js --parameter-file-path <参数
 
 ## 错误处理
 
-| 错误码   | 错误信息                               | 解决方案                                                                                                                    |
-| -------- | -------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| 99991663 | Invalid access token                   | 运行 `cd $SKILL_DIR/scripts; if ($?) { node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径> }` 刷新令牌 |
-| 1061004  | forbidden                              | 在浏览器中打开文件夹链接，将飞书企业自建应用添加为协作者并赋予「可管理」权限                                                |
-| -1       | 参数文件中必须包含 tenant_access_token | 检查参数文件是否包含 `tenant_access_token` 字段                                                                             |
-| -1       | 必须提供 --parameter-file-path 参数    | 通过 `--parameter-file-path` 传递参数文件绝对路径                                                                           |
+| 错误码   | 错误信息                               | 解决方案                                                                                                            |
+| -------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 99991663 | Invalid access token                   | 运行 `cd "$SKILL_DIR/scripts" && node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径>` 刷新令牌 |
+| 1061004  | forbidden                              | 在浏览器中打开文件夹链接，将飞书企业自建应用添加为协作者并赋予「可管理」权限                                        |
+| -1       | 参数文件中必须包含 tenant_access_token | 检查参数文件是否包含 `tenant_access_token` 字段                                                                     |
+| -1       | 必须提供 --parameter-file-path 参数    | 通过 `--parameter-file-path` 传递参数文件绝对路径                                                                   |

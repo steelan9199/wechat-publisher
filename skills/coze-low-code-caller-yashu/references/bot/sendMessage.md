@@ -40,13 +40,13 @@
 ## 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; node send_message.js <conversation_id> <param_json_absolute_path>
+cd "$SKILL_DIR/scripts" && node send_message.js <conversation_id> <param_json_absolute_path>
 ```
 
 > ⚠️ **必须先 cd 到 scripts 目录！** 例如：
 >
 > ```bash
-> cd $SKILL_DIR/scripts; node send_message.js 7652343036010610715 $SKILL_DIR/temp/send_msg_param.json
+> cd "$SKILL_DIR/scripts" && node send_message.js 7652343036010610715 $SKILL_DIR/temp/send_msg_param.json
 > ```
 
 ## ⚠️ 重要：必须使用绝对路径
@@ -148,7 +148,7 @@ cd $SKILL_DIR/scripts; node send_message.js <conversation_id> <param_json_absolu
 然后运行（第二个参数使用**绝对路径**，指向参数 JSON 文件）：
 
 ```bash
-cd $SKILL_DIR/scripts; node send_message.js 7651243864586878991 $SKILL_DIR/temp/send_msg_param.json
+cd "$SKILL_DIR/scripts" && node send_message.js 7651243864586878991 $SKILL_DIR/temp/send_msg_param.json
 # 输出: { "chat_id": "...", "conversation_id": "..." }
 ```
 
@@ -166,6 +166,6 @@ cd $SKILL_DIR/scripts; node send_message.js 7651243864586878991 $SKILL_DIR/temp/
 然后运行（第二个参数使用**绝对路径**）：
 
 ```bash
-cd $SKILL_DIR/scripts; node send_message.js 7651243864586878991 $SKILL_DIR/temp/param.json
+cd "$SKILL_DIR/scripts" && node send_message.js 7651243864586878991 $SKILL_DIR/temp/param.json
 # 输出: { "chat_id": "...", "conversation_id": "..." }
 ```

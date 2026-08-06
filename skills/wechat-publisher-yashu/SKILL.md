@@ -12,11 +12,11 @@ version: 1.0.4
 
 ## 环境说明
 
-- **Shell 类型**：PowerShell 5
-- 本 Skill 运行命令时采用**条件执行**（前一条成功才执行下一条），跨平台规则如下：bash/zsh 用 `&&`，PowerShell 5 用 `; if ($?) { cmd }`
+- **Shell 类型**：bash
+- 本 Skill 运行命令时采用 **bash 条件执行**（前一条成功才执行下一条），规则：`cmd1 && cmd2`，禁止单 `&`（在 bash 中 `&` 表示后台执行）
 - **脚本目录**：`$SKILL_DIR/scripts/`
 - **Node.js**：>= 18.20.8
-- **依赖安装**：`cd "$SKILL_DIR/scripts"; if ($?) { npm install }`
+- **依赖安装**：`cd "$SKILL_DIR/scripts" && npm install`
 - **配置文件**：`$SKILL_DIR/config.default.json`，发布参数默认值来源于此文件，用户未指定的字段将自动使用默认值
 - 执行任何脚本前必须先 `cd` 到 `$SKILL_DIR/scripts` 目录。
 - ⚠️ `$SKILL_DIR` 仅为文档占位符，不是环境变量，执行命令时必须替换为实际绝对路径。
@@ -49,8 +49,8 @@ version: 1.0.4
 - Node.js >= 18.20.8（`package.json` 中声明的最低版本）
 - 安装依赖（已安装时会快速跳过）
 
-```powershell
-cd "$SKILL_DIR/scripts"; if ($?) { npm install }
+```bash
+cd "$SKILL_DIR/scripts" && npm install
 ```
 
 ### 第2步：收集必要信息
@@ -134,8 +134,8 @@ cd "$SKILL_DIR/scripts"; if ($?) { npm install }
 
 执行命令：
 
-```powershell
-cd "$SKILL_DIR/scripts"; if ($?) { node "$SKILL_DIR/scripts/index.js" --config "$SKILL_DIR/config.default.json" }
+```bash
+cd "$SKILL_DIR/scripts" && node "$SKILL_DIR/scripts/index.js" --config "$SKILL_DIR/config.default.json"
 ```
 
 > 执行该命令后，等待命令运行完毕（脚本会以 exit 0 成功退出），然后从命令输出中读取发布结果（含 mediaId）。
@@ -155,8 +155,8 @@ cd "$SKILL_DIR/scripts"; if ($?) { node "$SKILL_DIR/scripts/index.js" --config "
 
 发布完成后清理临时文件：
 
-```powershell
-cd "$SKILL_DIR/scripts"; if ($?) { node clear_temp.js }
+```bash
+cd "$SKILL_DIR/scripts" && node clear_temp.js
 ```
 
 ### 第7步：提醒用户优化文章

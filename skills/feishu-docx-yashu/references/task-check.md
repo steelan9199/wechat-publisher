@@ -9,7 +9,7 @@
 ### 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; if ($?) { node task-check.js --parameter-file-path <参数文件绝对路径> }
+cd "$SKILL_DIR/scripts" && node task-check.js --parameter-file-path <参数文件绝对路径>
 ```
 
 ### 参数文件格式
@@ -23,10 +23,10 @@ cd $SKILL_DIR/scripts; if ($?) { node task-check.js --parameter-file-path <参�
 
 ### 参数说明
 
-| 参数名              | 类型   | 必填 | 说明                                                            | 默认值 |
-| ------------------- | ------ | ---- | --------------------------------------------------------------- | ------ |
-| tenant_access_token | string | yes  | 飞书应用租户访问令牌                                            | -      |
-| task_id             | string | yes  | 异步任务 ID，可通过删除文件夹或移动文件夹接口获取               | -      |
+| 参数名              | 类型   | 必填 | 说明                                              | 默认值 |
+| ------------------- | ------ | ---- | ------------------------------------------------- | ------ |
+| tenant_access_token | string | yes  | 飞书应用租户访问令牌                              | -      |
+| task_id             | string | yes  | 异步任务 ID，可通过删除文件夹或移动文件夹接口获取 | -      |
 
 ## 使用示例
 
@@ -63,10 +63,10 @@ cd $SKILL_DIR/scripts; if ($?) { node task-check.js --parameter-file-path <参�
 }
 ```
 
-| 字段     | 说明                                                                     |
-| -------- | ------------------------------------------------------------------------ |
-| task_id  | 异步任务 ID                                                              |
-| status   | 任务状态：`success`（已完成）、`failed`（失败）、`processing`（进行中）  |
+| 字段    | 说明                                                                    |
+| ------- | ----------------------------------------------------------------------- |
+| task_id | 异步任务 ID                                                             |
+| status  | 任务状态：`success`（已完成）、`failed`（失败）、`processing`（进行中） |
 
 ### 失败
 
@@ -86,7 +86,7 @@ cd $SKILL_DIR/scripts; if ($?) { node task-check.js --parameter-file-path <参�
 
 ## 错误处理
 
-| 错误码   | 错误信息             | 解决方案                                                                                                                    |
-| -------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| 99991663 | Invalid access token | 运行 `cd $SKILL_DIR/scripts; if ($?) { node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径> }` 刷新令牌 |
-| -1       | 参数文件中必须包含 task_id | 检查参数文件是否包含 `task_id` 字段                                                                                    |
+| 错误码   | 错误信息                   | 解决方案                                                                                                            |
+| -------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 99991663 | Invalid access token       | 运行 `cd "$SKILL_DIR/scripts" && node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径>` 刷新令牌 |
+| -1       | 参数文件中必须包含 task_id | 检查参数文件是否包含 `task_id` 字段                                                                                 |

@@ -10,10 +10,10 @@
 
 **调用本脚本前，必须同时满足以下两个条件，否则禁止调用：**
 
-| 条件 | 说明 |
-| ---- | ---- |
+| 条件             | 说明                            |
+| ---------------- | ------------------------------- |
 | ① 已知文件 token | 每个文件的 token 必须已明确获取 |
-| ② 已知文件类型 | 每个文件的 type 必须已明确确认 |
+| ② 已知文件类型   | 每个文件的 type 必须已明确确认  |
 
 **token 和 type 是一个文件的完整信息，必须成对提供，缺一不可。** 如果任一条件不满足，禁止调用本功能。
 
@@ -21,10 +21,10 @@
 
 通过以下方式获取文件的 `token` 和 `type`，确认后方可调用本脚本：
 
-| 确认方式 | 适用场景 | 操作 |
-| -------- | -------- | ---- |
-| `get-files.js` | 批量确认某文件夹下所有文件的类型 | 获取文件清单后，从返回结果中提取每个文件的 `token` 和 `type` |
-| `get-file-meta.js` | 确认单个或少量文件的类型 | 根据文件 token 获取元数据，查看 `type` 字段 |
+| 确认方式           | 适用场景                         | 操作                                                         |
+| ------------------ | -------------------------------- | ------------------------------------------------------------ |
+| `get-files.js`     | 批量确认某文件夹下所有文件的类型 | 获取文件清单后，从返回结果中提取每个文件的 `token` 和 `type` |
+| `get-file-meta.js` | 确认单个或少量文件的类型         | 根据文件 token 获取元数据，查看 `type` 字段                  |
 
 ### 禁止调用的情形
 
@@ -43,7 +43,7 @@
 ### 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; if ($?) { node batch-delete-file.js --parameter-file-path <参数文件绝对路径> }
+cd "$SKILL_DIR/scripts" && node batch-delete-file.js --parameter-file-path <参数文件绝对路径>
 ```
 
 ### 参数文件格式
@@ -63,25 +63,25 @@ cd $SKILL_DIR/scripts; if ($?) { node batch-delete-file.js --parameter-file-path
 
 ### 参数说明
 
-| 参数名              | 类型   | 必填 | 说明                                              | 默认值 |
-| ------------------- | ------ | ---- | ------------------------------------------------- | ------ |
-| tenant_access_token | string | yes  | 飞书应用租户访问令牌                              | -      |
+| 参数名              | 类型   | 必填 | 说明                                                               | 默认值 |
+| ------------------- | ------ | ---- | ------------------------------------------------------------------ | ------ |
+| tenant_access_token | string | yes  | 飞书应用租户访问令牌                                               | -      |
 | files               | array  | yes  | 文件信息列表，每个元素为 `{ "token": "xxx", "type": "docx" }` 对象 | -      |
 
 > ⚠️ **每个文件对象必须同时包含 `token` 和 `type`**，二者缺一不可。`type` 没有默认值，不支持仅传 token 字符串数组。调用前必须通过 `get-files.js` 或 `get-file-meta.js` 确认文件类型。
 
 #### type 参数可选值（仅文件类型）
 
-| 类型       | 说明           |
-| ---------- | -------------- |
-| `file`     | 普通文件类型   |
-| `docx`     | 新版文档类型   |
-| `bitable`  | 多维表格类型   |
-| `doc`      | 文档类型       |
-| `sheet`    | 电子表格类型   |
-| `mindnote` | 思维笔记类型   |
-| `slides`   | 幻灯片类型     |
-| `shortcut` | 快捷方式类型   |
+| 类型       | 说明         |
+| ---------- | ------------ |
+| `file`     | 普通文件类型 |
+| `docx`     | 新版文档类型 |
+| `bitable`  | 多维表格类型 |
+| `doc`      | 文档类型     |
+| `sheet`    | 电子表格类型 |
+| `mindnote` | 思维笔记类型 |
+| `slides`   | 幻灯片类型   |
+| `shortcut` | 快捷方式类型 |
 
 > ⚠️ **不支持 `folder` 类型**。如需删除文件夹，请使用 `delete-file.js`。
 
@@ -128,10 +128,7 @@ cd $SKILL_DIR/scripts; if ($?) { node batch-delete-file.js --parameter-file-path
 ```json
 {
   "tenant_access_token": "t-g10433muWKY3PPJG4QHT3EUYO2BBFJF52SAMWXWD",
-  "files": [
-    { "token": "token1", "type": "docx" },
-    { "token": "token2" }
-  ]
+  "files": [{ "token": "token1", "type": "docx" }, { "token": "token2" }]
 }
 ```
 
@@ -152,9 +149,24 @@ cd $SKILL_DIR/scripts; if ($?) { node batch-delete-file.js --parameter-file-path
     "elapsed_seconds": 2.5,
     "failed_files": [],
     "results": [
-      { "index": 1, "file_token": "token1", "type": "docx", "status": "success" },
-      { "index": 2, "file_token": "token2", "type": "docx", "status": "success" },
-      { "index": 3, "file_token": "token3", "type": "docx", "status": "success" }
+      {
+        "index": 1,
+        "file_token": "token1",
+        "type": "docx",
+        "status": "success"
+      },
+      {
+        "index": 2,
+        "file_token": "token2",
+        "type": "docx",
+        "status": "success"
+      },
+      {
+        "index": 3,
+        "file_token": "token3",
+        "type": "docx",
+        "status": "success"
+      }
     ]
   }
 }
@@ -172,12 +184,33 @@ cd $SKILL_DIR/scripts; if ($?) { node batch-delete-file.js --parameter-file-path
     "failed": 1,
     "elapsed_seconds": 3.0,
     "failed_files": [
-      { "index": 2, "token": "token2", "type": "docx", "msg": "文件不存在或已删除" }
+      {
+        "index": 2,
+        "token": "token2",
+        "type": "docx",
+        "msg": "文件不存在或已删除"
+      }
     ],
     "results": [
-      { "index": 1, "file_token": "token1", "type": "docx", "status": "success" },
-      { "index": 2, "file_token": "token2", "type": "docx", "status": "failed", "msg": "文件不存在或已删除" },
-      { "index": 3, "file_token": "token3", "type": "docx", "status": "success" }
+      {
+        "index": 1,
+        "file_token": "token1",
+        "type": "docx",
+        "status": "success"
+      },
+      {
+        "index": 2,
+        "file_token": "token2",
+        "type": "docx",
+        "status": "failed",
+        "msg": "文件不存在或已删除"
+      },
+      {
+        "index": 3,
+        "file_token": "token3",
+        "type": "docx",
+        "status": "success"
+      }
     ]
   }
 }
@@ -185,19 +218,19 @@ cd $SKILL_DIR/scripts; if ($?) { node batch-delete-file.js --parameter-file-path
 
 ### 返回字段说明
 
-| 字段                  | 说明                                                         |
-| --------------------- | ------------------------------------------------------------ |
-| total                 | 传入的文件总数                                               |
-| success               | 成功删除的数量                                               |
-| failed                | 删除失败的数量                                               |
-| elapsed_seconds       | 总耗时（秒）                                                 |
-| failed_files          | 失败文件列表，含 index、token、type、msg                     |
-| results               | 全部文件的删除结果明细                                       |
-| results[].index       | 文件序号（从 1 开始）                                        |
-| results[].file_token  | 文件 token                                                   |
-| results[].type        | 文件类型                                                     |
-| results[].status      | 删除状态：`success` 或 `failed`                              |
-| results[].msg         | 失败原因（仅失败时存在）                                     |
+| 字段                 | 说明                                     |
+| -------------------- | ---------------------------------------- |
+| total                | 传入的文件总数                           |
+| success              | 成功删除的数量                           |
+| failed               | 删除失败的数量                           |
+| elapsed_seconds      | 总耗时（秒）                             |
+| failed_files         | 失败文件列表，含 index、token、type、msg |
+| results              | 全部文件的删除结果明细                   |
+| results[].index      | 文件序号（从 1 开始）                    |
+| results[].file_token | 文件 token                               |
+| results[].type       | 文件类型                                 |
+| results[].status     | 删除状态：`success` 或 `failed`          |
+| results[].msg        | 失败原因（仅失败时存在）                 |
 
 ## 注意事项
 
@@ -211,12 +244,12 @@ cd $SKILL_DIR/scripts; if ($?) { node batch-delete-file.js --parameter-file-path
 
 ## 错误处理
 
-| 错误码   | 错误信息               | 解决方案                                                                                                                    |
-| -------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| 99991663 | Invalid access token   | 运行 `cd $SKILL_DIR/scripts; if ($?) { node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径> }` 刷新令牌 |
-| 1061003  | not found              | 检查 `type` 参数是否与实际文件类型匹配，检查 `file_token` 是否正确                                                          |
-| 1061004  | forbidden              | 确认应用或用户是否具有删除权限（文件所有者+父文件夹编辑权限，或父文件夹所有者）                                            |
-| 1061045  | too many requests      | 请求频率超限，脚本已内置频率控制，如仍触发可稍后重试失败的文件                                                              |
-| -1       | 参数文件中必须包含...  | 检查参数文件是否包含 `tenant_access_token` 和 `files` 字段                                                                  |
-| -1       | 缺少 token 或 type     | 每个文件对象必须同时包含 `token` 和 `type`。请先通过 `get-files.js` 或 `get-file-meta.js` 确认文件信息                      |
-| -1       | type 参数无效          | 检查 `type` 参数是否为支持的文件类型：file, docx, bitable, doc, sheet, mindnote, slides, shortcut                           |
+| 错误码   | 错误信息              | 解决方案                                                                                                            |
+| -------- | --------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 99991663 | Invalid access token  | 运行 `cd "$SKILL_DIR/scripts" && node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径>` 刷新令牌 |
+| 1061003  | not found             | 检查 `type` 参数是否与实际文件类型匹配，检查 `file_token` 是否正确                                                  |
+| 1061004  | forbidden             | 确认应用或用户是否具有删除权限（文件所有者+父文件夹编辑权限，或父文件夹所有者）                                     |
+| 1061045  | too many requests     | 请求频率超限，脚本已内置频率控制，如仍触发可稍后重试失败的文件                                                      |
+| -1       | 参数文件中必须包含... | 检查参数文件是否包含 `tenant_access_token` 和 `files` 字段                                                          |
+| -1       | 缺少 token 或 type    | 每个文件对象必须同时包含 `token` 和 `type`。请先通过 `get-files.js` 或 `get-file-meta.js` 确认文件信息              |
+| -1       | type 参数无效         | 检查 `type` 参数是否为支持的文件类型：file, docx, bitable, doc, sheet, mindnote, slides, shortcut                   |

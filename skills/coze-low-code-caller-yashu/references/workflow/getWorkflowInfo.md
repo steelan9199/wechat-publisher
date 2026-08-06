@@ -7,13 +7,13 @@
 ## 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; node get_workflow_info.js <workflow_id>
+cd "$SKILL_DIR/scripts" && node get_workflow_info.js <workflow_id>
 ```
 
 > ⚠️ **必须先 cd 到 scripts 目录！** 例如：
 >
 > ```bash
-> cd $SKILL_DIR/scripts; node get_workflow_info.js 7651238514168545306
+> cd "$SKILL_DIR/scripts" && node get_workflow_info.js 7651238514168545306
 > ```
 
 ## 参数
@@ -119,7 +119,7 @@ AI 在构造工作流输入参数时，应重点参考以下字段：
 ## 调用示例
 
 ```bash
-cd $SKILL_DIR/scripts; node get_workflow_info.js 7651238514168545306
+cd "$SKILL_DIR/scripts" && node get_workflow_info.js 7651238514168545306
 ```
 
 ## 使用场景

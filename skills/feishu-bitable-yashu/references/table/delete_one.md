@@ -54,11 +54,7 @@
 2. **运行脚本**
 
    ```bash
-   # bash/zsh
    cd $SKILL_DIR/scripts && node table/delete-one.js --parameter-file-path "$SKILL_DIR/temp/feishu-operation-1740374400000-a7x9k2.json"
-
-   # PowerShell 5
-   cd $SKILL_DIR/scripts; if ($?) { node table/delete-one.js --parameter-file-path "$SKILL_DIR/temp/feishu-operation-1740374400000-a7x9k2.json" }
    ```
 
    > ⚠️ 注意：

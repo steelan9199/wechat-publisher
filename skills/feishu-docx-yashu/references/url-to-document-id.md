@@ -20,7 +20,7 @@
 ### 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; if ($?) { node url-to-document-id.js --parameter-file-path <参数文件绝对路径> }
+cd "$SKILL_DIR/scripts" && node url-to-document-id.js --parameter-file-path <参数文件绝对路径>
 ```
 
 ### 参数文件格式
@@ -74,9 +74,9 @@ cd $SKILL_DIR/scripts; if ($?) { node url-to-document-id.js --parameter-file-pat
 }
 ```
 
-| 字段        | 说明                                                |
-| ----------- | --------------------------------------------------- |
-| document_id | 飞书文档 ID，即文件的 token（file_token）           |
+| 字段        | 说明                                      |
+| ----------- | ----------------------------------------- |
+| document_id | 飞书文档 ID，即文件的 token（file_token） |
 
 ### 失败
 
@@ -96,6 +96,6 @@ cd $SKILL_DIR/scripts; if ($?) { node url-to-document-id.js --parameter-file-pat
 
 ## 错误处理
 
-| 错误码   | 错误信息             | 解决方案                                                                                                                    |
-| -------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| 99991663 | Invalid access token | 运行 `cd $SKILL_DIR/scripts; if ($?) { node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径> }` 刷新令牌 |
+| 错误码   | 错误信息             | 解决方案                                                                                                            |
+| -------- | -------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 99991663 | Invalid access token | 运行 `cd "$SKILL_DIR/scripts" && node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径>` 刷新令牌 |

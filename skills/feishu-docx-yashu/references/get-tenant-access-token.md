@@ -45,7 +45,7 @@ tenant_access_token 是应用访问飞书开放平台 API 的凭证，用于代�
 - ❌ **错误示例**：`--parameter-file-path D:\skill\temp-params.json`（反斜杠）
 
 ```bash
-cd $SKILL_DIR/scripts; if ($?) { node get-tenant-access-token.js --parameter-file-path <json文件绝对路径> }
+cd "$SKILL_DIR/scripts" && node get-tenant-access-token.js --parameter-file-path <json文件绝对路径>
 ```
 
 参数文件 JSON 格式示例:
@@ -104,8 +104,8 @@ cd $SKILL_DIR/scripts; if ($?) { node get-tenant-access-token.js --parameter-fil
 
 ## 常见错误及解决方案
 
-| 错误现象                                                                              | 错误原因                                                                        | 解决方案                                                                                                                                                                |
-| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 执行令牌刷新脚本时返回 `必须提供 --parameter-file-path 参数`                          | 未按照脚本规范通过参数文件传递参数，直接执行脚本缺少必要配置                    | 必须通过 `--parameter-file-path` 参数传递包含完整配置的JSON参数文件，禁止直接运行脚本                                                                                   |
-| 执行令牌刷新脚本时返回 `参数文件中必须包含 secretKeyConfigFilePath`                   | 参数文件缺少 `secretKeyConfigFilePath` 必填字段，脚本无法将新令牌回写到配置文件 | 在参数文件中添加 `secretKeyConfigFilePath` 字段，值为 `$SKILL_DIR/config.default.json` 文件的绝对路径（使用正斜杠分隔符）                                               |
-| 调用其他飞书API时返回错误码 `99991663`，提示 `Invalid access token for authorization` | 配置文件中存储的`tenant_access_token`已过期（飞书令牌默认有效期为2小时）        | 运行 `cd $SKILL_DIR/scripts; if ($?) { node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径> }` 刷新令牌，获取新的`tenant_access_token`后重试API调用 |
+| 错误现象                                                                              | 错误原因                                                                        | 解决方案                                                                                                                                                        |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 执行令牌刷新脚本时返回 `必须提供 --parameter-file-path 参数`                          | 未按照脚本规范通过参数文件传递参数，直接执行脚本缺少必要配置                    | 必须通过 `--parameter-file-path` 参数传递包含完整配置的JSON参数文件，禁止直接运行脚本                                                                           |
+| 执行令牌刷新脚本时返回 `参数文件中必须包含 secretKeyConfigFilePath`                   | 参数文件缺少 `secretKeyConfigFilePath` 必填字段，脚本无法将新令牌回写到配置文件 | 在参数文件中添加 `secretKeyConfigFilePath` 字段，值为 `$SKILL_DIR/config.default.json` 文件的绝对路径（使用正斜杠分隔符）                                       |
+| 调用其他飞书API时返回错误码 `99991663`，提示 `Invalid access token for authorization` | 配置文件中存储的`tenant_access_token`已过期（飞书令牌默认有效期为2小时）        | 运行 `cd "$SKILL_DIR/scripts" && node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径>` 刷新令牌，获取新的`tenant_access_token`后重试API调用 |

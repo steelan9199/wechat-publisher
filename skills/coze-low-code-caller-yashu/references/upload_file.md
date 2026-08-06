@@ -35,13 +35,13 @@
 > ⚠️ **重要**：参数文件路径必须使用**绝对路径**，且临时文件必须放在 `$SKILL_DIR/temp` 目录下！
 
 ```bash
-cd $SKILL_DIR/scripts; node upload_file.js <文件绝对路径>
+cd "$SKILL_DIR/scripts" && node upload_file.js <文件绝对路径>
 ```
 
 > ⚠️ **必须先 cd 到 scripts 目录！** 例如：
 >
 > ```bash
-> cd $SKILL_DIR/scripts; node upload_file.js $SKILL_DIR/temp/photo.jpg
+> cd "$SKILL_DIR/scripts" && node upload_file.js $SKILL_DIR/temp/photo.jpg
 > ```
 
 ### 参数说明
@@ -56,10 +56,10 @@ cd $SKILL_DIR/scripts; node upload_file.js <文件绝对路径>
 
 ```bash
 # 使用绝对路径上传图片文件
-cd $SKILL_DIR/scripts; node upload_file.js $SKILL_DIR/temp/photo.jpg
+cd "$SKILL_DIR/scripts" && node upload_file.js $SKILL_DIR/temp/photo.jpg
 
 # 使用绝对路径上传 PDF 文档
-cd $SKILL_DIR/scripts; node upload_file.js $SKILL_DIR/temp/report.pdf
+cd "$SKILL_DIR/scripts" && node upload_file.js $SKILL_DIR/temp/report.pdf
 ```
 
 ### 输出格式

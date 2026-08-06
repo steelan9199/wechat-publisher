@@ -9,7 +9,7 @@
 ### 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; if ($?) { node move-file.js --parameter-file-path <参数文件绝对路径> }
+cd "$SKILL_DIR/scripts" && node move-file.js --parameter-file-path <参数文件绝对路径>
 ```
 
 ### 参数文件格式
@@ -34,16 +34,16 @@ cd $SKILL_DIR/scripts; if ($?) { node move-file.js --parameter-file-path <参数
 
 #### type 参数可选值
 
-| 类型       | 说明           |
-| ---------- | -------------- |
-| `file`     | 普通文件类型   |
-| `docx`     | 新版文档类型   |
-| `bitable`  | 多维表格类型   |
-| `doc`      | 文档类型       |
-| `sheet`    | 电子表格类型   |
-| `mindnote` | 思维笔记类型   |
-| `folder`   | 文件夹类型     |
-| `slides`   | 幻灯片类型     |
+| 类型       | 说明         |
+| ---------- | ------------ |
+| `file`     | 普通文件类型 |
+| `docx`     | 新版文档类型 |
+| `bitable`  | 多维表格类型 |
+| `doc`      | 文档类型     |
+| `sheet`    | 电子表格类型 |
+| `mindnote` | 思维笔记类型 |
+| `folder`   | 文件夹类型   |
+| `slides`   | 幻灯片类型   |
 
 > ⚠️ **不支持 `shortcut` 类型**：快捷方式无法通过本接口移动。
 
@@ -89,13 +89,13 @@ cd $SKILL_DIR/scripts; if ($?) { node move-file.js --parameter-file-path <参数
 }
 ```
 
-| 字段                     | 说明                                                                  |
-| ------------------------ | --------------------------------------------------------------------- |
-| file_token               | 被移动的文件或文件夹的 token                                          |
-| type                     | 文件类型                                                              |
-| destination_folder_token | 目标文件夹的 token                                                    |
-| task_id                  | 异步任务 ID。`"0"` 表示同步完成，非零表示异步操作                      |
-| task_status              | 任务状态：`success`（已完成）。异步操作时脚本自动轮询直至完成          |
+| 字段                     | 说明                                                          |
+| ------------------------ | ------------------------------------------------------------- |
+| file_token               | 被移动的文件或文件夹的 token                                  |
+| type                     | 文件类型                                                      |
+| destination_folder_token | 目标文件夹的 token                                            |
+| task_id                  | 异步任务 ID。`"0"` 表示同步完成，非零表示异步操作             |
+| task_status              | 任务状态：`success`（已完成）。异步操作时脚本自动轮询直至完成 |
 
 ### 失败
 
@@ -127,11 +127,11 @@ cd $SKILL_DIR/scripts; if ($?) { node move-file.js --parameter-file-path <参数
 
 ## 错误处理
 
-| 错误码   | 错误信息                           | 解决方案                                                                                                                    |
-| -------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| 99991663 | Invalid access token               | 运行 `cd $SKILL_DIR/scripts; if ($?) { node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径> }` 刷新令牌 |
-| 1061003  | not found                          | 检查 `type` 参数是否与实际文件类型匹配，检查 `file_token` 是否正确                                                          |
-| 1061004  | forbidden                          | 确认应用是否具有源文件夹的操作权限                                                                                          |
-| 1062535  | destination parent no permission   | 在目标文件夹中添加飞书企业自建应用为协作者并赋予「可管理」权限（见上方「目标文件夹权限配置」）                              |
-| -1       | type 参数无效                      | 检查 `type` 参数是否为支持的类型：file, docx, bitable, doc, sheet, mindnote, folder, slides                                 |
-| -1       | 参数文件中必须包含 folder_token    | 检查参数文件是否包含 `folder_token` 字段（目标文件夹 token）                                                                |
+| 错误码   | 错误信息                         | 解决方案                                                                                                            |
+| -------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 99991663 | Invalid access token             | 运行 `cd "$SKILL_DIR/scripts" && node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径>` 刷新令牌 |
+| 1061003  | not found                        | 检查 `type` 参数是否与实际文件类型匹配，检查 `file_token` 是否正确                                                  |
+| 1061004  | forbidden                        | 确认应用是否具有源文件夹的操作权限                                                                                  |
+| 1062535  | destination parent no permission | 在目标文件夹中添加飞书企业自建应用为协作者并赋予「可管理」权限（见上方「目标文件夹权限配置」）                      |
+| -1       | type 参数无效                    | 检查 `type` 参数是否为支持的类型：file, docx, bitable, doc, sheet, mindnote, folder, slides                         |
+| -1       | 参数文件中必须包含 folder_token  | 检查参数文件是否包含 `folder_token` 字段（目标文件夹 token）                                                        |

@@ -10,40 +10,40 @@
 
 **与「获取文件夹元数据」的区别**：
 
-| 接口                       | 适用对象           | 支持批量 | 返回信息侧重                         |
-| -------------------------- | ------------------ | -------- | ------------------------------------ |
-| get-folder-meta（文件夹） | 仅文件夹（folder） | 否       | 文件夹的 ID、名称、上级目录 ID 等    |
+| 接口                      | 适用对象           | 支持批量 | 返回信息侧重                             |
+| ------------------------- | ------------------ | -------- | ---------------------------------------- |
+| get-folder-meta（文件夹） | 仅文件夹（folder） | 否       | 文件夹的 ID、名称、上级目录 ID 等        |
 | get-file-meta（本接口）   | 任意类型文件       | 是       | 标题、所有者、密级、访问链接等通用元数据 |
 
 ## doc_type 取值
 
-| doc_type      | 说明                  |
-| ------------- | --------------------- |
-| `docx`        | 飞书新版文档（最常用）|
-| `bitable`     | 飞书多维表格（最常用）|
-| `doc`         | 飞书旧版文档          |
-| `sheet`       | 飞书电子表格          |
-| `mindnote`    | 飞书思维笔记          |
-| `file`        | 飞书文件              |
-| `wiki`        | 飞书知识库            |
-| `folder`      | 飞书文件夹            |
-| `synced_block`| 文档同步块（灰度中）  |
-| `slides`      | 飞书幻灯片            |
+| doc_type       | 说明                   |
+| -------------- | ---------------------- |
+| `docx`         | 飞书新版文档（最常用） |
+| `bitable`      | 飞书多维表格（最常用） |
+| `doc`          | 飞书旧版文档           |
+| `sheet`        | 飞书电子表格           |
+| `mindnote`     | 飞书思维笔记           |
+| `file`         | 飞书文件               |
+| `wiki`         | 飞书知识库             |
+| `folder`       | 飞书文件夹             |
+| `synced_block` | 文档同步块（灰度中）   |
+| `slides`       | 飞书幻灯片             |
 
 ## doc_type 推断规则（重要）
 
 用户通常只会提供文档链接，不会主动告知 `doc_type`。AI Agent 需根据链接路径推断：
 
-| 链接格式                                                            | 推断的 doc_type | 说明                                                         |
-| ------------------------------------------------------------------- | --------------- | ------------------------------------------------------------ |
-| `https://{domain}.feishu.cn/docx/{token}`                           | `docx`          | 云盘中的云文档                                               |
-| `https://{domain}.feishu.cn/base/{token}`                           | `bitable`       | 云盘中的多维表格                                             |
-| `https://{domain}.feishu.cn/sheets/{token}`                         | `sheet`         | 云盘中的电子表格                                             |
-| `https://{domain}.feishu.cn/wiki/{wiki_token}`                      | 需先解析        | 知识库节点，需先调用 `url-to-document-id.js` 获取 obj_type   |
-| `https://{domain}.feishu.cn/docs/{token}`                           | `doc`           | 旧版文档                                                     |
-| `https://{domain}.feishu.cn/mindnotes/{token}`                      | `mindnote`      | 思维笔记                                                     |
-| `https://{domain}.feishu.cn/slides/{token}`                         | `slides`        | 幻灯片                                                       |
-| `https://{domain}.feishu.cn/drive/folder/{token}`                   | `folder`        | 文件夹                                                       |
+| 链接格式                                          | 推断的 doc_type | 说明                                                       |
+| ------------------------------------------------- | --------------- | ---------------------------------------------------------- |
+| `https://{domain}.feishu.cn/docx/{token}`         | `docx`          | 云盘中的云文档                                             |
+| `https://{domain}.feishu.cn/base/{token}`         | `bitable`       | 云盘中的多维表格                                           |
+| `https://{domain}.feishu.cn/sheets/{token}`       | `sheet`         | 云盘中的电子表格                                           |
+| `https://{domain}.feishu.cn/wiki/{wiki_token}`    | 需先解析        | 知识库节点，需先调用 `url-to-document-id.js` 获取 obj_type |
+| `https://{domain}.feishu.cn/docs/{token}`         | `doc`           | 旧版文档                                                   |
+| `https://{domain}.feishu.cn/mindnotes/{token}`    | `mindnote`      | 思维笔记                                                   |
+| `https://{domain}.feishu.cn/slides/{token}`       | `slides`        | 幻灯片                                                     |
+| `https://{domain}.feishu.cn/drive/folder/{token}` | `folder`        | 文件夹                                                     |
 
 **说明**：
 
@@ -56,7 +56,7 @@
 ### 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; if ($?) { node get-file-meta.js --parameter-file-path <参数文件绝对路径> }
+cd "$SKILL_DIR/scripts" && node get-file-meta.js --parameter-file-path <参数文件绝对路径>
 ```
 
 ### 参数文件格式
@@ -77,12 +77,12 @@ cd $SKILL_DIR/scripts; if ($?) { node get-file-meta.js --parameter-file-path <�
 
 ### 参数说明
 
-| 参数名              | 类型    | 必填 | 说明                                                                                                  | 默认值     |
-| ------------------- | ------- | ---- | ----------------------------------------------------------------------------------------------------- | ---------- |
-| tenant_access_token | string  | yes  | 飞书应用租户访问令牌                                                                                  | -          |
-| request_docs        | array   | yes  | 文件 token 和类型列表，长度范围 1\~200。每项含 `doc_token`（string）和 `doc_type`（string）            | -          |
-| with_url            | boolean | no   | 是否返回文件的访问链接                                                                                | `true`     |
-| user_id_type        | string  | no   | 用户 ID 类型，可选值：`open_id`、`union_id`、`user_id`（`user_id` 需开启对应权限，仅自建应用）        | `open_id`  |
+| 参数名              | 类型    | 必填 | 说明                                                                                           | 默认值    |
+| ------------------- | ------- | ---- | ---------------------------------------------------------------------------------------------- | --------- |
+| tenant_access_token | string  | yes  | 飞书应用租户访问令牌                                                                           | -         |
+| request_docs        | array   | yes  | 文件 token 和类型列表，长度范围 1\~200。每项含 `doc_token`（string）和 `doc_type`（string）    | -         |
+| with_url            | boolean | no   | 是否返回文件的访问链接                                                                         | `true`    |
+| user_id_type        | string  | no   | 用户 ID 类型，可选值：`open_id`、`union_id`、`user_id`（`user_id` 需开启对应权限，仅自建应用） | `open_id` |
 
 ## 使用示例
 
@@ -169,21 +169,21 @@ cd $SKILL_DIR/scripts; if ($?) { node get-file-meta.js --parameter-file-path <�
 }
 ```
 
-| 字段                            | 类型   | 说明                                                                                         |
-| ------------------------------- | ------ | -------------------------------------------------------------------------------------------- |
-| code                            | int    | 错误码，`0` 表示成功                                                                         |
-| msg                             | string | 错误描述                                                                                     |
-| data.metas                      | array  | 文件元数据列表                                                                               |
-| data.metas[].doc_token          | string | 文件 token                                                                                   |
-| data.metas[].doc_type           | string | 文件类型                                                                                     |
-| data.metas[].title              | string | 文件标题                                                                                     |
-| data.metas[].owner_id           | string | 所有者 ID（类型对应 `user_id_type`，需开启对应权限）                                        |
-| data.metas[].create_time        | string | 创建时间（Unix 时间戳，秒）                                                                  |
-| data.metas[].latest_modify_user | string | 最近修改者 ID（类型对应 `user_id_type`，需开启对应权限）                                    |
-| data.metas[].latest_modify_time | string | 最近修改时间（Unix 时间戳，秒）                                                              |
-| data.metas[].url                | string | 文件访问链接（需 `with_url=true`）                                                           |
-| data.metas[].sec_label_name     | string | 文档密级标签名称（需开启对应权限，仅自建应用）                                               |
-| data.metas[].request_doc_info   | object | 请求时传入的文件信息，包含 `doc_token` 和 `doc_type`                                         |
+| 字段                            | 类型   | 说明                                                     |
+| ------------------------------- | ------ | -------------------------------------------------------- |
+| code                            | int    | 错误码，`0` 表示成功                                     |
+| msg                             | string | 错误描述                                                 |
+| data.metas                      | array  | 文件元数据列表                                           |
+| data.metas[].doc_token          | string | 文件 token                                               |
+| data.metas[].doc_type           | string | 文件类型                                                 |
+| data.metas[].title              | string | 文件标题                                                 |
+| data.metas[].owner_id           | string | 所有者 ID（类型对应 `user_id_type`，需开启对应权限）     |
+| data.metas[].create_time        | string | 创建时间（Unix 时间戳，秒）                              |
+| data.metas[].latest_modify_user | string | 最近修改者 ID（类型对应 `user_id_type`，需开启对应权限） |
+| data.metas[].latest_modify_time | string | 最近修改时间（Unix 时间戳，秒）                          |
+| data.metas[].url                | string | 文件访问链接（需 `with_url=true`）                       |
+| data.metas[].sec_label_name     | string | 文档密级标签名称（需开启对应权限，仅自建应用）           |
+| data.metas[].request_doc_info   | object | 请求时传入的文件信息，包含 `doc_token` 和 `doc_type`     |
 
 > **说明**：`owner_id`、`latest_modify_user`、`sec_label_name` 等敏感字段仅在应用开启对应权限后才会返回，否则响应中可能缺失这些字段。
 
@@ -215,15 +215,15 @@ cd $SKILL_DIR/scripts; if ($?) { node get-file-meta.js --parameter-file-path <�
 
 ## 错误处理
 
-| 错误码   | 错误信息                              | 解决方案                                                                                                                    |
-| -------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| 99991663 | Invalid access token                  | 运行 `cd $SKILL_DIR/scripts; if ($?) { node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径> }` 刷新令牌 |
-| 1069701  | User identity verification failed     | 检查 appid 是否正确                                                                                                         |
-| 1069704  | Internal server error                 | 服务端错误，稍后重试；若仍报错可联系技术支持                                                                                |
-| 1061004  | forbidden                             | 在浏览器中打开文件链接，将飞书企业自建应用添加为协作者并赋予「可管理」权限                                                  |
-| -1       | 参数文件中必须包含 tenant_access_token| 检查参数文件是否包含 `tenant_access_token` 字段                                                                             |
-| -1       | 参数文件中必须包含 request_docs       | 检查参数文件是否包含 `request_docs` 数组                                                                                    |
-| -1       | request_docs 数组长度不能超过 200     | 拆分为多次调用                                                                                                              |
-| -1       | request_docs[i] 缺少 doc_token 字段   | 检查每个元素是否包含 `doc_token`                                                                                            |
-| -1       | request_docs[i] 缺少 doc_type 字段    | 检查每个元素是否包含 `doc_type`，必要时由 AI Agent 根据链接推断                                                              |
-| -1       | 必须提供 --parameter-file-path 参数   | 通过 `--parameter-file-path` 传递参数文件绝对路径                                                                            |
+| 错误码   | 错误信息                               | 解决方案                                                                                                            |
+| -------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 99991663 | Invalid access token                   | 运行 `cd "$SKILL_DIR/scripts" && node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径>` 刷新令牌 |
+| 1069701  | User identity verification failed      | 检查 appid 是否正确                                                                                                 |
+| 1069704  | Internal server error                  | 服务端错误，稍后重试；若仍报错可联系技术支持                                                                        |
+| 1061004  | forbidden                              | 在浏览器中打开文件链接，将飞书企业自建应用添加为协作者并赋予「可管理」权限                                          |
+| -1       | 参数文件中必须包含 tenant_access_token | 检查参数文件是否包含 `tenant_access_token` 字段                                                                     |
+| -1       | 参数文件中必须包含 request_docs        | 检查参数文件是否包含 `request_docs` 数组                                                                            |
+| -1       | request_docs 数组长度不能超过 200      | 拆分为多次调用                                                                                                      |
+| -1       | request_docs[i] 缺少 doc_token 字段    | 检查每个元素是否包含 `doc_token`                                                                                    |
+| -1       | request_docs[i] 缺少 doc_type 字段     | 检查每个元素是否包含 `doc_type`，必要时由 AI Agent 根据链接推断                                                     |
+| -1       | 必须提供 --parameter-file-path 参数    | 通过 `--parameter-file-path` 传递参数文件绝对路径                                                                   |

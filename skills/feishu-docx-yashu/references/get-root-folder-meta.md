@@ -11,7 +11,7 @@
 ### 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; if ($?) { node get-root-folder-meta.js --parameter-file-path <参数文件绝对路径> }
+cd "$SKILL_DIR/scripts" && node get-root-folder-meta.js --parameter-file-path <参数文件绝对路径>
 ```
 
 ### 参数文件格式
@@ -54,11 +54,11 @@ cd $SKILL_DIR/scripts; if ($?) { node get-root-folder-meta.js --parameter-file-p
 }
 ```
 
-| 字段    | 说明                          |
-| ------- | ----------------------------- |
-| token   | 根文件夹的 token              |
-| id      | 根文件夹的 ID                 |
-| user_id | 根文件夹所有者的 ID           |
+| 字段    | 说明                |
+| ------- | ------------------- |
+| token   | 根文件夹的 token    |
+| id      | 根文件夹的 ID       |
+| user_id | 根文件夹所有者的 ID |
 
 ### 失败
 
@@ -78,9 +78,9 @@ cd $SKILL_DIR/scripts; if ($?) { node get-root-folder-meta.js --parameter-file-p
 
 ## 错误处理
 
-| 错误码   | 错误信息             | 解决方案                                                                                                                    |
-| -------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| 99991663 | Invalid access token | 运行 `cd $SKILL_DIR/scripts; if ($?) { node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径> }` 刷新令牌 |
-| 91201    | FAILED               | 处理失败，请稍后重试或联系飞书技术支持                                                                                      |
-| 91204    | FORBIDDEN            | 当前应用或用户没有权限，请为应用开启 `drive:drive` 或 `drive:drive:readonly` 权限                                          |
-| -1       | 参数文件中必须包含 tenant_access_token | 检查参数文件是否包含 `tenant_access_token` 字段                                                                    |
+| 错误码   | 错误信息                               | 解决方案                                                                                                            |
+| -------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 99991663 | Invalid access token                   | 运行 `cd "$SKILL_DIR/scripts" && node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径>` 刷新令牌 |
+| 91201    | FAILED                                 | 处理失败，请稍后重试或联系飞书技术支持                                                                              |
+| 91204    | FORBIDDEN                              | 当前应用或用户没有权限，请为应用开启 `drive:drive` 或 `drive:drive:readonly` 权限                                   |
+| -1       | 参数文件中必须包含 tenant_access_token | 检查参数文件是否包含 `tenant_access_token` 字段                                                                     |

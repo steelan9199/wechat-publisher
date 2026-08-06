@@ -7,13 +7,13 @@
 ## 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; node run_workflow.js <workflow_id> <绝对路径/params.json>
+cd "$SKILL_DIR/scripts" && node run_workflow.js <workflow_id> <绝对路径/params.json>
 ```
 
 > ⚠️ **必须先 cd 到 scripts 目录！** 例如：
 >
 > ```bash
-> cd $SKILL_DIR/scripts; node run_workflow.js 7651238514168545306 $SKILL_DIR/temp/workflow_params.json
+> cd "$SKILL_DIR/scripts" && node run_workflow.js 7651238514168545306 $SKILL_DIR/temp/workflow_params.json
 > ```
 
 ## 参数
@@ -32,7 +32,7 @@ cd $SKILL_DIR/scripts; node run_workflow.js <workflow_id> <绝对路径/params.j
 在执行工作流之前，先用 `get_workflow_info.js` 查看需要哪些输入参数：
 
 ```bash
-cd $SKILL_DIR/scripts; node get_workflow_info.js 7651238514168545306
+cd "$SKILL_DIR/scripts" && node get_workflow_info.js 7651238514168545306
 ```
 
 **为什么需要这一步？**
@@ -59,7 +59,7 @@ cd $SKILL_DIR/scripts; node get_workflow_info.js 7651238514168545306
 ### 步骤 3：执行工作流
 
 ```bash
-cd $SKILL_DIR/scripts; node run_workflow.js 7651238514168545306 $SKILL_DIR/temp/workflow_params.json
+cd "$SKILL_DIR/scripts" && node run_workflow.js 7651238514168545306 $SKILL_DIR/temp/workflow_params.json
 ```
 
 ---
@@ -179,7 +179,7 @@ cd $SKILL_DIR/scripts; node run_workflow.js 7651238514168545306 $SKILL_DIR/temp/
 2. 执行工作流：
 
    ```bash
-   cd $SKILL_DIR/scripts; node run_workflow.js 7651238514168545306 $SKILL_DIR/temp/workflow_params.json
+   cd "$SKILL_DIR/scripts" && node run_workflow.js 7651238514168545306 $SKILL_DIR/temp/workflow_params.json
    ```
 
 ### 示例 2：带文件参数
@@ -187,7 +187,7 @@ cd $SKILL_DIR/scripts; node run_workflow.js 7651238514168545306 $SKILL_DIR/temp/
 1. 上传文件：
 
    ```bash
-   cd $SKILL_DIR/scripts; node upload_file.js $SKILL_DIR/temp/my_image.jpg
+   cd "$SKILL_DIR/scripts" && node upload_file.js $SKILL_DIR/temp/my_image.jpg
    # 输出: { "file_id": "1122334455", "file_name": "my_image.jpg" }
    ```
 
@@ -203,7 +203,7 @@ cd $SKILL_DIR/scripts; node run_workflow.js 7651238514168545306 $SKILL_DIR/temp/
 3. 执行工作流：
 
    ```bash
-   cd $SKILL_DIR/scripts; node run_workflow.js 7651238514168545306 $SKILL_DIR/temp/workflow_params.json
+   cd "$SKILL_DIR/scripts" && node run_workflow.js 7651238514168545306 $SKILL_DIR/temp/workflow_params.json
    ```
 
 ---

@@ -7,13 +7,13 @@
 ## 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; node check_status.js 7652343036010610715 7652343403598299174
+cd "$SKILL_DIR/scripts" && node check_status.js 7652343036010610715 7652343403598299174
 ```
 
 > ⚠️ **必须先 cd 到 scripts 目录！** 例如：
 >
 > ```bash
-> cd $SKILL_DIR/scripts; node check_status.js 7652343036010610715 7652343403598299174
+> cd "$SKILL_DIR/scripts" && node check_status.js 7652343036010610715 7652343403598299174
 > ```
 
 ## 参数
@@ -41,7 +41,7 @@ cd $SKILL_DIR/scripts; node check_status.js 7652343036010610715 7652343403598299
 ### 步骤 2：查询状态
 
 ```bash
-cd $SKILL_DIR/scripts; node check_status.js 7652343036010610715 7652343403598299174
+cd "$SKILL_DIR/scripts" && node check_status.js 7652343036010610715 7652343403598299174
 ```
 
 ### 步骤 3：判断状态
@@ -65,7 +65,7 @@ cd $SKILL_DIR/scripts; node check_status.js 7652343036010610715 7652343403598299
 
 ```bash
 # 等待一段时间后再次查询
-cd $SKILL_DIR/scripts; node check_status.js 7652343036010610715 7652343403598299174
+cd "$SKILL_DIR/scripts" && node check_status.js 7652343036010610715 7652343403598299174
 ```
 
 循环执行直到状态变为 `completed`。
@@ -84,11 +84,11 @@ cd $SKILL_DIR/scripts; node check_status.js 7652343036010610715 7652343403598299
 
 ```bash
 # 查询状态
-cd $SKILL_DIR/scripts; node check_status.js 7651243864586878991 7651251220132708392
+cd "$SKILL_DIR/scripts" && node check_status.js 7651243864586878991 7651251220132708392
 # 输出: { "status": "in_progress" } 或 { "status": "completed" }
 
 # 如果是 in_progress，重复调用直到 completed
-cd $SKILL_DIR/scripts; node check_status.js 7651243864586878991 7651251220132708392
+cd "$SKILL_DIR/scripts" && node check_status.js 7651243864586878991 7651251220132708392
 # 输出: { "status": "completed" }
 ```
 

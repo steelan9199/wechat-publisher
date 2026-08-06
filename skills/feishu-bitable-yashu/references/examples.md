@@ -148,8 +148,8 @@ AI 调用本 Skill 时，所有临时参数文件均存放在 **`$SKILL_DIR/temp
 | ---- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1    | 读取对应参考文档 | 按 JSON Schema 构造参数对象                                                                                                                                                             |
 | 2    | 创建临时参数文件 | 使用 Write 工具将参数 JSON 写入 `$SKILL_DIR/temp` 目录                                                                                                                                  |
-| 3    | 执行脚本         | bash: `cd $SKILL_DIR/scripts && node record/create.js --parameter-file-path "..."` / PowerShell: `cd $SKILL_DIR/scripts; if ($?) { node record/create.js --parameter-file-path "..." }` |
-| 4    | 清理临时参数文件 | 完成用户需求或报错终止后，运行 `cd $SKILL_DIR/scripts; if ($?) { node clear_temp.js }` 清理 temp 目录                                                                                   |
+| 3    | 执行脚本         | `cd $SKILL_DIR/scripts && node record/create.js --parameter-file-path "..."`                                                                                                              |
+| 4    | 清理临时参数文件 | 完成用户需求或报错终止后，运行 `cd $SKILL_DIR/scripts && node clear_temp.js` 清理 temp 目录                                                                                               |
 
 ### 关键原则
 

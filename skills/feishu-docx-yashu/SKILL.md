@@ -36,21 +36,20 @@ metadata:
 
 ## 环境说明
 
-| 项目         | 说明                                                           |
-| ------------ | -------------------------------------------------------------- |
-| `$SKILL_DIR` | 当前 Skill 所在的绝对目录，即 SKILL.md 文件所在的文件夹        |
-| Shell 类型   | PowerShell 5 / bash / zsh                                      |
-| 脚本目录     | `$SKILL_DIR/scripts`                                           |
-| 临时文件目录 | `$SKILL_DIR/temp`                                              |
-| Node.js 版本 | `>=18.20.8`                                                    |
-| 依赖安装     | 运行 `cd $SKILL_DIR/scripts; if ($?) { npm install }` 安装依赖 |
+| 项目         | 说明                                                    |
+| ------------ | ------------------------------------------------------- |
+| `$SKILL_DIR` | 当前 Skill 所在的绝对目录，即 SKILL.md 文件所在的文件夹 |
+| Shell 类型   | bash                                                    |
+| 脚本目录     | `$SKILL_DIR/scripts`                                    |
+| 临时文件目录 | `$SKILL_DIR/temp`                                       |
+| Node.js 版本 | `>=18.20.8`                                             |
+| 依赖安装     | 运行 `cd "$SKILL_DIR/scripts" && npm install` 安装依赖  |
 
-> **⚠️ `$SKILL_DIR` 仅为文档占位符，不是环境变量**，执行命令时必须替换为实际绝对路径。在 PowerShell 中直接写 `$SKILL_DIR` 会被当作未定义变量解析为空字符串，导致 `cd $SKILL_DIR/scripts` 变成 `cd /scripts` 而报错"找不到路径"。
+> **⚠️ `$SKILL_DIR` 仅为文档占位符，不是环境变量**，执行命令时必须替换为实际绝对路径。在 bash 中直接写 `$SKILL_DIR` 而不加双引号时，若路径含空格会分词；若未替换则被解析为空字符串，导致 `cd "$SKILL_DIR/scripts"` 变成 `cd "/scripts"` 而报错"找不到路径"。
 
-本 Skill 运行命令时采用**条件执行**（前一条成功才执行下一条），跨平台规则如下：
+本 Skill 运行命令时采用 **bash 条件执行**（前一条成功才执行下一条），规则如下：
 
-- **bash/zsh**（Linux/macOS）：`cmd1 && cmd2`
-- **PowerShell 5**（Windows）：`cmd1; if ($?) { cmd2 }`
+- **条件执行**：`cmd1 && cmd2`
 - **禁止单 `&`**：在 bash 中 `&` 表示后台执行，语义完全不同
 
 ### ⚠️ 脚本已混淆，禁止读取源码
@@ -68,20 +67,20 @@ metadata:
 
 ## 跨功能公共规则（必须遵守）
 
-| 规则                | 说明                                                                                                                                                                                                                                                   |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 📁 执行目录         | 执行任何脚本前**必须先 `cd` 到脚本目录**（见「环境说明」表），再运行命令                                                                                                                                                                               |
-| 📄 参数传递         | 所有需要配置参数的脚本必须通过 `--parameter-file-path` 传递配置，禁止命令行直接传参                                                                                                                                                                    |
-| 📄 参数文件路径     | `--parameter-file-path` 的值必须使用绝对路径和正斜杠 `/`                                                                                                                                                                                               |
-| 🗑️ 临时文件存放     | 临时参数文件统一存放到临时文件目录（见「环境说明」表），不得与脚本文件混杂存放                                                                                                                                                                         |
-| 🧹 临时文件清理     | 调用脚本后**必须清理** `$SKILL_DIR/temp` 目录，运行 `cd $SKILL_DIR/scripts; if ($?) { node clear_temp.js }` 完成清理。禁止使用终端命令（如 `rm`、`del`、`Remove-Item`）直接清理                                                                        |
-| 📖 脚本文档强制读取 | 执行任何脚本前**必须先读取对应的参考文档**，严格按照文档中的参数格式操作，禁止凭记忆或直觉编写参数                                                                                                                                                     |
-| ✍️ 参数文件写入     | 创建参数文件**必须使用 Write 工具**写入 `$SKILL_DIR/temp/` 目录，**禁止使用任何 PowerShell 文件写入命令**（`Set-Content`、`Out-File`、`>` 重定向、`[System.IO.File]::WriteAllText()` 等）。PowerShell 默认会在文件中添加 UTF-8 BOM，导致 JSON 解析失败 |
+| 规则                | 说明                                                                                                                                                                                                                                                        |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 📁 执行目录         | 执行任何脚本前**必须先 `cd` 到脚本目录**（见「环境说明」表），再运行命令                                                                                                                                                                                    |
+| 📄 参数传递         | 所有需要配置参数的脚本必须通过 `--parameter-file-path` 传递配置，禁止命令行直接传参                                                                                                                                                                         |
+| 📄 参数文件路径     | `--parameter-file-path` 的值必须使用绝对路径和正斜杠 `/`                                                                                                                                                                                                    |
+| 🗑️ 临时文件存放     | 临时参数文件统一存放到临时文件目录（见「环境说明」表），不得与脚本文件混杂存放                                                                                                                                                                              |
+| 🧹 临时文件清理     | 调用脚本后**必须清理** `$SKILL_DIR/temp` 目录，运行 `cd "$SKILL_DIR/scripts" && node clear_temp.js` 完成清理。禁止使用终端命令（如 `rm`、`del`、`Remove-Item`）直接清理                                                                                     |
+| 📖 脚本文档强制读取 | 执行任何脚本前**必须先读取对应的参考文档**，严格按照文档中的参数格式操作，禁止凭记忆或直觉编写参数                                                                                                                                                          |
+| ✍️ 参数文件写入     | 创建参数文件**必须使用 Write 工具**写入 `$SKILL_DIR/temp/` 目录，**禁止使用任何 Shell 文件写入命令**（`Set-Content`、`Out-File`、`>` 重定向、`[System.IO.File]::WriteAllText()` 等）。Shell 的文件写入命令可能添加 UTF-8 BOM 或破坏编码，导致 JSON 解析失败 |
 
 **标准执行命令模板**（端到端流程：读取凭证 → 读参考文档 → Write 写参数文件 → 执行 → 处理结果 → 清理）：
 
 ```
-cd $SKILL_DIR/scripts; if ($?) { node <脚本名>.js --parameter-file-path <参数文件绝对路径> }
+cd "$SKILL_DIR/scripts" && node <脚本名>.js --parameter-file-path <参数文件绝对路径>
 ```
 
 成功：返回结果数据给用户；失败：根据错误码匹配解决方案并重试。
@@ -126,7 +125,7 @@ cd $SKILL_DIR/scripts; if ($?) { node <脚本名>.js --parameter-file-path <参�
 | `tenant_access_token` | 飞书企业自建应用 | 应用自身云空间的文档     | 约 2 小时 | 本 Skill 调用 `get-tenant-access-token.js`，凭 `appId`+`appSecret` 自动向飞书换取                            | ✅       |
 | `user_access_token`   | 飞书用户（个人） | 用户个人云空间的可见文档 | 约 2 小时 | 用户自行打开飞书开放平台 API 调试台网页，登录授权后复制 token 值（步骤见下文「user_access_token 获取步骤」） | ❌       |
 
-> ⚠️ `tenant_access_token` 可由本 Skill 自动刷新（错误码 99991663 时运行 `cd $SKILL_DIR/scripts; if ($?) { node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径> }`）。详细获取/刷新流程见 [访问令牌获取指南]($SKILL_DIR/references/get-tenant-access-token.md)。
+> ⚠️ `tenant_access_token` 可由本 Skill 自动刷新（错误码 99991663 时运行 `cd "$SKILL_DIR/scripts" && node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径>`）。详细获取/刷新流程见 [访问令牌获取指南]($SKILL_DIR/references/get-tenant-access-token.md)。
 
 ### 如何切换身份：以飞书用户身份操作用户空间文档
 

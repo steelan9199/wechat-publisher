@@ -20,20 +20,20 @@
 > ⚠️ **必须先 cd 到 scripts 目录！** 例如：
 >
 > ```bash
-> cd $SKILL_DIR/scripts; node clear_temp.js
+> cd "$SKILL_DIR/scripts" && node clear_temp.js
 > ```
 
 示例调用流程：
 
-```powershell
+```bash
 # 1. 执行扣子智能体或工作流的调用流程
-cd $SKILL_DIR/scripts; if ($?) { node create_session.js <bot_id> }
-cd $SKILL_DIR/scripts; if ($?) { node send_message.js <conversation_id> <参数JSON文件绝对路径> }
-cd $SKILL_DIR/scripts; if ($?) { node check_status.js <conversation_id> <chat_id> }
-cd $SKILL_DIR/scripts; if ($?) { node get_messages.js <conversation_id> <chat_id> }
+cd "$SKILL_DIR/scripts" && node create_session.js <bot_id>
+cd "$SKILL_DIR/scripts" && node send_message.js <conversation_id> <参数JSON文件绝对路径>
+cd "$SKILL_DIR/scripts" && node check_status.js <conversation_id> <chat_id>
+cd "$SKILL_DIR/scripts" && node get_messages.js <conversation_id> <chat_id>
 
 # 2. 将结果交付给用户后，清理 temp 目录（AI 自动执行）
-cd $SKILL_DIR/scripts; if ($?) { node clear_temp.js }
+cd "$SKILL_DIR/scripts" && node clear_temp.js
 ```
 
 ## 注意事项

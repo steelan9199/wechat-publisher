@@ -7,13 +7,13 @@
 ## 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; node check_workflow_result.js <workflow_id> <execute_id>
+cd "$SKILL_DIR/scripts" && node check_workflow_result.js <workflow_id> <execute_id>
 ```
 
 > ⚠️ **必须先 cd 到 scripts 目录！** 例如：
 >
 > ```bash
-> cd $SKILL_DIR/scripts; node check_workflow_result.js 7651238514168545306 7652350786920562688
+> cd "$SKILL_DIR/scripts" && node check_workflow_result.js 7651238514168545306 7652350786920562688
 > ```
 
 ## 参数
@@ -81,7 +81,7 @@ cd $SKILL_DIR/scripts; node check_workflow_result.js <workflow_id> <execute_id>
 ## 调用示例
 
 ```bash
-cd $SKILL_DIR/scripts; node check_workflow_result.js 7651238514168545306 7652350786920562688
+cd "$SKILL_DIR/scripts" && node check_workflow_result.js 7651238514168545306 7652350786920562688
 ```
 
 ## 轮询策略

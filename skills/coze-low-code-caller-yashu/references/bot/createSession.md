@@ -7,13 +7,13 @@
 ## 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; node create_session.js <bot_id>
+cd "$SKILL_DIR/scripts" && node create_session.js <bot_id>
 ```
 
 > ⚠️ **必须先 cd 到 scripts 目录！** 例如：
 >
 > ```bash
-> cd $SKILL_DIR/scripts; node create_session.js 7651224745501376564
+> cd "$SKILL_DIR/scripts" && node create_session.js 7651224745501376564
 > ```
 
 ## 参数
@@ -51,7 +51,7 @@ AI 应从配置文件 `$SKILL_DIR/config/bots.json` 中获取智能体 ID，匹�
 ### 步骤 2：执行创建会话
 
 ```bash
-cd $SKILL_DIR/scripts; node create_session.js 7651224745501376564
+cd "$SKILL_DIR/scripts" && node create_session.js 7651224745501376564
 ```
 
 ### 步骤 3：保存 conversation_id
@@ -81,7 +81,7 @@ cd $SKILL_DIR/scripts; node create_session.js 7651224745501376564
 ## 调用示例
 
 ```bash
-cd $SKILL_DIR/scripts; node create_session.js 7651224745501376564
+cd "$SKILL_DIR/scripts" && node create_session.js 7651224745501376564
 # 输出: { "conversation_id": "7651243864586878991" }
 ```
 

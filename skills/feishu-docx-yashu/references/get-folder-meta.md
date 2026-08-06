@@ -9,7 +9,7 @@
 ### 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; if ($?) { node get-folder-meta.js --parameter-file-path <参数文件绝对路径> }
+cd "$SKILL_DIR/scripts" && node get-folder-meta.js --parameter-file-path <参数文件绝对路径>
 ```
 
 ### 参数文件格式
@@ -23,10 +23,10 @@ cd $SKILL_DIR/scripts; if ($?) { node get-folder-meta.js --parameter-file-path <
 
 ### 参数说明
 
-| 参数名              | 类型   | 必填 | 说明             | 默认值 |
-| ------------------- | ------ | ---- | ---------------- | ------ |
+| 参数名              | 类型   | 必填 | 说明                 | 默认值 |
+| ------------------- | ------ | ---- | -------------------- | ------ |
 | tenant_access_token | string | yes  | 飞书应用租户访问令牌 | -      |
-| folder_token        | string | yes  | 文件夹的 token   | -      |
+| folder_token        | string | yes  | 文件夹的 token       | -      |
 
 ## 使用示例
 
@@ -59,15 +59,15 @@ cd $SKILL_DIR/scripts; if ($?) { node get-folder-meta.js --parameter-file-path <
 }
 ```
 
-| 字段        | 说明                                                                                |
-| ----------- | ----------------------------------------------------------------------------------- |
-| token       | 文件夹的 token                                                                      |
-| id          | 文件夹的 ID                                                                         |
-| name        | 文件夹的标题                                                                        |
-| create_uid  | 文件夹的创建者 ID                                                                   |
-| edit_uid    | 文件夹的最后编辑者 ID                                                               |
-| own_uid     | 文件夹为个人文件夹时，为所有者 ID；文件夹为共享文件夹时，为文件夹树 ID              |
-| parent_id   | 文件夹的上级目录 ID。`"0"` 表示当前文件夹无上级目录（即根目录下的文件夹）           |
+| 字段       | 说明                                                                      |
+| ---------- | ------------------------------------------------------------------------- |
+| token      | 文件夹的 token                                                            |
+| id         | 文件夹的 ID                                                               |
+| name       | 文件夹的标题                                                              |
+| create_uid | 文件夹的创建者 ID                                                         |
+| edit_uid   | 文件夹的最后编辑者 ID                                                     |
+| own_uid    | 文件夹为个人文件夹时，为所有者 ID；文件夹为共享文件夹时，为文件夹树 ID    |
+| parent_id  | 文件夹的上级目录 ID。`"0"` 表示当前文件夹无上级目录（即根目录下的文件夹） |
 
 ### 失败
 
@@ -87,8 +87,8 @@ cd $SKILL_DIR/scripts; if ($?) { node get-folder-meta.js --parameter-file-path <
 
 ## 错误处理
 
-| 错误码   | 错误信息             | 解决方案                                                                                                                    |
-| -------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| 99991663 | Invalid access token | 运行 `cd $SKILL_DIR/scripts; if ($?) { node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径> }` 刷新令牌 |
-| 1061004  | forbidden            | 在浏览器中打开文件夹链接，点击分享按钮，将飞书企业自建应用添加为协作者并赋予「可管理」权限                                  |
-| -1       | 参数文件中必须包含 folder_token | 检查参数文件是否包含 `folder_token` 字段                                                                           |
+| 错误码   | 错误信息                        | 解决方案                                                                                                            |
+| -------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 99991663 | Invalid access token            | 运行 `cd "$SKILL_DIR/scripts" && node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径>` 刷新令牌 |
+| 1061004  | forbidden                       | 在浏览器中打开文件夹链接，点击分享按钮，将飞书企业自建应用添加为协作者并赋予「可管理」权限                          |
+| -1       | 参数文件中必须包含 folder_token | 检查参数文件是否包含 `folder_token` 字段                                                                            |

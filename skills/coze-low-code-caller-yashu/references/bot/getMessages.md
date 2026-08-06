@@ -7,13 +7,13 @@
 ## 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; node get_messages.js 7652343036010610715 7652343403598299174
+cd "$SKILL_DIR/scripts" && node get_messages.js 7652343036010610715 7652343403598299174
 ```
 
 > ⚠️ **必须先 cd 到 scripts 目录！** 例如：
 >
 > ```bash
-> cd $SKILL_DIR/scripts; node get_messages.js 7652343036010610715 7652343403598299174
+> cd "$SKILL_DIR/scripts" && node get_messages.js 7652343036010610715 7652343403598299174
 > ```
 
 ## 参数
@@ -34,7 +34,7 @@ cd $SKILL_DIR/scripts; node get_messages.js 7652343036010610715 7652343403598299
 先用 `check_status.js` 查询状态，确保返回 `status === "completed"`：
 
 ```bash
-cd $SKILL_DIR/scripts; node check_status.js 7652343036010610715 7652343403598299174
+cd "$SKILL_DIR/scripts" && node check_status.js 7652343036010610715 7652343403598299174
 # 输出: { "status": "completed" }
 ```
 
@@ -43,7 +43,7 @@ cd $SKILL_DIR/scripts; node check_status.js 7652343036010610715 7652343403598299
 确认状态为 `completed` 后，执行获取回复：
 
 ```bash
-cd $SKILL_DIR/scripts; node get_messages.js 7652343036010610715 7652343403598299174
+cd "$SKILL_DIR/scripts" && node get_messages.js 7652343036010610715 7652343403598299174
 ```
 
 ### 解析返回值
@@ -71,6 +71,6 @@ cd $SKILL_DIR/scripts; node get_messages.js 7652343036010610715 7652343403598299
 
 ```bash
 # 假设 conversation_id = 7652343036010610715, chat_id = 7652343403598299174
-cd $SKILL_DIR/scripts; node get_messages.js 7652343036010610715 7652343403598299174
+cd "$SKILL_DIR/scripts" && node get_messages.js 7652343036010610715 7652343403598299174
 # 输出: { "content": "好的，2026 年 06 月 17 日 20 时 40 分 42 秒" }
 ```

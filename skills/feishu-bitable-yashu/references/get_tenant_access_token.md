@@ -30,11 +30,7 @@
 **运行以下命令**获取 `tenant_access_token`：
 
 ```bash
-# bash/zsh
 cd $SKILL_DIR/scripts && node get-tenant-access-token.js --parameter-file-path params.json
-
-# PowerShell 5
-cd $SKILL_DIR/scripts; if ($?) { node get-tenant-access-token.js --parameter-file-path params.json }
 ```
 
 **参数文件示例**（`params.json`）：

@@ -18,12 +18,10 @@ description: 本技能提供扣子(Coze)低代码平台的智能体与工作流�
 ## 环境说明
 
 - `$SKILL_DIR` = 当前 Skill (`coze-low-code-caller-yashu`) 所在目录，即本文件 `SKILL.md` 所在的文件夹
-- > ⚠️ **`$SKILL_DIR` 仅为文档占位符，不是环境变量！** 执行命令时必须替换为当前 Skill 所在目录的绝对路径。在 PowerShell 中直接写 `$SKILL_DIR` 会被当作未定义变量解析为空字符串，导致 `cd $SKILL_DIR/scripts` 变成 `cd /scripts` 而报错"找不到路径"。
+- **Shell 类型：** 本 Skill 的命令示例统一采用 **bash 语法**。AI 应在 bash 执行环境中运行命令；若当前环境的默认 Shell 不是 bash（如 Windows PowerShell），先切换到 bash（如 Git Bash、WSL）再执行。
+- > ⚠️ **`$SKILL_DIR` 仅为文档占位符，不是环境变量！** 执行命令时必须替换为当前 Skill 所在目录的绝对路径。直接写 `$SKILL_DIR` 会被 bash 当作未定义变量解析为空字符串，导致 `cd "$SKILL_DIR/scripts"` 变成 `cd "/scripts"` 而报错"找不到路径"。
 - **脚本目录：** `$SKILL_DIR/scripts/`
-- **命令分隔符：** 本 Skill 运行命令时采用**条件执行**（前一条成功才执行下一条），跨平台规则如下：
-  - **bash/zsh**（Linux/macOS）：`cmd1 && cmd2`
-  - **PowerShell 5**（Windows）：`cmd1; if ($?) { cmd2 }`（PowerShell 5 不支持 `&&`）
-  - **PowerShell 7+**：`&&` 和 `; if ($?) { cmd2 }` 均可，为最大兼容性推荐 `; if ($?) { cmd2 }`
+- **命令分隔符：** 本 Skill 运行命令时采用 **bash 条件执行**（前一条成功才执行下一条）：`cmd1 && cmd2`
   - **禁止单 `&`**：在 bash 中 `&` 表示后台执行，语义完全不同
 - **模块类型：** `$SKILL_DIR/scripts/package.json` 已设置 `"type": "module"`，因此所有 `.js` 脚本均按 **ES Module** 解析。如需修改或新建脚本文件，必须使用 `import` 语法，不能使用 CommonJS 的 `require`。
 
@@ -116,7 +114,7 @@ description: 本技能提供扣子(Coze)低代码平台的智能体与工作流�
 
    > `recent_durations` 字段由脚本自动维护，记录最近 6 次成功调用的端到端耗时（从执行工作流到执行完成，如 `"28秒"`、`"1分15秒"`），供 AI 参考预估等待时间。无需手动填写。
 
-3. **安装依赖（一次性操作）：** 运行 `cd $SKILL_DIR/scripts; if ($?) { npm install }` 确保依赖已安装。依赖安装后无需重复执行，仅首次使用或 `package.json` 更新后需要重新安装。
+3. **安装依赖（一次性操作）：** 运行 `cd "$SKILL_DIR/scripts" && npm install` 确保依赖已安装。依赖安装后无需重复执行，仅首次使用或 `package.json` 更新后需要重新安装。
 
 ## 脚本调用方式
 
@@ -124,19 +122,18 @@ description: 本技能提供扣子(Coze)低代码平台的智能体与工作流�
 
 > ⚠️ **【致命重要】执行脚本前必须先 cd 到 scripts 目录**
 >
-> 每次运行任何脚本之前，先执行 `cd $SKILL_DIR/scripts`，再运行脚本。否则 Node.js 会在当前工作目录找不到脚本文件，报 `Error: Cannot find module '...'`。
+> 每次运行任何脚本之前，先执行 `cd "$SKILL_DIR/scripts"`，再运行脚本。否则 Node.js 会在当前工作目录找不到脚本文件，报 `Error: Cannot find module '...'`。
 >
-> AI 执行命令时，每个命令前都要包含 `cd $SKILL_DIR/scripts`，并使用条件执行（前一条成功才执行下一条）。例如：
+> AI 执行命令时，每个命令前都要包含 `cd "$SKILL_DIR/scripts"`，并使用 bash 条件执行（前一条成功才执行下一条）。例如：
 >
-> ```powershell
-> cd $SKILL_DIR/scripts; if ($?) { node create_session.js <bot_id> }
+> ```bash
+> cd "$SKILL_DIR/scripts" && node create_session.js <bot_id>
 > ```
 
-> ⚠️ **命令语法注意**：必须使用条件执行（前一条成功才执行下一条），跨平台规则见【环境说明】。例如：
+> ⚠️ **命令语法注意**：必须使用 bash 条件执行（前一条成功才执行下一条），规则见【环境说明】。例如：
 >
-> - ❌ `cd dir; node xxx.js`（`;` 不是条件执行，第一条失败时第二条仍会执行）
-> - ✅ PowerShell：`cd dir; if ($?) { node xxx.js }`
-> - ✅ bash/zsh：`cd dir && node xxx.js`
+> - ❌ `cd "$SKILL_DIR/scripts"; node xxx.js`（`;` 不是条件执行，第一条失败时第二条仍会执行）
+> - ✅ `cd "$SKILL_DIR/scripts" && node xxx.js`
 
 ## 执行步骤
 
@@ -153,11 +150,11 @@ description: 本技能提供扣子(Coze)低代码平台的智能体与工作流�
    - **智能体**：`create_session.js` -> `send_message.js` -> `check_status.js` -> `get_messages.js`
    - **工作流**：`get_workflow_info.js` -> `run_workflow.js` -> `check_workflow_result.js`（需要 **workflow_id** 和 **execute_id** 两个参数）
 4. 每次执行脚本前，先 `cd` 到 `$SKILL_DIR/scripts`，再运行命令。示例：
-   ```powershell
-   cd $SKILL_DIR/scripts; if ($?) { node create_session.js <bot_id> }
-   cd $SKILL_DIR/scripts; if ($?) { node send_message.js <conversation_id> <绝对路径> }
-   cd $SKILL_DIR/scripts; if ($?) { node check_status.js <conversation_id> <chat_id> }
-   cd $SKILL_DIR/scripts; if ($?) { node get_messages.js <conversation_id> <chat_id> }
+   ```bash
+   cd "$SKILL_DIR/scripts" && node create_session.js <bot_id>
+   cd "$SKILL_DIR/scripts" && node send_message.js <conversation_id> <绝对路径>
+   cd "$SKILL_DIR/scripts" && node check_status.js <conversation_id> <chat_id>
+   cd "$SKILL_DIR/scripts" && node get_messages.js <conversation_id> <chat_id>
    ```
 5. **临时文件必须放在 `$SKILL_DIR/temp` 目录**，且参数文件路径必须使用**绝对路径**
 6. **结果交付后清理临时文件**：将执行结果交付给用户后，执行 `clear_temp.js` 清理 `$SKILL_DIR/temp` 目录（详细说明见 [临时文件清理说明]($SKILL_DIR/references/temp-cleanup.md)）
@@ -228,72 +225,57 @@ POLLING_INTERVAL=5
 
 调用 `check_status.js` 后，检查返回的 `status` 字段：
 
-| status 值       | 含义   | 后续操作                                                                                                      |
-| --------------- | ------ | ------------------------------------------------------------------------------------------------------------- |
-| `"completed"`   | 已完成 | 停止轮询，调用 `get_messages.js` 获取回复                                                                     |
-| `"in_progress"` | 进行中 | 继续轮询：先单独执行 `Start-Sleep -Seconds <POLLING_INTERVAL>` 等待，再发起下一次查询（详见下方「实现方式」） |
+| status 值       | 含义   | 后续操作                                                                                       |
+| --------------- | ------ | ---------------------------------------------------------------------------------------------- |
+| `"completed"`   | 已完成 | 停止轮询，调用 `get_messages.js` 获取回复                                                      |
+| `"in_progress"` | 进行中 | 继续轮询：先单独执行 `sleep <POLLING_INTERVAL>` 等待，再发起下一次查询（详见下方「实现方式」） |
 
 **2. 工作流（Workflow）：**
 
 调用 `check_workflow_result.js` 后，检查返回的 `execute_status` 字段：
 
-| execute_status 值 | 含义   | 后续操作                                                                                                                                                                   |
-| ----------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `"Success"`       | 已完成 | 停止轮询，获取输出结果                                                                                                                                                     |
-| `"Fail"`          | 失败   | 停止轮询，返回错误信息                                                                                                                                                     |
-| `"Running"`       | 进行中 | 继续轮询：先单独执行 `Start-Sleep -Seconds <POLLING_INTERVAL>` 等待，再发起下一次查询（详见下方「实现方式」）；同时将 `debug_url` 提供给用户，可在浏览器中实时观察执行进度 |
+| execute_status 值 | 含义   | 后续操作                                                                                                                                                    |
+| ----------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `"Success"`       | 已完成 | 停止轮询，获取输出结果                                                                                                                                      |
+| `"Fail"`          | 失败   | 停止轮询，返回错误信息                                                                                                                                      |
+| `"Running"`       | 进行中 | 继续轮询：先单独执行 `sleep <POLLING_INTERVAL>` 等待，再发起下一次查询（详见下方「实现方式」）；同时将 `debug_url` 提供给用户，可在浏览器中实时观察执行进度 |
 
 ### 实现方式
 
-脚本本身**不包含自动等待逻辑**，需要 AI 自行实现轮询。等待命令必须作为**独立的一条命令**执行，不能与轮询脚本拼接在同一条命令里。等待命令因平台而异：PowerShell 用 `Start-Sleep -Seconds N`，bash/zsh 用 `sleep N`
-
-```powershell
-# 示例：智能体轮询（PowerShell）
-前一次查询: cd $SKILL_DIR/scripts; if ($?) { node check_status.js <conversation_id> <chat_id> }
-# 检查输出，如果 in_progress，先单独执行等待命令，再发起下一次查询
-等待: Start-Sleep -Seconds <POLLING_INTERVAL>
-后一次查询: cd $SKILL_DIR/scripts; if ($?) { node check_status.js <conversation_id> <chat_id> }
-
-# 示例：工作流轮询（PowerShell）
-前一次查询: cd $SKILL_DIR/scripts; if ($?) { node check_workflow_result.js <workflow_id> <execute_id> }
-# 检查输出，如果 Running，先单独执行等待命令，再发起下一次查询
-等待: Start-Sleep -Seconds <POLLING_INTERVAL>
-后一次查询: cd $SKILL_DIR/scripts; if ($?) { node check_workflow_result.js <workflow_id> <execute_id> }
-```
+脚本本身**不包含自动等待逻辑**，需要 AI 自行实现轮询。等待命令必须作为**独立的一条命令**执行，不能与轮询脚本拼接在同一条命令里。等待命令统一使用 bash 的 `sleep N`：
 
 ```bash
-# 示例：智能体轮询（bash/zsh）
-前一次查询: cd $SKILL_DIR/scripts && node check_status.js <conversation_id> <chat_id>
+# 示例：智能体轮询（bash）
+前一次查询: cd "$SKILL_DIR/scripts" && node check_status.js <conversation_id> <chat_id>
 # 检查输出，如果 in_progress，先单独执行等待命令，再发起下一次查询
 等待: sleep <POLLING_INTERVAL>
-后一次查询: cd $SKILL_DIR/scripts && node check_status.js <conversation_id> <chat_id>
+后一次查询: cd "$SKILL_DIR/scripts" && node check_status.js <conversation_id> <chat_id>
 
-# 示例：工作流轮询（bash/zsh）
-前一次查询: cd $SKILL_DIR/scripts && node check_workflow_result.js <workflow_id> <execute_id>
+# 示例：工作流轮询（bash）
+前一次查询: cd "$SKILL_DIR/scripts" && node check_workflow_result.js <workflow_id> <execute_id>
 # 检查输出，如果 Running，先单独执行等待命令，再发起下一次查询
 等待: sleep <POLLING_INTERVAL>
-后一次查询: cd $SKILL_DIR/scripts && node check_workflow_result.js <workflow_id> <execute_id>
+后一次查询: cd "$SKILL_DIR/scripts" && node check_workflow_result.js <workflow_id> <execute_id>
 ```
 
 > ⚠️ **【致命重要】等待命令必须作为独立命令执行，禁止与轮询脚本拼接在同一条命令里！**
 >
 > **等待是必须的**：两次轮询之间必须等待，避免无意义的密集查询。
 >
-> **等待命令必须单独成一条命令**，禁止用 `;`、`&&` 或 `if ($?)` 把等待命令与其他命令拼接。
+> **等待命令必须单独成一条命令**，禁止用 `;` 或 `&&` 把等待命令与其他命令拼接。
 >
-> - ❌ **错误（拼接在一条命令里，PowerShell）**：`Start-Sleep -Seconds <POLLING_INTERVAL>; cd $SKILL_DIR/scripts; if ($?) { node check_workflow_result.js <wf_id> <exec_id> }`（错误写法）
-> - ❌ **错误（拼接在一条命令里，bash）**：`sleep <POLLING_INTERVAL> && cd $SKILL_DIR/scripts && node check_workflow_result.js <wf_id> <exec_id>`（错误写法）
+> - ❌ **错误（拼接在一条命令里，bash）**：`sleep <POLLING_INTERVAL> && cd "$SKILL_DIR/scripts" && node check_workflow_result.js <wf_id> <exec_id>`（错误写法）
 > - ✅ **正确（分两条独立命令执行）**：
->   - 第 1 条命令（仅等待）：PowerShell `Start-Sleep -Seconds <POLLING_INTERVAL>` / bash `sleep <POLLING_INTERVAL>`
->   - 第 2 条命令（仅执行脚本）：PowerShell `cd $SKILL_DIR/scripts; if ($?) { node check_workflow_result.js <wf_id> <exec_id> }` / bash `cd $SKILL_DIR/scripts && node check_workflow_result.js <wf_id> <exec_id>`
+>   - 第 1 条命令（仅等待）：`sleep <POLLING_INTERVAL>`
+>   - 第 2 条命令（仅执行脚本）：`cd "$SKILL_DIR/scripts" && node check_workflow_result.js <wf_id> <exec_id>`
 
 ## ⚠️ 常见错误
 
 | 错误信息                                                                | 原因                                       | 正确用法                                                                                                                |
 | ----------------------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| `Cannot find module '...create_session.js'`                             | 未先 `cd` 到 scripts 目录就运行脚本        | 执行 `cd $SKILL_DIR/scripts; if ($?) { node create_session.js <bot_id> }`                                               |
+| `Cannot find module '...create_session.js'`                             | 未先 `cd` 到 scripts 目录就运行脚本        | 执行 `cd "$SKILL_DIR/scripts" && node create_session.js <bot_id>`                                                       |
 | `Unexpected token ... is not valid JSON`                                | 错误地将文本文件路径传给 `send_message.js` | 第二个参数必须是 JSON 参数文件，如 `param.json`                                                                         |
-| `参数错误：第二个参数必须是 JSON 文件路径`                              | 传递了 `.txt` 或其他非 JSON 文件           | 使用 `cd $SKILL_DIR/scripts; if ($?) { node send_message.js <会话ID> <参数JSON文件绝对路径> }`                          |
+| `参数错误：第二个参数必须是 JSON 文件路径`                              | 传递了 `.txt` 或其他非 JSON 文件           | 使用 `cd "$SKILL_DIR/scripts" && node send_message.js <会话ID> <参数JSON文件绝对路径>`                                  |
 | `参数错误：JSON 中缺少或无效的 'path' 字段`                             | JSON 文件中没有 `path` 字段                | 确保 JSON 格式为 `{ "path": "$SKILL_DIR/temp/your_file.txt" }`（**绝对路径**）                                          |
 | `用户输入文件不存在`                                                    | `path` 指向的文件不存在                    | 使用**绝对路径**（如 `$SKILL_DIR/temp/your_file.txt`）                                                                  |
 | `执行工作流失败`                                                        | `workflow_id` 错误或参数类型不匹配         | 先用 `get_workflow_info.js` 确认参数定义，再检查传入的参数                                                              |

@@ -9,7 +9,7 @@
 ### 命令行调用
 
 ```bash
-cd $SKILL_DIR/scripts; if ($?) { node feishu-to-markdown.js --parameter-file-path <参数文件绝对路径> }
+cd "$SKILL_DIR/scripts" && node feishu-to-markdown.js --parameter-file-path <参数文件绝对路径>
 ```
 
 ### 参数文件格式
