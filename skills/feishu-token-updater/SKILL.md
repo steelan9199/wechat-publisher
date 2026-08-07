@@ -3,8 +3,8 @@ name: feishu-token-updater
 description: 更新飞书技能 feishu-docx-yashu 的 tenant_access_token 字段。激活条件：用户消息包含「更新/设置飞书 token」。
 metadata:
   author: "AI Assistant"
-  updated: "2026-08-07 10:01:00"
-  version: "2.3.1"
+  updated: "2026-08-07 19:19:00"
+  version: "2.4.0"
 ---
 
 # 飞书 tenant_access_token 更新器
@@ -25,9 +25,11 @@ metadata:
 | `$SKILL_DIR` | 当前 Skill 所在的绝对目录，即 SKILL.md 文件所在的文件夹 |
 | 校验脚本     | `$SKILL_DIR/update.js`（JWT 校验 + 配置写入）           |
 | 临时文件     | `$SKILL_DIR/_tmp_token.txt`（剪贴板内容中转，用后即删） |
-| Node.js 版本 | `>=18`                                                  |
+| 命令外壳     | **Bash（Git Bash / MSYS2）优先**，尽量不使用 PowerShell  |
+| 剪贴板读取   | 经 Git Bash 伪文件 `/dev/clipboard` 直接读系统剪贴板      |
+| Node.js 版本 | `>=18`（推荐用托管版 node 绝对路径）                    |
 
-> **⚠️ `$SKILL_DIR` 仅为文档占位符，不是环境变量**，执行命令时必须替换为技能目录的实际绝对路径。PowerShell 命令中若不替换，`$SKILL_DIR` 会被解析为空字符串导致路径错误。
+> **⚠️ `$SKILL_DIR` 仅为文档占位符，不是环境变量**，执行命令时必须替换为技能目录的实际绝对路径。在 bash 中若未替换，`$SKILL_DIR` 会被当作环境变量展开为空字符串，导致路径错误。
 
 ## 核心原则：Token 与脚本代码都不进上下文
 
@@ -54,15 +56,15 @@ token 极长（数百~数千字符）且是敏感凭证，放进聊天框纯属�
 
 ## 第二步：读取剪贴板 → 临时文件（内容不进上下文）
 
-用 PowerShell 把剪贴板原样写入技能目录下的临时文件（管道输出不会回显剪贴板内容；`$SKILL_DIR` 替换为实际路径）：
+用 Bash（Git Bash / MSYS2）把剪贴板原样写入技能目录下的临时文件。Git Bash 提供 `/dev/clipboard` 伪文件，可直接读取系统剪贴板，**无需 PowerShell、也不回显剪贴板内容**（`$SKILL_DIR` 替换为实际路径）：
 
-```powershell
-Get-Clipboard -Raw | Set-Content -LiteralPath "$SKILL_DIR/_tmp_token.txt" -Encoding UTF8 -NoNewline
+```bash
+printf '%s' "$(cat /dev/clipboard)" > "$SKILL_DIR/_tmp_token.txt"
 ```
 
 要点：
 
-- `-Raw` 取剪贴板全文，`-NoNewline` 避免额外换行。
+- `cat /dev/clipboard` 读取系统剪贴板全文；`printf '%s'` 不追加额外换行（等价于 PowerShell 的 `-Raw -NoNewline`）。
 - 剪贴板为空时临时文件为空，属正常，交由第三步判为无效。
 - 此命令输出为空，不会把 token 打到终端。
 
@@ -85,8 +87,8 @@ node "$SKILL_DIR/update.js"
 
 删除第二步产生的临时 token 文件（`$SKILL_DIR` 替换为实际路径；校验脚本 `update.js` 不得删除）：
 
-```powershell
-Remove-Item -LiteralPath "$SKILL_DIR/_tmp_token.txt" -Force
+```bash
+rm -f "$SKILL_DIR/_tmp_token.txt"
 ```
 
 ## 第五步：回执
@@ -110,4 +112,4 @@ Remove-Item -LiteralPath "$SKILL_DIR/_tmp_token.txt" -Force
 - 只改 `tenant_access_token` 这一个字段的值；键名永不修改。
 - token 属敏感凭证：完整值不回显、不落盘到日志/无关文件；临时 token 文件用后即删。
 - `update.js` 为持久脚本，AI 不得在对话中读取、重写、内联或删除其代码，只能通过 `node` 运行。
-- 用户环境为 Windows（Win 11 / PowerShell 5），命令按 PowerShell 语法编写。
+- 命令尽量用 Bash（Git Bash / MSYS2）编写，剪贴板经 `/dev/clipboard` 读取；仅当确实无 bash 等价能力时才退回 PowerShell。
