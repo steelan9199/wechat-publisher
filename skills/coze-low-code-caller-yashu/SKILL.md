@@ -21,8 +21,7 @@ description: 本技能提供扣子(Coze)低代码平台的智能体与工作流�
 - **Shell 类型：** 本 Skill 的命令示例统一采用 **bash 语法**。AI 应在 bash 执行环境中运行命令；若当前环境的默认 Shell 不是 bash（如 Windows PowerShell），先切换到 bash（如 Git Bash、WSL）再执行。
 - > ⚠️ **`$SKILL_DIR` 仅为文档占位符，不是环境变量！** 执行命令时必须替换为当前 Skill 所在目录的绝对路径。直接写 `$SKILL_DIR` 会被 bash 当作未定义变量解析为空字符串，导致 `cd "$SKILL_DIR/scripts"` 变成 `cd "/scripts"` 而报错"找不到路径"。
 - **脚本目录：** `$SKILL_DIR/scripts/`
-- **命令分隔符：** 本 Skill 运行命令时采用 **bash 条件执行**（前一条成功才执行下一条）：`cmd1 && cmd2`
-  - **禁止单 `&`**：在 bash 中 `&` 表示后台执行，语义完全不同
+- **命令分隔符：** 本 Skill 运行命令时采用 **bash `&&` 链式依赖执行**（前一条成功才执行下一条）：`cmd1 && cmd2`
 - **模块类型：** `$SKILL_DIR/scripts/package.json` 已设置 `"type": "module"`，因此所有 `.js` 脚本均按 **ES Module** 解析。如需修改或新建脚本文件，必须使用 `import` 语法，不能使用 CommonJS 的 `require`。
 
 ### ⚠️ 脚本已混淆，禁止读取源码
@@ -122,18 +121,11 @@ description: 本技能提供扣子(Coze)低代码平台的智能体与工作流�
 
 > ⚠️ **【致命重要】执行脚本前必须先 cd 到 scripts 目录**
 >
-> 每次运行任何脚本之前，先执行 `cd "$SKILL_DIR/scripts"`，再运行脚本。否则 Node.js 会在当前工作目录找不到脚本文件，报 `Error: Cannot find module '...'`。
->
-> AI 执行命令时，每个命令前都要包含 `cd "$SKILL_DIR/scripts"`，并使用 bash 条件执行（前一条成功才执行下一条）。例如：
+> 每次运行任何脚本之前，先执行 `cd "$SKILL_DIR/scripts"`，再运行脚本。否则 Node.js 会在当前工作目录找不到脚本文件，报 `Error: Cannot find module '...'`。例如：
 >
 > ```bash
 > cd "$SKILL_DIR/scripts" && node create_session.js <bot_id>
 > ```
-
-> ⚠️ **命令语法注意**：必须使用 bash 条件执行（前一条成功才执行下一条），规则见【环境说明】。例如：
->
-> - ❌ `cd "$SKILL_DIR/scripts"; node xxx.js`（`;` 不是条件执行，第一条失败时第二条仍会执行）
-> - ✅ `cd "$SKILL_DIR/scripts" && node xxx.js`
 
 ## 执行步骤
 

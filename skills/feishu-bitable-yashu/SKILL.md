@@ -81,9 +81,8 @@ metadata:
 ## 环境说明
 
 - **`$SKILL_DIR`**：本 Skill 所在的绝对目录，即 `SKILL.md` 文件所在文件夹。**⚠️ `$SKILL_DIR` 仅为文档占位符，不是环境变量**：执行命令时必须替换为实际绝对路径，否则 bash 会将其解析为空字符串，导致 `cd $SKILL_DIR/scripts` 变成 `cd /scripts` 而报错"找不到路径"
-- **Shell 类型**：bash。本 Skill 运行命令时采用 **bash 条件执行**（前一条成功才执行下一条），规则如下：
+- **Shell 类型**：bash。本 Skill 运行命令时采用 **bash `&&` 链式依赖执行**（前一条成功才执行下一条），规则如下：
   - **条件执行**：`cmd1 && cmd2`（如 `cd $SKILL_DIR/scripts && node script.js`）
-  - **禁止单 `&`**：在 bash 中 `&` 表示后台执行，语义完全不同
 - **脚本目录**：`$SKILL_DIR/scripts`
 - **Node 版本**：>=18.20.8
 - **依赖安装**：`cd $SKILL_DIR/scripts && npm install`

@@ -13,7 +13,7 @@ version: 1.0.4
 ## 环境说明
 
 - **Shell 类型**：bash
-- 本 Skill 运行命令时采用 **bash 条件执行**（前一条成功才执行下一条），规则：`cmd1 && cmd2`，禁止单 `&`（在 bash 中 `&` 表示后台执行）
+- 本 Skill 运行命令时采用 **bash `&&` 链式依赖执行**（前一条成功才执行下一条），规则：`cmd1 && cmd2`
 - **脚本目录**：`$SKILL_DIR/scripts/`
 - **Node.js**：>= 18.20.8
 - **依赖安装**：`cd "$SKILL_DIR/scripts" && npm install`
