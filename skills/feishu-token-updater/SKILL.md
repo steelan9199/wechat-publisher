@@ -3,8 +3,8 @@ name: feishu-token-updater
 description: 更新飞书技能 feishu-docx-yashu 的 tenant_access_token 字段。激活条件：用户消息包含「更新/设置飞书 token」。
 metadata:
   author: "AI Assistant"
-  updated: "2026-08-06 17:00:00"
-  version: "2.2.0"
+  updated: "2026-08-07 10:01:00"
+  version: "2.3.1"
 ---
 
 # 飞书 tenant_access_token 更新器
@@ -18,7 +18,18 @@ metadata:
 - 只改 `tenant_access_token` 的**值**，键名永远不动。
 - 不碰 `appId`、`appSecret`、`member_id`、`custom` 等其它任何字段。
 
-## 核心原则：Token 不进上下文
+## 环境说明
+
+| 项目 | 说明 |
+| --- | --- |
+| `$SKILL_DIR` | 当前 Skill 所在的绝对目录，即 SKILL.md 文件所在的文件夹 |
+| 常驻脚本 | `$SKILL_DIR/update.js`（JWT 校验 + 配置写入） |
+| 临时文件 | `$SKILL_DIR/_tmp_token.txt`（剪贴板内容中转，用后即删） |
+| Node.js 版本 | `>=18` |
+
+> **⚠️ `$SKILL_DIR` 仅为文档占位符，不是环境变量**，执行命令时必须替换为技能目录的实际绝对路径。PowerShell 命令中若不替换，`$SKILL_DIR` 会被解析为空字符串导致路径错误。
+
+## 核心原则：Token 与脚本代码都不进上下文
 
 token 极长（数百~数千字符）且是敏感凭证，放进聊天框纯属浪费 token 和泄露风险。因此：
 
@@ -27,11 +38,13 @@ token 极长（数百~数千字符）且是敏感凭证，放进聊天框纯属�
 - AI 与用户只接触 token 的前 ~20 字符前缀。
 - 仅当剪贴板内容**未通过校验**时，额外显示其前 10 与后 10 字符（换行/制表符转为 `\n`、`\r`、`\t` 形式）及总长度 `len`，供用户确认复制的到底是不是 token。
 
+**校验脚本 `update.js` 常驻技能目录，AI 直接 `node` 运行、不读取、不重写，脚本代码不进入对话上下文。**
+
 ## 流程
 
 1. 用户把 token 复制到剪贴板，然后发「更新飞书 token」（不要粘贴 token 到聊天框）。
 2. 执行「第二步：读取剪贴板」（token 不进上下文）。
-3. 执行「第三步：Node.js 校验特征并写入」（代码里检测，只输出结果与前缀）。
+3. 执行「第三步：运行常驻校验脚本」（脚本内检测，只输出结果与前缀）。
 4. 执行「第四步：清理临时文件」。
 5. 执行「第五步：回执」。
 
@@ -41,10 +54,10 @@ token 极长（数百~数千字符）且是敏感凭证，放进聊天框纯属�
 
 ## 第二步：读取剪贴板 → 临时文件（内容不进上下文）
 
-用 PowerShell 把剪贴板原样写入临时文件（管道输出不会回显剪贴板内容）：
+用 PowerShell 把剪贴板原样写入技能目录下的临时文件（管道输出不会回显剪贴板内容；`$SKILL_DIR` 替换为实际路径）：
 
 ```powershell
-Get-Clipboard -Raw | Set-Content -LiteralPath "C:\Users\Administrator\.skills-manager\skills\feishu-docx-yashu\_tmp_token.txt" -Encoding UTF8 -NoNewline
+Get-Clipboard -Raw | Set-Content -LiteralPath "$SKILL_DIR/_tmp_token.txt" -Encoding UTF8 -NoNewline
 ```
 
 要点：
@@ -53,83 +66,27 @@ Get-Clipboard -Raw | Set-Content -LiteralPath "C:\Users\Administrator\.skills-ma
 - 剪贴板为空时临时文件为空，属正常，交由第三步判为无效。
 - 此命令输出为空，不会把 token 打到终端。
 
-## 第三步：Node.js 校验特征并写入（只输出结果与前缀）
+## 第三步：运行常驻校验脚本（代码不进上下文）
 
-> 注意：PowerShell 5 会把 `node -e '...'` 内联脚本中的双引号吞掉导致 SyntaxError，因此必须先把脚本写入临时文件再执行。
-
-先用 Write 工具创建临时脚本 `C:\Users\Administrator\.skills-manager\skills\feishu-docx-yashu\_tmp_update.js`，内容如下：
-
-```javascript
-const fs = require("fs");
-const cfgPath =
-  "C:/Users/Administrator/.skills-manager/skills/feishu-docx-yashu/config.default.json";
-const tokPath =
-  "C:/Users/Administrator/.skills-manager/skills/feishu-docx-yashu/_tmp_token.txt";
-let raw = fs.readFileSync(tokPath, "utf-8").replace(/^\uFEFF/, "");
-// 不可见字符转义为可见形式，保证 head/tail 单行展示
-const visible = (s) =>
-  s.replace(/\r/g, "\\r").replace(/\n/g, "\\n").replace(/\t/g, "\\t");
-const reportInvalid = () => {
-  console.log(
-    "NO_VALID_TOKEN_IN_CLIPBOARD head=" +
-      visible(raw.slice(0, 10)) +
-      " tail=" +
-      visible(raw.slice(-10)) +
-      " len=" +
-      raw.length,
-  );
-  process.exit(1);
-};
-// 特征1：先剔除一切杂质（换行/制表/空格/零宽字符等），只保留 JWT 字符集（字母数字 . _ -），
-// 再匹配 eyJ 开头、两段点分隔的 base64url 结构 —— 可容忍复制时夹带的换行或隐藏字符
-const cleaned = raw.replace(/[^A-Za-z0-9_.\-]/g, "");
-const m = cleaned.match(/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/);
-if (!m) {
-  reportInvalid();
-}
-const newToken = m[0];
-// 特征2：解码 payload 校验 token 类型为 access_token。
-// 注意：飞书 JWT 的键是标准注册声明 "typ"（不是 "type"），两版都兼容
-let payload = null;
-try {
-  const b64 = newToken.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-  payload = JSON.parse(Buffer.from(b64, "base64").toString("utf-8"));
-} catch (e) {}
-if (
-  !payload ||
-  (payload.type !== "access_token" && payload.typ !== "access_token")
-) {
-  reportInvalid();
-}
-const cfg = JSON.parse(fs.readFileSync(cfgPath, "utf-8"));
-const oldPrefix = (cfg["tenant_access_token"] || "").slice(0, 20);
-cfg["tenant_access_token"] = newToken;
-fs.writeFileSync(cfgPath, JSON.stringify(cfg, null, 2), "utf-8");
-console.log("UPDATED old=" + oldPrefix + " new=" + newToken.slice(0, 20));
-```
-
-再执行：
+直接运行本技能目录下的常驻脚本 `update.js`（`$SKILL_DIR` 替换为实际路径）。脚本内含 JWT 特征校验与配置写入逻辑，AI **无需读取、无需重写**脚本内容，脚本代码不进入对话上下文：
 
 ```bash
-node "C:\Users\Administrator\.skills-manager\skills\feishu-docx-yashu\_tmp_update.js"
+node "$SKILL_DIR/update.js"
 ```
 
-执行后，与 `_tmp_token.txt` 一起在「第四步」清理删除。
+脚本行为说明（供 AI 理解输出，无需查看源码）：
 
-说明：
-
-- 校验逻辑全部在代码里完成，AI 不参与看内容，完整 token 不会进入上下文。
-- 打印只含新旧前缀（各 20 字符）与 `UPDATED` / `NO_VALID_TOKEN_IN_CLIPBOARD` 标记。
-- 校验失败时，`NO_VALID_TOKEN_IN_CLIPBOARD` 一行同时输出 `head=`（剪贴板内容前 10 字符）、`tail=`（后 10 字符）、`len=`（总长度），换行/制表符会以 `\n`、`\r`、`\t` 形式显示；用户可据此判断：复制内容是不是完整 token、是不是复制错了东西、或 token 是否真的无效。
+- 读取第二步写入的 `_tmp_token.txt`（脚本用 `__dirname` 自动定位同目录文件），校验 JWT 特征（`eyJ` 开头、三段点分隔）并解码 payload 确认 token 类型为 `access_token`。
+- 校验通过：将 token 写入配置文件的 `tenant_access_token` 字段，打印 `UPDATED old=<旧前缀> new=<新前缀>`（各 20 字符）。
+- 校验失败：打印 `NO_VALID_TOKEN_IN_CLIPBOARD head=<前10字符> tail=<后10字符> len=<总长度>`，换行/制表符以 `\n`、`\r`、`\t` 形式显示；用户可据此判断复制内容是否为完整 token、是否复制错内容、或 token 是否真的无效。
 - 路径用 `/`，Windows 下 Node 可直接识别，避免反斜杠转义问题。
-- `JSON.stringify(cfg, null, 2)` 等价 indent=2，默认保留中文。
 
 ## 第四步：清理临时文件
 
-用 DeleteFile 工具删除 `C:\Users\Administrator\.skills-manager\skills\feishu-docx-yashu\_tmp_token.txt` 与 `C:\Users\Administrator\.skills-manager\skills\feishu-docx-yashu\_tmp_update.js`；或 PowerShell：
+删除第二步产生的临时 token 文件（`$SKILL_DIR` 替换为实际路径；常驻脚本 `update.js` 不删）：
 
 ```powershell
-Remove-Item -LiteralPath "C:\Users\Administrator\.skills-manager\skills\feishu-docx-yashu\_tmp_token.txt","C:\Users\Administrator\.skills-manager\skills\feishu-docx-yashu\_tmp_update.js" -Force
+Remove-Item -LiteralPath "$SKILL_DIR/_tmp_token.txt" -Force
 ```
 
 ## 第五步：回执
@@ -151,5 +108,6 @@ Remove-Item -LiteralPath "C:\Users\Administrator\.skills-manager\skills\feishu-d
 
 - 配置文件路径固定为 `C:\Users\Administrator\.skills-manager\skills\feishu-docx-yashu\config.default.json`，不要写到其它位置。
 - 只改 `tenant_access_token` 这一个字段的值；键名永不修改。
-- token 属敏感凭证：完整值不回显、不落盘到日志/无关文件；临时文件用后即删。
+- token 属敏感凭证：完整值不回显、不落盘到日志/无关文件；临时 token 文件用后即删。
+- `update.js` 为常驻脚本，AI 不得在对话中读取、重写或内联其代码，只能通过 `node` 运行。
 - 用户环境为 Windows（Win 11 / PowerShell 5），命令按 PowerShell 语法编写。
