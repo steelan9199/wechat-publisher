@@ -20,12 +20,12 @@ metadata:
 
 ## 环境说明
 
-| 项目 | 说明 |
-| --- | --- |
+| 项目         | 说明                                                    |
+| ------------ | ------------------------------------------------------- |
 | `$SKILL_DIR` | 当前 Skill 所在的绝对目录，即 SKILL.md 文件所在的文件夹 |
-| 常驻脚本 | `$SKILL_DIR/update.js`（JWT 校验 + 配置写入） |
-| 临时文件 | `$SKILL_DIR/_tmp_token.txt`（剪贴板内容中转，用后即删） |
-| Node.js 版本 | `>=18` |
+| 校验脚本     | `$SKILL_DIR/update.js`（JWT 校验 + 配置写入）           |
+| 临时文件     | `$SKILL_DIR/_tmp_token.txt`（剪贴板内容中转，用后即删） |
+| Node.js 版本 | `>=18`                                                  |
 
 > **⚠️ `$SKILL_DIR` 仅为文档占位符，不是环境变量**，执行命令时必须替换为技能目录的实际绝对路径。PowerShell 命令中若不替换，`$SKILL_DIR` 会被解析为空字符串导致路径错误。
 
@@ -38,13 +38,13 @@ token 极长（数百~数千字符）且是敏感凭证，放进聊天框纯属�
 - AI 与用户只接触 token 的前 ~20 字符前缀。
 - 仅当剪贴板内容**未通过校验**时，额外显示其前 10 与后 10 字符（换行/制表符转为 `\n`、`\r`、`\t` 形式）及总长度 `len`，供用户确认复制的到底是不是 token。
 
-**校验脚本 `update.js` 常驻技能目录，AI 直接 `node` 运行、不读取、不重写，脚本代码不进入对话上下文。**
+**校验脚本 `update.js` 持久驻留技能目录，AI 直接 `node` 运行、不读取、不重写、不删除，脚本代码不进入对话上下文。**
 
 ## 流程
 
 1. 用户把 token 复制到剪贴板，然后发「更新飞书 token」（不要粘贴 token 到聊天框）。
 2. 执行「第二步：读取剪贴板」（token 不进上下文）。
-3. 执行「第三步：运行常驻校验脚本」（脚本内检测，只输出结果与前缀）。
+3. 执行「第三步：运行校验脚本」（脚本内检测，只输出结果与前缀）。
 4. 执行「第四步：清理临时文件」。
 5. 执行「第五步：回执」。
 
@@ -66,9 +66,9 @@ Get-Clipboard -Raw | Set-Content -LiteralPath "$SKILL_DIR/_tmp_token.txt" -Encod
 - 剪贴板为空时临时文件为空，属正常，交由第三步判为无效。
 - 此命令输出为空，不会把 token 打到终端。
 
-## 第三步：运行常驻校验脚本（代码不进上下文）
+## 第三步：运行校验脚本（代码不进上下文）
 
-直接运行本技能目录下的常驻脚本 `update.js`（`$SKILL_DIR` 替换为实际路径）。脚本内含 JWT 特征校验与配置写入逻辑，AI **无需读取、无需重写**脚本内容，脚本代码不进入对话上下文：
+直接运行本技能目录下的校验脚本 `update.js`（`$SKILL_DIR` 替换为实际路径）。脚本内含 JWT 特征校验与配置写入逻辑，AI **无需读取、无需重写**脚本内容，脚本代码不进入对话上下文：
 
 ```bash
 node "$SKILL_DIR/update.js"
@@ -83,7 +83,7 @@ node "$SKILL_DIR/update.js"
 
 ## 第四步：清理临时文件
 
-删除第二步产生的临时 token 文件（`$SKILL_DIR` 替换为实际路径；常驻脚本 `update.js` 不删）：
+删除第二步产生的临时 token 文件（`$SKILL_DIR` 替换为实际路径；校验脚本 `update.js` 不得删除）：
 
 ```powershell
 Remove-Item -LiteralPath "$SKILL_DIR/_tmp_token.txt" -Force
@@ -109,5 +109,5 @@ Remove-Item -LiteralPath "$SKILL_DIR/_tmp_token.txt" -Force
 - 配置文件路径固定为 `C:\Users\Administrator\.skills-manager\skills\feishu-docx-yashu\config.default.json`，不要写到其它位置。
 - 只改 `tenant_access_token` 这一个字段的值；键名永不修改。
 - token 属敏感凭证：完整值不回显、不落盘到日志/无关文件；临时 token 文件用后即删。
-- `update.js` 为常驻脚本，AI 不得在对话中读取、重写或内联其代码，只能通过 `node` 运行。
+- `update.js` 为持久脚本，AI 不得在对话中读取、重写、内联或删除其代码，只能通过 `node` 运行。
 - 用户环境为 Windows（Win 11 / PowerShell 5），命令按 PowerShell 语法编写。
