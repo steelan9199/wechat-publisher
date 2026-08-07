@@ -3,8 +3,8 @@ name: feishu-bitable-yashu
 description: 操作飞书多维表格(Bitable)。激活条件：用户消息须包含以下关键词之一:`操作飞书多维表格`、`管理多维表格`、`操作飞书bitable`、`多维表格操作`、`bitable管理`。
 metadata:
   author: "AI Assistant"
-  updated: "2026-07-08 12:00:00"
-  version: "1.0.0"
+  updated: "2026-08-07 00:00:00"
+  version: "1.1.0"
 ---
 
 # 飞书多维表格 API 操作
@@ -17,7 +17,7 @@ metadata:
 
 > **硬性规则**：本文档中每一个 `*.js` 脚本的调用，**必须**先 Read 对应的 `$SKILL_DIR/references/<功能>/<操作>.md` 文档，再构造参数文件，**最后**才执行脚本。
 >
-> **此规则适用于本 skill 的所有 23 个脚本**--包括"基础能力"的 `get-tenant-access-token.js` 和 `parse-bitable-url.js`，**没有任何脚本是例外**。
+> **此规则适用于本 skill 的所有 23 个脚本**——包括"基础能力"的 `get-tenant-access-token.js` 和 `parse-bitable-url.js`，**没有任何脚本是例外**。本规则在「决策流程」「触发词总表」「跨功能公共规则」中均不再重复阐述，统一以此处为准。
 
 ### ❌ 反面案例（真实发生，请勿重演）
 
@@ -87,13 +87,17 @@ metadata:
 - **脚本目录**：`$SKILL_DIR/scripts`
 - **Node 版本**：>=18.20.8
 - **依赖安装**：`cd $SKILL_DIR/scripts && npm install`
-- **配置文件**：`$SKILL_DIR/config.default.json`（存储 appId、appSecret、tenant_access_token，AI 可自动读写）
+- **配置文件 `config.default.json`**（集中说明，全文不再重复）：
+  - 路径：`$SKILL_DIR/config.default.json`
+  - 默认存储字段：`appId`、`appSecret`、`tenant_access_token`
+  - AI 可自动读写；脚本会自动将新令牌回写到该文件
+  - 可手动修改 `tenant_access_token` 字段的**值**（键名保持不变）以切换为 `user_access_token` 身份，详见「如何切换身份」
 
 ### ⚠️ 脚本已混淆，禁止读取源码
 
 `$SKILL_DIR/scripts/` 目录下的所有 JavaScript 文件已进行代码混淆处理，**禁止读取或分析 `.js` 文件内容**。混淆代码可读性极差，读取纯属浪费 token 和时间。
 
-如需了解脚本功能和用法，请查阅下方「脚本清单」和 `$SKILL_DIR/references/` 目录下的接口文档。
+如需了解脚本功能和用法，请查阅下方「脚本与触发词总表」和 `$SKILL_DIR/references/` 目录下的接口文档。
 
 ## 全局前置条件
 
@@ -101,7 +105,7 @@ metadata:
 
 | 前置条件              | 说明                               | 获取方式                                       |
 | --------------------- | ---------------------------------- | ---------------------------------------------- |
-| `tenant_access_token` | API 访问凭证，有效期 2 小时        | 运行 `get-tenant-access-token.js`              |
+| `tenant_access_token` | API 访问凭证，有效期 2 小时        | 按下方「令牌使用策略」执行                     |
 | `app_token`           | 标识要操作的多维表格               | 运行 `parse-bitable-url.js` 从 URL 解析        |
 | `table_id`            | 标识要操作的数据表（部分操作需要） | 运行 `parse-bitable-url.js` 或 `table/list.js` |
 
@@ -111,7 +115,7 @@ metadata:
 
 > 💡 **飞书多维表格也是一种文档**：在飞书产品的概念中，飞书多维表格（Bitable）本质上是飞书云文档的一种，存放于用户的云空间中。因此下文关于"两个独立身份/两个独立空间/access_token 鉴权/身份切换"的说明，同样完全适用于多维表格的操作。
 
-### 两个独立身份与两个独立空间
+### 两个独立身份与两个独立空间（核心定义）
 
 在使用飞书云文档 API 时，需要先理解一个关键概念：**飞书企业自建应用**和**飞书用户（使用飞书产品的真人）**在飞书中被视为两个完全独立的"用户"，各自拥有独立的云空间。
 
@@ -122,40 +126,22 @@ metadata:
 
 本 Skill 默认使用飞书企业自建应用身份操作，因此默认操作的是**应用自身空间**中的多维表格，而非用户个人空间中的多维表格。
 
-| 身份             | Token 类型            | 操作范围                 | 默认 |
-| ---------------- | --------------------- | ------------------------ | ---- |
-| 飞书企业自建应用 | `tenant_access_token` | 应用自身云空间的多维表格 | ✅   |
-| 飞书用户（个人） | `user_access_token`   | 用户个人云空间的多维表格 | -    |
+### 凭证对比总表
+
+下表汇总两种访问凭证的全部差异（合并身份、作用、有效期、获取方式、是否自动、默认身份）：
+
+| 凭证类型              | 归属身份         | 作用                                                                                     | 有效期    | 获取依据                           | 获取方式                                                                               | 是否可自动获取    | 默认 |
+| --------------------- | ---------------- | ---------------------------------------------------------------------------------------- | --------- | ---------------------------------- | -------------------------------------------------------------------------------------- | ----------------- | ---- |
+| `tenant_access_token` | 飞书企业自建应用 | 飞书企业自建应用的临时令牌，以**应用身份**调用 OpenAPI，操作应用自身云空间的多维表格     | 约 2 小时 | `appId` + `appSecret`（应用凭证）  | 本 Skill 调用 `get-tenant-access-token.js` 脚本，凭 `appId`+`appSecret` 自动向飞书换取 | ✅ 可自动获取     | ✅   |
+| `user_access_token`   | 飞书用户（个人） | 飞书用户的令牌，以**用户身份**调用 OpenAPI，可直接操作用户个人云空间中的所有可见多维表格 | 约 2 小时 | 飞书用户账号（需用户本人登录授权） | 用户自行打开飞书开放平台 API 调试台网页，登录授权后复制 token 值（步骤见下文）         | ❌ 需用户手动获取 | -    |
+
+> 💡 **关键区别**：`appId` + `appSecret` 是飞书企业自建应用的凭证，本 Skill 可以凭它**自动换取** `tenant_access_token`（应用身份）；但 `user_access_token` 必须由**飞书用户本人**登录网页授权才能获取，本 Skill 无法代为自动获取。两种 token 均约 2 小时过期。
 
 ### 协作者机制：让应用访问用户文档的另一种路径
 
 由于两个空间相互隔离，如果飞书企业自建应用希望直接操作**飞书用户个人空间**里的某个多维表格，需要先将该应用**添加为该多维表格文档的"协作者"**，授予相应权限（查看/编辑/管理）。配置入口：在飞书客户端打开目标多维表格 → 右上角「分享」→ 添加协作者 → 搜索应用名并授予权限。
 
-> 协作者方式适合"只操作个别多维表格"的场景；若需批量操作用户空间中的多个多维表格，推荐改用下文的 `user_access_token` 方式直接以用户身份操作。
-
-### 访问凭证（access_token）鉴权机制
-
-为了提升 API 调用的安全性，飞书开放平台设计了**访问凭证（access_token）机制**。调用 API 获取应用资源时，需要通过 access_token 对调用者身份进行鉴权 —— 即告知飞书**"当前是谁、以什么身份、获取什么租户的数据"**。
-
-访问凭证是接入飞书开放平台的"钥匙"，将应用获得的所有数据访问和接口调用权限绑定在一起，允许应用对资源进行读写操作。本 Skill 中涉及两种访问凭证：
-
-| 凭证类型              | 归属身份         | 作用                                                                                     | 有效期    |
-| --------------------- | ---------------- | ---------------------------------------------------------------------------------------- | --------- |
-| `tenant_access_token` | 飞书企业自建应用 | 飞书企业自建应用的临时令牌，以**应用身份**调用 OpenAPI，操作应用自身云空间的多维表格     | 约 2 小时 |
-| `user_access_token`   | 飞书用户（个人） | 飞书用户的令牌，以**用户身份**调用 OpenAPI，可直接操作用户个人云空间中的所有可见多维表格 | 约 2 小时 |
-
-> ⚠️ `user_access_token` 有效期约为 2 小时，过期后需重新获取；`tenant_access_token` 同样约 2 小时过期，但可由本 Skill 自动刷新（见下文）。
-
-### 两种 token 的获取方式对比
-
-`tenant_access_token` 与 `user_access_token` 的获取路径完全不同，下表清晰对比两者差异：
-
-| Token 类型            | 获取依据                           | 获取方式                                                                                                           | 是否可自动获取    |
-| --------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ----------------- |
-| `tenant_access_token` | `appId` + `appSecret`（应用凭证）  | 本 Skill 调用 `get-tenant-access-token.js` 脚本，凭 `appId`+`appSecret` 自动向飞书换取                             | ✅ 可自动获取     |
-| `user_access_token`   | 飞书用户账号（需用户本人登录授权） | 用户自行打开飞书开放平台 API 调试台网页，登录授权后复制 token 值（具体步骤见下文「user_access_token 的获取方式」） | ❌ 需用户手动获取 |
-
-> 💡 **关键区别**：`appId` + `appSecret` 是飞书企业自建应用的凭证，本 Skill 可以凭它**自动换取** `tenant_access_token`（应用身份）；但 `user_access_token` 必须由**飞书用户本人**登录网页授权才能获取，本 Skill 无法代为自动获取。因此，若需以用户身份操作用户个人空间的多维表格，请用户按下方步骤自行获取 `user_access_token` 后提供给 AI。
+> 协作者方式适合"只操作个别多维表格"的场景；若需批量操作用户空间中的多个多维表格，推荐改用 `user_access_token` 方式直接以用户身份操作。
 
 ### 如何切换身份：以飞书用户身份操作用户空间文档
 
@@ -190,17 +176,17 @@ metadata:
 
 > ⚠️ **安全提示**：`user_access_token` 具有用户级别的完整权限，请妥善保管。本 Skill 仅临时使用，不做任何持久化存储，执行完毕后临时文件会自动清理。
 
-### tenant_access_token 的获取与刷新
+### tenant_access_token 的获取与刷新（令牌使用策略，全文唯一权威定义）
 
-飞书 API 调用默认使用 `tenant_access_token`。获取方式参考 [认证与凭证管理指南]($SKILL_DIR/references/authentication.md) 或 [获取访问凭证 API]($SKILL_DIR/references/get_tenant_access_token.md)。
+> ⚠️ **令牌使用策略（重要）**：本 Skill **优先复用** `config.default.json` 中的 `tenant_access_token`，**默认不主动刷新**，以避免不必要的换取请求。仅当**其他业务脚本**返回信息中出现"token 不合法"、"token 已过期"、"token 失效"等类似描述时，才运行 `cd $SKILL_DIR/scripts && node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径>` 刷新令牌（脚本会自动将新令牌回写到配置文件，无需手动处理）。
 
-令牌过期（错误码 99991663）时，运行 `cd $SKILL_DIR/scripts && node get-tenant-access-token.js --parameter-file-path <参数文件绝对路径>` 刷新令牌，更新参数文件后重试。
+获取方式参考 [认证与凭证管理指南]($SKILL_DIR/references/authentication.md) 或 [获取访问凭证 API]($SKILL_DIR/references/get_tenant_access_token.md)。
 
 ## 跨功能公共规则
 
-> 以下规则适用于本 Skill 所有脚本调用，必须严格遵守。
+> 以下规则适用于本 Skill 所有脚本调用，必须严格遵守。「先 Read 文档」规则已在顶部「AI 调用任何脚本前必读」集中定义，此处不重复。
 
-### 1. 执行前必须进入 scripts 目录
+### 1. 执行前必须进入 scripts 目录（命令模板，全文唯一权威定义）
 
 执行任何脚本前，**必须先 `cd` 到 `$SKILL_DIR/scripts` 目录**，再运行命令：
 
@@ -214,50 +200,11 @@ cd $SKILL_DIR/scripts && node record/get.js --parameter-file-path "参数文件�
 | `node $SKILL_DIR/scripts/record/get.js ...`       | ❌ 禁止  |
 | `node scripts/record/get.js ...`                  | ❌ 禁止  |
 
-### 2. 🚨 执行前必须读取对应参考文档（强制流程，不可跳过）
-
-> **这是硬性要求，不是建议。** 任何脚本调用前，**必须**先 Read 对应的参考文档，再构造参数文件。
-
-**强制执行流程**：
-
-| 步骤 | 动作                                                        | 是否可跳过  |
-| ---- | ----------------------------------------------------------- | ----------- |
-| 1    | **Read** 对应的参考文档（如 `references/record/create.md`） | ❌ 不可跳过 |
-| 2    | 复制文档中提供的**完整 JSON Schema 示例**                   | ❌ 不可跳过 |
-| 3    | 仅替换示例中的占位值为实际值，**不增删任何字段**            | ❌ 不可跳过 |
-| 4    | Write 参数文件到 `$SKILL_DIR/temp/` 目录                    | —           |
-| 5    | 执行脚本                                                    | —           |
-
-**禁止行为**：
-
-- ❌ **禁止凭记忆/直觉编写参数**：例如「上次用过 `record_ids`，这次也用」是严重错误
-- ❌ **禁止跳过步骤1直接编写参数**：即使你"记得"参数格式，也必须先 Read 文档
-- ❌ **禁止类比其他脚本推断字段**：批量创建/更新/删除/获取的 `records` 字段格式各不相同，必须看文档
-
-**为什么必须这样做**：
-
-不同脚本的参数字段差异巨大，记忆不可靠：
-
-| 脚本                     | 关键参数     | 格式                                             |
-| ------------------------ | ------------ | ------------------------------------------------ |
-| `record/batch-create.js` | `records`    | 对象数组 `[{"fields": {...}}]`                   |
-| `record/batch-update.js` | `records`    | 对象数组 `[{"record_id": "x", "fields": {...}}]` |
-| `record/batch-delete.js` | `records`    | **字符串数组 `["recx", "recy"]`**                |
-| `record/batch-get.js`    | `record_ids` | **字符串数组 `["recx", "recy"]`**                |
-
-仅凭记忆很容易把 `record_ids`、`record_id` 等搞错，**唯一可靠的来源是当下 Read 的文档**。
-
-**自检清单**（执行每个脚本前在内心过一遍）：
-
-- [ ] 我刚才 Read 了对应的参考文档吗？
-- [ ] 我使用的字段名（不是 `record_ids`，而是 `records`）是否与文档 Schema 一致？
-- [ ] 我使用的字段格式（字符串数组 vs 对象数组）是否与文档示例一致？
-
-### 3. 参数通过文件传递
+### 2. 参数通过文件传递
 
 所有脚本均使用 `--parameter-file-path` 参数传递配置。参数文件必须使用**绝对路径**，路径分隔符使用正斜杠 `/`，包含空格时用双引号包裹。各脚本所需的参数字段不同，请阅读对应的参考文档获取字段说明。
 
-### 4. 临时文件管理
+### 3. 临时文件管理
 
 AI 调用脚本时自动管理临时参数文件：
 
@@ -267,7 +214,7 @@ AI 调用脚本时自动管理临时参数文件：
 
 详细临时文件管理流程、工具函数用法与参数配置示例参见 [参数配置示例与最佳实践]($SKILL_DIR/references/examples.md)。
 
-### 5. 🚨 禁止用 Shell 命令写文件
+### 4. 🚨 禁止用 Shell 命令写文件
 
 AI 在执行本 Skill 过程中**创建或修改任何文件（包括参数文件、配置文件等）**，**必须使用 Write 工具**。**禁止使用任何 Shell 文件写入命令**（`>` 重定向、`echo >`、`Set-Content`、`Out-File`、`[System.IO.File]::WriteAllText()` 等）。
 
@@ -279,7 +226,7 @@ AI 在执行本 Skill 过程中**创建或修改任何文件（包括参数文�
 >
 > **Write 工具**不产生 BOM，是唯一安全的文件写入方式。
 
-### 6. 输出格式
+### 5. 输出格式
 
 - **成功**：返回操作结果数据（JSON 格式），包含完整的 API 响应
 - **失败**：返回错误信息，包含错误码和解决建议
@@ -290,120 +237,91 @@ AI 在执行本 Skill 过程中**创建或修改任何文件（包括参数文�
 
 据此，脚本运行期间产生的所有输出（含进度日志与结构化结果数据 JSON）均经由 stderr 输出，标准输出流（stdout）为空。AI 在调用脚本、捕获输出时应知晓此特性。
 
-## 触发映射：用户说 → AI 做
+## 脚本与触发词总表
 
-> ⚠️ **执行任意一条前必须先 Read 表格最右列的文档**——这是强制流程，不可跳过。
+> 🚨 **执行任何脚本前，先 Read 对应参考文档（最右列链接），再 `cd $SKILL_DIR/scripts`，最后才运行脚本。** 没有例外。本表合并原「触发映射」与「全业务脚本索引清单」两张表。
 
-| 用户输入触发词                   | AI 执行动作                                   | 对应脚本                                        | 🔴 必读文档（先 Read 再执行）                                    |
-| -------------------------------- | --------------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------- |
-| "查看记录"/"获取记录"/"列出记录" | 运行 `record/get.js` 查询记录列表             | `$SKILL_DIR/scripts/record/get.js`              | [获取记录]($SKILL_DIR/references/record/get.md)                  |
-| "添加记录"/"创建记录"/"插入记录" | 运行 `record/create.js` 创建单条记录          | `$SKILL_DIR/scripts/record/create.js`           | [创建记录]($SKILL_DIR/references/record/create.md)               |
-| "修改记录"/"更新记录"/"编辑记录" | 运行 `record/update.js` 更新单条记录          | `$SKILL_DIR/scripts/record/update.js`           | [更新记录]($SKILL_DIR/references/record/update.md)               |
-| "删除记录"/"移除记录"            | 运行 `record/delete.js` 删除单条记录          | `$SKILL_DIR/scripts/record/delete.js`           | [删除记录]($SKILL_DIR/references/record/delete.md)               |
-| "批量添加记录"/"添加多条记录"    | 运行 `record/batch-create.js` 批量创建记录    | `$SKILL_DIR/scripts/record/batch-create.js`     | [批量创建记录]($SKILL_DIR/references/record/batch_create.md)     |
-| "批量修改记录"/"更新多条记录"    | 运行 `record/batch-update.js` 批量更新记录    | `$SKILL_DIR/scripts/record/batch-update.js`     | [批量更新记录]($SKILL_DIR/references/record/batch_update.md)     |
-| "批量获取记录"                   | 运行 `record/batch-get.js` 批量获取记录       | `$SKILL_DIR/scripts/record/batch-get.js`        | [批量获取记录]($SKILL_DIR/references/record/batch_get.md)        |
-| "批量删除记录"/"清空记录"        | 运行 `record/batch-delete.js` 批量删除记录    | `$SKILL_DIR/scripts/record/batch-delete.js`     | [批量删除记录]($SKILL_DIR/references/record/batch_delete.md)     |
-| "查看表格"/"数据表列表"          | 运行 `table/list.js` 列出所有数据表           | `$SKILL_DIR/scripts/table/list.js`              | [列出数据表]($SKILL_DIR/references/table/list.md)                |
-| "创建表格"/"添加数据表"          | 运行 `table/create-single.js` 创建单个数据表  | `$SKILL_DIR/scripts/table/create-single.js`     | [创建单个数据表]($SKILL_DIR/references/table/create_single.md)   |
-| "批量创建表格"                   | 运行 `table/batch-create.js` 批量创建数据表   | `$SKILL_DIR/scripts/table/batch-create.js`      | [批量创建数据表]($SKILL_DIR/references/table/batch_create.md)    |
-| "修改表格名称"/"重命名表格"      | 运行 `table/update.js` 更新数据表名称         | `$SKILL_DIR/scripts/table/update.js`            | [更新数据表]($SKILL_DIR/references/table/update.md)              |
-| "删除表格"/"移除数据表"          | 运行 `table/delete-one.js` 删除单个数据表     | `$SKILL_DIR/scripts/table/delete-one.js`        | [删除单个数据表]($SKILL_DIR/references/table/delete_one.md)      |
-| "批量删除表格"                   | 运行 `table/batch-delete.js` 批量删除数据表   | `$SKILL_DIR/scripts/table/batch-delete.js`      | [批量删除数据表]($SKILL_DIR/references/table/batch_delete.md)    |
-| "查看字段"/"列信息"              | 运行 `field/list.js` 列出所有字段             | `$SKILL_DIR/scripts/field/list.js`              | [列出字段]($SKILL_DIR/references/field/list.md)                  |
-| "添加字段"/"新列"                | 运行 `field/create.js` 创建字段               | `$SKILL_DIR/scripts/field/create.js`            | [创建字段]($SKILL_DIR/references/field/create.md)                |
-| "修改字段"/"修改列"              | 运行 `field/update.js` 更新字段               | `$SKILL_DIR/scripts/field/update.js`            | [更新字段]($SKILL_DIR/references/field/update.md)                |
-| "删除字段"/"移除列"              | 运行 `field/delete.js` 删除字段               | `$SKILL_DIR/scripts/field/delete.js`            | [删除字段]($SKILL_DIR/references/field/delete.md)                |
-| "上传文件"/"上传图片"/"上传附件" | 运行 `media/upload.js` 上传素材               | `$SKILL_DIR/scripts/media/upload.js`            | [上传素材]($SKILL_DIR/references/media/upload.md)                |
-| "获取下载链接"/"获取直链"        | 运行 `media/file-token-to-url.js` 获取文件URL | `$SKILL_DIR/scripts/media/file-token-to-url.js` | [获取文件链接]($SKILL_DIR/references/media/file_token_to_url.md) |
-| "获取访问凭证"/"刷新 token"      | 运行 `get-tenant-access-token.js` 获取凭证    | `$SKILL_DIR/scripts/get-tenant-access-token.js` | [获取访问凭证]($SKILL_DIR/references/get_tenant_access_token.md) |
-| "解析飞书链接"                   | 运行 `parse-bitable-url.js` 解析 URL          | `$SKILL_DIR/scripts/parse-bitable-url.js`       | [解析飞书链接]($SKILL_DIR/references/parse_bitable_url.md)       |
+### 基础能力
 
-## 决策流程
+| 用户输入触发词              | 脚本                         | 功能                                           | 参考文档                                                         |
+| --------------------------- | ---------------------------- | ---------------------------------------------- | ---------------------------------------------------------------- |
+| "获取访问凭证"/"刷新 token" | `get-tenant-access-token.js` | 获取 `tenant_access_token`                     | [获取访问凭证]($SKILL_DIR/references/get_tenant_access_token.md) |
+| "解析飞书链接"              | `parse-bitable-url.js`       | 从 URL 提取 `app_token`、`table_id`、`view_id` | [解析飞书链接]($SKILL_DIR/references/parse_bitable_url.md)       |
+| （清理临时文件）            | `clear_temp.js`              | 清理 `$SKILL_DIR/temp` 下的临时文件            | [参数配置示例与最佳实践]($SKILL_DIR/references/examples.md)      |
 
-> **流程图的核心改动**：原流程是"想调用 → 直接调用"，现改为"想调用 → **先 Read 文档** → 再调用"。`Read doc` 是流程中的**第一个必经节点**，不可绕过。
+### 数据表操作（table/）
+
+| 用户输入触发词              | 脚本               | 功能                                     | 参考文档                                                       |
+| --------------------------- | ------------------ | ---------------------------------------- | -------------------------------------------------------------- |
+| "创建表格"/"添加数据表"     | `create-single.js` | 新增一个数据表，支持指定名称、视图和字段 | [创建单个数据表]($SKILL_DIR/references/table/create_single.md) |
+| "批量创建表格"              | `batch-create.js`  | 新增多个数据表，仅可指定名称             | [批量创建数据表]($SKILL_DIR/references/table/batch_create.md)  |
+| "修改表格名称"/"重命名表格" | `update.js`        | 更新指定数据表的名称                     | [更新数据表]($SKILL_DIR/references/table/update.md)            |
+| "查看表格"/"数据表列表"     | `list.js`          | 获取所有数据表的 ID、版本号和名称        | [列出数据表]($SKILL_DIR/references/table/list.md)              |
+| "删除表格"/"移除数据表"     | `delete-one.js`    | 通过 `app_token` 和 `table_id` 删除      | [删除单个数据表]($SKILL_DIR/references/table/delete_one.md)    |
+| "批量删除表格"              | `batch-delete.js`  | 批量删除多个数据表                       | [批量删除数据表]($SKILL_DIR/references/table/batch_delete.md)  |
+
+### 记录操作（record/）
+
+| 用户输入触发词                   | 脚本              | 功能                                | 参考文档                                                     |
+| -------------------------------- | ----------------- | ----------------------------------- | ------------------------------------------------------------ |
+| "添加记录"/"创建记录"/"插入记录" | `create.js`       | 在数据表中新增一条记录              | [创建记录]($SKILL_DIR/references/record/create.md)           |
+| "修改记录"/"更新记录"/"编辑记录" | `update.js`       | 更新数据表中的一条记录              | [更新记录]($SKILL_DIR/references/record/update.md)           |
+| "查看记录"/"获取记录"/"列出记录" | `get.js`          | 查询记录，单次最多 500 行，支持分页 | [获取记录]($SKILL_DIR/references/record/get.md)              |
+| "删除记录"/"移除记录"            | `delete.js`       | 删除数据表中的一条记录              | [删除记录]($SKILL_DIR/references/record/delete.md)           |
+| "批量添加记录"/"添加多条记录"    | `batch-create.js` | 批量新增记录，单次最多 1,000 条     | [批量创建记录]($SKILL_DIR/references/record/batch_create.md) |
+| "批量修改记录"/"更新多条记录"    | `batch-update.js` | 批量更新记录，单次最多 1,000 条     | [批量更新记录]($SKILL_DIR/references/record/batch_update.md) |
+| "批量获取记录"                   | `batch-get.js`    | 通过记录 ID 查询，最多 100 条       | [批量获取记录]($SKILL_DIR/references/record/batch_get.md)    |
+| "批量删除记录"/"清空记录"        | `batch-delete.js` | 批量删除多条记录                    | [批量删除记录]($SKILL_DIR/references/record/batch_delete.md) |
+
+### 字段操作（field/）
+
+| 用户输入触发词      | 脚本        | 功能                              | 参考文档                                          |
+| ------------------- | ----------- | --------------------------------- | ------------------------------------------------- |
+| "添加字段"/"新列"   | `create.js` | 在数据表中新增一个字段            | [创建字段]($SKILL_DIR/references/field/create.md) |
+| "修改字段"/"修改列" | `update.js` | 全量更新字段（property 会被覆盖） | [更新字段]($SKILL_DIR/references/field/update.md) |
+| "查看字段"/"列信息" | `list.js`   | 获取数据表中的所有字段            | [列出字段]($SKILL_DIR/references/field/list.md)   |
+| "删除字段"/"移除列" | `delete.js` | 删除数据表中的一个字段            | [删除字段]($SKILL_DIR/references/field/delete.md) |
+
+### 素材/文件操作（media/）
+
+| 用户输入触发词                   | 脚本                   | 功能                                                                    | 参考文档                                                         |
+| -------------------------------- | ---------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| "上传文件"/"上传图片"/"上传附件" | `upload.js`            | 上传文件、图片、视频等素材（无大小限制，脚本内部自动区分直传/分片上传） | [上传素材]($SKILL_DIR/references/media/upload.md)                |
+| "获取下载链接"/"获取直链"        | `file-token-to-url.js` | `file_token` 转临时下载链接（24小时有效）                               | [获取文件链接]($SKILL_DIR/references/media/file_token_to_url.md) |
+
+## 决策流程（权威调用流程，全文唯一）
+
+> **流程图的核心**：原流程是"想调用 → 直接调用"，现改为"想调用 → **先 Read 文档** → 再调用"。`Read doc` 是流程中的**第一个必经节点**，不可绕过。本节为权威流程，「强制三步走」「跨功能公共规则」均指向本节。
 
 **第1步：判断是否涉及飞书多维表格**
-→ 否 → 不使用此 Skill
-→ 是 → 确定要调用的脚本名（如 record/create.js），进入第2步
+否 → 不使用此 Skill
+是 → 确定要调用的脚本名（如 record/create.js），进入第2步
 
 **第2步：【必经节点 1】Read 对应参考文档**
-→ 运行 Read 读取 `$SKILL_DIR/references/<类别>/<操作>.md`
-→ 已 Read？→ 在输出中 cite 文档路径，进入第3步
-→ 未 Read？→ 立即 Read，不要继续
+运行 Read 读取 `$SKILL_DIR/references/<类别>/<操作>.md`
+已 Read？→ 在输出中 cite 文档路径，进入第3步
+未 Read？→ 立即 Read，不要继续
 
 **第3步：准备访问凭证（如需要）**
-→ 调 `get-tenant-access-token.js`（同样先 Read 对应文档）
-→ 进入第4步
+按令牌使用策略执行（见「tenant_access_token 的获取与刷新」）
+进入第4步
 
 **第4步：准备资源标识（如需要）**
-→ 调 `parse-bitable-url.js`（同样先 Read 对应文档）
-→ 进入第5步
+调 `parse-bitable-url.js`（同样先 Read 对应文档）
+进入第5步
 
 **第5步：【必经节点 2】cd 到 scripts 目录后执行**
 运行 `cd $SKILL_DIR/scripts && node <script-path>.js --parameter-file-path "..."`
-→ 数据表操作 → `table/` 脚本
-→ 记录操作 → `record/` 脚本
-→ 字段操作 → `field/` 脚本
-→ 素材操作 → `media/` 脚本
+数据表操作 → `table/` 脚本
+记录操作 → `record/` 脚本
+字段操作 → `field/` 脚本
+素材操作 → `media/` 脚本
 
 **关键约束**：
 
 - 任何脚本（包括 `get-tenant-access-token.js`、`parse-bitable-url.js` 这两个"基础操作"）都**必须**经过第2步 Read 对应 reference
 - Read 文档后必须能在输出中"cite 出文档路径"，否则视为未读
 - 跳过 Read 直接写参数文件 = 流程违规（参考文档顶部"反面案例"）
-
-## 全业务脚本索引清单
-
-> 🚨 **执行任何脚本前，先 Read 对应参考文档（每个脚本的最右列链接），再 `cd $SKILL_DIR/scripts`，最后才运行脚本。** 没有例外。
-
-### 基础能力
-
-| 脚本                         | 功能                                           | 参考文档                                                         |
-| ---------------------------- | ---------------------------------------------- | ---------------------------------------------------------------- |
-| `get-tenant-access-token.js` | 获取 `tenant_access_token`                     | [获取访问凭证]($SKILL_DIR/references/get_tenant_access_token.md) |
-| `parse-bitable-url.js`       | 从 URL 提取 `app_token`、`table_id`、`view_id` | [解析飞书链接]($SKILL_DIR/references/parse_bitable_url.md)       |
-| `clear_temp.js`              | 清理 `$SKILL_DIR/temp` 下的临时文件            | [参数配置示例与最佳实践]($SKILL_DIR/references/examples.md)      |
-
-### 数据表操作（table/）
-
-| 脚本               | 功能                                     | 参考文档                                                       |
-| ------------------ | ---------------------------------------- | -------------------------------------------------------------- |
-| `create-single.js` | 新增一个数据表，支持指定名称、视图和字段 | [创建单个数据表]($SKILL_DIR/references/table/create_single.md) |
-| `batch-create.js`  | 新增多个数据表，仅可指定名称             | [批量创建数据表]($SKILL_DIR/references/table/batch_create.md)  |
-| `update.js`        | 更新指定数据表的名称                     | [更新数据表]($SKILL_DIR/references/table/update.md)            |
-| `list.js`          | 获取所有数据表的 ID、版本号和名称        | [列出数据表]($SKILL_DIR/references/table/list.md)              |
-| `delete-one.js`    | 通过 `app_token` 和 `table_id` 删除      | [删除单个数据表]($SKILL_DIR/references/table/delete_one.md)    |
-| `batch-delete.js`  | 批量删除多个数据表                       | [批量删除数据表]($SKILL_DIR/references/table/batch_delete.md)  |
-
-### 记录操作（record/）
-
-| 脚本              | 功能                                | 参考文档                                                     |
-| ----------------- | ----------------------------------- | ------------------------------------------------------------ |
-| `create.js`       | 在数据表中新增一条记录              | [创建记录]($SKILL_DIR/references/record/create.md)           |
-| `update.js`       | 更新数据表中的一条记录              | [更新记录]($SKILL_DIR/references/record/update.md)           |
-| `get.js`          | 查询记录，单次最多 500 行，支持分页 | [获取记录]($SKILL_DIR/references/record/get.md)              |
-| `delete.js`       | 删除数据表中的一条记录              | [删除记录]($SKILL_DIR/references/record/delete.md)           |
-| `batch-create.js` | 批量新增记录，单次最多 1,000 条     | [批量创建记录]($SKILL_DIR/references/record/batch_create.md) |
-| `batch-update.js` | 批量更新记录，单次最多 1,000 条     | [批量更新记录]($SKILL_DIR/references/record/batch_update.md) |
-| `batch-get.js`    | 通过记录 ID 查询，最多 100 条       | [批量获取记录]($SKILL_DIR/references/record/batch_get.md)    |
-| `batch-delete.js` | 批量删除多条记录                    | [批量删除记录]($SKILL_DIR/references/record/batch_delete.md) |
-
-### 字段操作（field/）
-
-| 脚本        | 功能                              | 参考文档                                          |
-| ----------- | --------------------------------- | ------------------------------------------------- |
-| `create.js` | 在数据表中新增一个字段            | [创建字段]($SKILL_DIR/references/field/create.md) |
-| `update.js` | 全量更新字段（property 会被覆盖） | [更新字段]($SKILL_DIR/references/field/update.md) |
-| `list.js`   | 获取数据表中的所有字段            | [列出字段]($SKILL_DIR/references/field/list.md)   |
-| `delete.js` | 删除数据表中的一个字段            | [删除字段]($SKILL_DIR/references/field/delete.md) |
-
-### 素材/文件操作（media/）
-
-| 脚本                   | 功能                                                                    | 参考文档                                                         |
-| ---------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| `upload.js`            | 上传文件、图片、视频等素材（无大小限制，脚本内部自动区分直传/分片上传） | [上传素材]($SKILL_DIR/references/media/upload.md)                |
-| `file-token-to-url.js` | `file_token` 转临时下载链接（24小时有效）                               | [获取文件链接]($SKILL_DIR/references/media/file_token_to_url.md) |
 
 ## 核心概念
 
@@ -459,43 +377,34 @@ AI 在执行本 Skill 过程中**创建或修改任何文件（包括参数文�
 
 **用户说**："帮我在飞书表格 https://xxx.feishu.cn/wiki/xxx 里添加一条记录，任务名称是'完成报告'，进度50%"
 
-**AI 执行步骤**（每个脚本调用前都必须先 Read 对应文档，下表「已读证明」列需在输出中显式呈现）：
+**AI 执行步骤**（按「决策流程」执行，下表"已读证明"列需在输出中显式呈现）：
 
-| 步骤 | 执行动作                            | 已读证明（必须显式 cite）                                                                 | 命令                                                                         |
-| ---- | ----------------------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| 1    | 检查 tenant_access_token            | `已 Read references/get_tenant_access_token.md`                                           | 如无则 `cd $SKILL_DIR/scripts && node get-tenant-access-token.js ...`        |
-| 2    | 解析 URL 获取 app_token 和 table_id | `已 Read references/parse_bitable_url.md`                                                 | `cd $SKILL_DIR/scripts && node parse-bitable-url.js ...`                     |
-| 3    | 读取参考文档                        | `已 Read references/record/create.md`（重点：行 22-156 Schema + 行 162-193 文本格式警告） | 读取 `$SKILL_DIR/references/record/create.md`，按 JSON Schema 构造参数       |
-| 4    | 创建临时参数文件                    | —                                                                                         | 存放在 `$SKILL_DIR/temp` 目录                                                |
-| 5    | 创建记录                            | —                                                                                         | `cd $SKILL_DIR/scripts && node record/create.js --parameter-file-path "..."` |
-| 6    | 清理临时参数文件                    | —                                                                                         | 完成用户需求或报错终止后，运行 `clear_temp.js` 清理 temp 目录                |
-| 7    | 返回结果                            | —                                                                                         | 向用户返回："已成功创建记录！记录ID: recxxx"                                 |
-
-**反例对照**（请勿重演，详见文档顶部"反面案例"小节）：
-
-| 步骤 | ❌ 错误做法                                        | 后果                                                        |
-| ---- | -------------------------------------------------- | ----------------------------------------------------------- |
-| 1    | 直接 `cd ...; node get-tenant-access-token.js ...` | 可能漏传 `appId`/`appSecret`，脚本拒绝执行                  |
-| 2    | 不读 `parse_bitable_url.md` 直接写 `{url: "..."}`  | 漏传 `tenant_access_token`，脚本返回"参数文件中必须包含..." |
-| 3    | 不读 `record/create.md` 直接构造 fields            | 文本字段误用富文本数组格式，触发 `TextFieldConvFail`        |
+| 步骤 | 执行动作                            | 已读证明（必须显式 cite）                                                                 | 命令                                                                                                                                          |
+| ---- | ----------------------------------- | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | 检查 tenant_access_token            | `已 Read references/get_tenant_access_token.md`                                           | 按令牌使用策略：**优先复用** config 中已有 token；仅当业务脚本返回失效描述时才 `cd $SKILL_DIR/scripts && node get-tenant-access-token.js ...` |
+| 2    | 解析 URL 获取 app_token 和 table_id | `已 Read references/parse_bitable_url.md`                                                 | `cd $SKILL_DIR/scripts && node parse-bitable-url.js ...`                                                                                      |
+| 3    | 读取参考文档                        | `已 Read references/record/create.md`（重点：行 22-156 Schema + 行 162-193 文本格式警告） | 读取 `$SKILL_DIR/references/record/create.md`，按 JSON Schema 构造参数                                                                        |
+| 4    | 创建临时参数文件                    | —                                                                                         | 存放在 `$SKILL_DIR/temp` 目录                                                                                                                 |
+| 5    | 创建记录                            | —                                                                                         | `cd $SKILL_DIR/scripts && node record/create.js --parameter-file-path "..."`                                                                  |
+| 6    | 清理临时参数文件                    | —                                                                                         | 完成用户需求或报错终止后，运行 `clear_temp.js` 清理 temp 目录                                                                                 |
+| 7    | 返回结果                            | —                                                                                         | 向用户返回："已成功创建记录！记录ID: recxxx"                                                                                                  |
 
 **用户感知**：完全不需要知道临时文件的存在，只需自然语言交互。
 
 ## 全局错误处理
 
-| 错误场景         | 错误表现                                                                      | 处理方式                                                                      |
-| ---------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| 缺少访问凭证     | API 返回 401/403 错误                                                         | 运行 `get-tenant-access-token.js` 获取凭证                                    |
-| 访问凭证过期     | API 返回 错误代码: 99991663, 错误信息: Invalid access token for authorization | 运行 `get-tenant-access-token.js` 获取凭证                                    |
-| URL 解析失败     | 无法提取 app_token/table_id                                                   | 检查 URL 格式是否正确，或手动提供参数                                         |
-| 记录不存在       | API 返回 404 错误                                                             | 检查 record_id 是否正确，或先运行 `record/get.js` 查询                        |
-| 字段类型不匹配   | API 返回 400 错误                                                             | 运行 `field/list.js` 查看字段类型，调整参数后重试                             |
-| 文本字段格式错误 | `TextFieldConvFail` 错误                                                      | 文本字段写入使用字符串格式，不要用富文本数组格式                              |
-| 字段更新缺少参数 | `field validation failed`                                                     | 更新字段时必须提供 `type` 和 `field_name` 参数                                |
-| 文件token格式错  | `Cannot read properties`                                                      | 使用 `file_tokens`（数组）而非 `file_token`（字符串）                         |
-| 批量操作超限     | API 返回 422 错误                                                             | 减少单次操作数量（创建/更新最多1000条，批量获取最多100条，批量删除最多500条） |
-| 临时文件创建失败 | 磁盘空间不足或权限问题                                                        | 检查 `$SKILL_DIR/temp` 目录权限和磁盘空间                                     |
-| 网络超时         | 请求无响应                                                                    | 检查网络连接，稍后重试                                                        |
+| 错误场景                                                                      | 错误表现                        | 处理方式                                                                      |
+| ----------------------------------------------------------------------------- | ------------------------------- | ----------------------------------------------------------------------------- |
+| 令牌失效（业务脚本返回"token 不合法/已过期/失效"等描述，含 401/403/99991663） | API 返回 token 失效相关错误信息 | 运行 `get-tenant-access-token.js` 刷新令牌，更新参数文件后重试                |
+| URL 解析失败                                                                  | 无法提取 app_token/table_id     | 检查 URL 格式是否正确，或手动提供参数                                         |
+| 记录不存在                                                                    | API 返回 404 错误               | 检查 record_id 是否正确，或先运行 `record/get.js` 查询                        |
+| 字段类型不匹配                                                                | API 返回 400 错误               | 运行 `field/list.js` 查看字段类型，调整参数后重试                             |
+| 文本字段格式错误                                                              | `TextFieldConvFail` 错误        | 文本字段写入使用字符串格式，不要用富文本数组格式                              |
+| 字段更新缺少参数                                                              | `field validation failed`       | 更新字段时必须提供 `type` 和 `field_name` 参数                                |
+| 文件token格式错                                                               | `Cannot read properties`        | 使用 `file_tokens`（数组）而非 `file_token`（字符串）                         |
+| 批量操作超限                                                                  | API 返回 422 错误               | 减少单次操作数量（创建/更新最多1000条，批量获取最多100条，批量删除最多500条） |
+| 临时文件创建失败                                                              | 磁盘空间不足或权限问题          | 检查 `$SKILL_DIR/temp` 目录权限和磁盘空间                                     |
+| 网络超时                                                                      | 请求无响应                      | 检查网络连接，稍后重试                                                        |
 
 > 字段读写格式差异、常见错误详解及测试记录参见 [常见错误及解决方案]($SKILL_DIR/references/errors.md) 与 [参数配置示例与最佳实践]($SKILL_DIR/references/examples.md)。
 
