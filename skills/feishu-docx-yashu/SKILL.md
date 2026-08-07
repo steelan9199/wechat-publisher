@@ -1,6 +1,6 @@
 ---
 name: feishu-docx-yashu
-description: 本技能用于飞书文档(Docx)与Markdown互转，以及飞书云空间文件夹管理。激活条件：用户消息须包含以下关键词之一:`本地Markdown转飞书云文档`、`飞书云文档转本地Markdown`、`解析飞书云文档链接`、`获取飞书云文档的指定文件夹的token`、`飞书云文档新建文件夹`、`飞书云文档移动文件夹`、`飞书云文档获取指定文件夹的文件清单`、`获取飞书云文档的文件元数据`、`获取飞书云文档我的空间根文件夹元数据`、`搜索云文档`、`移动知识库文档到云空间`、`移动Wiki到云盘`、`知识库文档移出`。
+description: 本技能用于飞书文档(Docx)与Markdown互转，以及飞书云空间文件夹管理。激活条件：用户消息须包含以下关键词之一:`本地Markdown转飞书云文档`、`飞书云文档转本地Markdown`、`解析飞书云文档链接`、`获取飞书云文档的指定文件夹的token`、`飞书云文档新建文件夹`、`飞书云文档移动文件夹`、`飞书云文档获取指定文件夹的文件清单`、`获取飞书云文档的文件元数据`、`获取飞书云文档我的空间根文件夹元数据`、`飞书云文档搜索文档`、`飞书云文档移动知识库文档到云空间`、`飞书云文档移动Wiki到云盘`、`飞书云文档知识库文档移出`。
 metadata:
   author: "AI Assistant"
   updated: "2026-08-07 00:00:00"
@@ -73,9 +73,9 @@ metadata:
 | 📄 参数传递         | 所有需要配置参数的脚本必须通过 `--parameter-file-path` 传递配置，禁止命令行直接传参                                                                                                                                                                         |
 | 📄 参数文件路径     | `--parameter-file-path` 的值必须使用绝对路径和正斜杠 `/`                                                                                                                                                                                                    |
 | 🗑️ 临时文件存放     | 临时参数文件统一存放到临时文件目录（见「环境说明」表），不得与脚本文件混杂存放                                                                                                                                                                              |
-| 🧹 临时文件清理     | 调用脚本后**必须清理** `$SKILL_DIR/temp` 目录，运行 `cd "$SKILL_DIR/scripts" && node clear_temp.js` 完成清理。禁止使用终端命令（如 `rm`、`del`、`Remove-Item`）直接清理                                                                                     |
+| 🧹 临时文件清理     | 任务完成后**必须清理** `$SKILL_DIR/temp` 目录，运行 `cd "$SKILL_DIR/scripts" && node clear_temp.js` 完成清理。  |
 | 📖 脚本文档强制读取 | 执行任何脚本前**必须先读取对应的参考文档**，严格按照文档中的参数格式操作，禁止凭记忆或直觉编写参数                                                                                                                                                          |
-| ✍️ 参数文件写入     | 创建参数文件**必须使用 Write 工具**写入 `$SKILL_DIR/temp/` 目录，**禁止使用任何 Shell 文件写入命令**（`Set-Content`、`Out-File`、`>` 重定向、`[System.IO.File]::WriteAllText()` 等）。Shell 的文件写入命令可能添加 UTF-8 BOM 或破坏编码，导致 JSON 解析失败 |
+| ✍️ 参数文件写入     | 创建参数文件写入 `$SKILL_DIR/temp/` 目录， 文件编码必须为 UTF-8 ，禁止添加 BOM。 |
 
 **标准执行命令模板**（端到端流程：读取凭证 → 读参考文档 → Write 写参数文件 → 执行 → 处理结果 → 清理）：
 
@@ -100,8 +100,8 @@ cd "$SKILL_DIR/scripts" && node <脚本名>.js --parameter-file-path <参数文�
 | "Markdown上传到飞书文档"/"上传Markdown到飞书"/"本地Markdown转飞书文档" | `markdown-to-feishu.js`                | 约 5-10 秒 | [Markdown转飞书指南]($SKILL_DIR/references/markdown-to-feishu.md)        | Markdown 上传到飞书的详细步骤、参数说明、Callout 格式检查与自动修正规则                                                                                         |
 | "飞书文档下载为Markdown"/"下载飞书文档为Markdown"/"飞书文档转Markdown" | `feishu-to-markdown.js`                | 约 5-10 秒 | [飞书转Markdown指南]($SKILL_DIR/references/feishu-to-markdown.md)        | 飞书文档下载为 Markdown 的详细流程                                                                                                                              |
 | "解析飞书文档链接"/"获取document_id"/"从链接提取文档ID"                | `url-to-document-id.js`                | 约 2 秒    | [链接解析指南]($SKILL_DIR/references/url-to-document-id.md)              | 飞书云文档链接解析为 document_id（文件 token）的详细流程                                                                                                        |
-| "搜索云文档"/"搜索文档"/"查找云文档"/"搜索文件夹"                      | `search-document.js`                   | 约 2 秒    | [搜索云文档指南]($SKILL_DIR/references/search-document.md)               | 根据关键词搜索当前用户可见云文档、文件夹、知识库及知识库内文档（支持 tenant_access_token 与 user_access_token，支持分页与 doc_filter/wiki_filter 过滤）         |
-| "获取文件夹token"/"获取folder_token"/"从链接提取文件夹token"           | —（AI Agent 直接执行或调用 get-files） | 约 2 秒    | [获取文件夹token指南]($SKILL_DIR/references/get-folder-token.md)         | 获取文件夹 token 的两种方式（链接提取由 AI Agent 直接执行、名称查找由 AI Agent 调用 get-files 工具完成）                                                        |
+| "搜索文件夹"/"搜索云文档"/"搜索文档"/"查找云文档"                      | `search-document.js`                   | 约 2 秒    | [搜索云文档指南]($SKILL_DIR/references/search-document.md)               | 根据关键词搜索当前用户可见云文档、文件夹、知识库及知识库内文档（支持 tenant_access_token 与 user_access_token，支持分页与 doc_filter/wiki_filter 过滤）         |
+| "从链接提取文件夹token"                                              | 不需要脚本                             | 约 2 秒    | [获取文件夹token指南]($SKILL_DIR/references/get-folder-token.md)         | 从链接提取文件夹token |
 | "获取文件夹元数据"/"获取folder_meta"/"查看文件夹信息"                  | `get-folder-meta.js`                   | 约 2 秒    | [获取文件夹元数据指南]($SKILL_DIR/references/get-folder-meta.md)         | 获取文件夹元数据（ID、名称、创建者等）                                                                                                                          |
 | "获取我的空间"/"获取根文件夹"/"获取root_folder_meta"                   | `get-root-folder-meta.js`              | 约 2 秒    | [获取我的空间元数据指南]($SKILL_DIR/references/get-root-folder-meta.md)  | 获取我的空间（根文件夹）元数据（token、ID、所有者 ID）                                                                                                          |
 | "获取文件元数据"/"获取file_meta"/"查看文件信息"/"批量获取文件元数据"   | `get-file-meta.js`                     | 约 2 秒    | [获取文件元数据指南]($SKILL_DIR/references/get-file-meta.md)             | 根据文件 token 批量获取任意类型文件元数据（标题、所有者、密级、URL 等），含 doc_type 推断规则                                                                   |
@@ -139,7 +139,7 @@ cd "$SKILL_DIR/scripts" && node <脚本名>.js --parameter-file-path <参数文�
 {
   "appId": "cli_xxx",
   "appSecret": "xxx",
-  "tenant_access_token": "u-xxxxxxxxxxxxxxxxxxxx",
+  "tenant_access_token": "eyxxxxxxxxxxxxxxxxxxxx",
   ...
 }
 ```
