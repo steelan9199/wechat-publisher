@@ -1,0 +1,7 @@
+# 运行产物 / 依赖（按需保留或忽略）
+node_modules/
+uploads/*
+temp/*
+cache/*
+*.log
+.DS_Store

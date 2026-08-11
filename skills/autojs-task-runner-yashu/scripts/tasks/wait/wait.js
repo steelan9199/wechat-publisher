@@ -1,0 +1,34 @@
+/**
+ * wait.js - 等待（用于等界面加载 / 动画结束后再走下一步）
+ *
+ * 输入（/sdcard/脚本/task_args.json）:
+ *   ms {number} 必填  等待毫秒数
+ * 输出:
+ *   成功 {ok:1}   失败 {ok:0, err:"原因"}
+ *
+ * 语法: ES5（var only）。单文件自包含。
+ */
+
+function readArgs() {
+  try {
+    return JSON.parse(files.read("/sdcard/脚本/task_args.json"));
+  } catch (e) {
+    return {};
+  }
+}
+
+var result = { ok: 0, err: "脚本未产出结果" };
+try {
+  var args = readArgs();
+  if (typeof args.ms !== "number" || args.ms < 0) {
+    result = { ok: 0, err: "缺少参数 ms（必须是非负数字）" };
+  } else {
+    sleep(args.ms);
+    result = { ok: 1 };
+  }
+} catch (e) {
+  result = { ok: 0, err: e.toString() };
+}
+events.on("exit", function () {
+  events.broadcast.emit("autojs_result", JSON.stringify(result));
+});

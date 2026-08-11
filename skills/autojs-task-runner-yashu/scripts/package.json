@@ -1,0 +1,23 @@
+{
+  "name": "autojs-task-runner-yashu-scripts",
+  "version": "1.0.0",
+  "description": "AutoJS 手机任务执行器运行时（Node.js ES6 版本）",
+  "type": "module",
+  "main": "run_task.js",
+  "bin": {
+    "run-task": "run_task.js"
+  },
+  "scripts": {
+    "start": "node autojs-relay-server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@hono/node-server": "^1.13.7",
+    "hono": "^4.6.14",
+    "ws": "^8.21.3",
+    "zip-stream": "^7.0.5"
+  }
+}

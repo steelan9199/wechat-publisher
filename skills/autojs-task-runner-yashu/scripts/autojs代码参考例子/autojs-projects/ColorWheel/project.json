@@ -1,0 +1,10 @@
+{
+  "name": "ColorWheel",
+  "packageName": "org.autojs.colorwheel",
+  "versionName": "1.0.0",
+  "versionCode": 1,
+  "main": "main.js",
+  "ui": "main.js",
+  "useFeatures": ["ui"],
+  "dependencies": []
+}
