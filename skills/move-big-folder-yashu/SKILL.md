@@ -30,7 +30,7 @@ disable-model-invocation: false
 
 推荐使用 **磁盘快速分析软件**（免费，5 秒扫描整个 C 盘）快速定位大文件夹：
 
-- 下载地址：https://pan.quark.cn/s/da6703f482b0
+- 下载地址：https://pan.quark.cn/s/a44858fa8287
 
 使用方法：打开 磁盘快速分析软件 -> 选择 C 盘 -> 点击扫描，即可找到占空间最大的文件夹。
 
