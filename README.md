@@ -34,8 +34,10 @@ npx skills add steelan9199/wechat-publisher
 ## 项目结构
 
 - `skills/` - 各种技能包
+  - `autojs-task-runner-yashu/` - AutoJS 手机任务自动执行工具
   - `backup-project/` - JS 项目代码备份工具
   - `chrome-devtools-skill/` - Chrome DevTools 网页分析工具
+  - `clean-filename/` - 文件名标点符号清理规范化工具
   - `context-handoff-yashu/` - 对话上下文交接文档生成工具
   - `contradiction-fixer-yashu/` - SKILL.md 矛盾检测与修复工具
   - `copy-folder-yashu/` - 文件夹复制工具（自动跳过 node_modules）
@@ -44,14 +46,17 @@ npx skills add steelan9199/wechat-publisher
   - `error-friendly/` - 代码错误提示友好化工具
   - `feishu-bitable-yashu/` - 飞书多维表格操作工具
   - `feishu-docx-yashu/` - 飞书文档 Markdown 互转工具
+  - `feishu-token-updater/` - 飞书 tenant_access_token 更新工具
   - `flat-illustration-asset-parser/` - 纯色平涂插画解析与 SAM3 提取提示词工具
   - `format-json/` - Markdown JSON 代码块格式化工具
   - `generate-cover-prompt-yashu/` - 封面提示词生成工具
   - `guizang-ppt-lite/` - 高级质感单文件 HTML 网页 PPT 生成工具
+  - `image-format-detector-yashu/` - 图片真实格式检测工具（JPG/PNG/WebP）
   - `image-pixel-viewer-yashu/` - 浏览器图片像素实时查看工具
   - `js-error-fixer/` - JavaScript 错误检查与修复工具
   - `js-project-refactor/` - JavaScript 项目架构重构与模块化工具
   - `json-to-markdown-files/` - JSON 转 Markdown 文件工具
+  - `link-type-detector-yashu/` - Windows 软链接类型检测工具（Symbolic Link/Junction）
   - `md-typeset-yashu/` - Markdown 文件排版优化工具
   - `move-big-folder-yashu/` - C 盘大文件夹迁移工具
   - `music/` - AI 音乐提示词生成工具
@@ -64,16 +69,22 @@ npx skills add steelan9199/wechat-publisher
   - `retest-generator/` - 技能复测脚本生成工具
   - `self-contained-auditor-yashu/` - 自包含技能评审器（检查技能知识是否全部内置、不依赖宿主私有接口）
   - `skill-bloat-auditor-yashu/` - 技能文档废话检查与诊断报告工具
-  - `skill-deleter/` - 技能文件夹删除工具
+  - `skill-deleter-yashu/` - 技能文件夹删除工具
   - `skill-description-optimizer-yashu/` - 技能 description 字段优化工具
+  - `skill-doc-dedup-yashu/` - 技能文档冗余体检工具
   - `skill-failed-cleanup-yashu/` - 技能安装失败残留文件夹清理工具
   - `skill-get-link-yashu/` - 技能 GitHub 链接生成与剪贴板复制工具
   - `skill-logic-conflict-checker-yashu/` - 技能文档逻辑冲突检查工具
+  - `skill-pack-yashu/` - 技能打包 .skill 归档工具
+  - `skill-publish-auditor-yashu/` - 技能发布前审核工具
   - `skill-publish-yashu/` - 私有技能发布到公开目录工具
-  - `skill-searcher/` - 技能文件夹搜索工具
+  - `skill-searcher-yashu/` - 技能文件夹搜索工具
   - `skill-tester-yashu/` - 技能真实运行测试与报告工具
   - `skills-list-available-yashu/` - 可用技能列表查询工具
+  - `source-fingerprint-self-upgrade/` - 源码指纹自升级机制参考资料
+  - `suffix-to-json/` - 多行后缀文本转 JSON 工具
   - `svg-diagram-yashu/` - 扁平 SVG 图生成工具（架构图/中心辐射图/流程图/时序图/思维导图/组织架构图/对比矩阵/时间线/循环图/鱼骨图），支持 SVG 转 PNG 图片
+  - `symlink-troubleshooting-yashu/` - 符号链接故障排查与修复指南
   - `task-sop-architect-yashu/` - 任务 SOP 执行方案生成工具
   - `token-auditor-yashu/` - Token 消耗审计与优化工具
   - `video-course-recorder/` - Win11 视频课程录制一键启停助手
