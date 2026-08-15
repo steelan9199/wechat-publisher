@@ -7,6 +7,7 @@
         "wechat-title-optimizer-yashu",
         "wechat-content-optimizer-yashu",
         "wechat-publisher-yashu",
+        "clean-filename-yashu",
         "generate-cover-prompt-yashu"
       ]
     },
@@ -14,9 +15,56 @@
       "description": "飞书生态集成（用户）：多维表格、文档",
       "skills": ["feishu-bitable-yashu", "feishu-docx-yashu"]
     },
-    "需求澄清": {
-      "description": "需求澄清（用户）：elite-intent-architect 反向提问/理清需求/顾问模式/专家对齐",
-      "skills": ["elite-intent-architect-yashu"]
+    "WorkBuddy 用户安装的技能": {
+      "description": "WorkBuddy 用户安装的技能",
+      "skills": [
+        "anysearch",
+        "autojs-task-runner-yashu",
+        "clean-filename-yashu",
+        "context-handoff-yashu",
+        "coze-low-code-caller-yashu",
+        "elite-intent-architect-yashu",
+        "feishu-bitable-yashu",
+        "feishu-docx-yashu",
+        "file-icon-favicon-helper-yashu",
+        "find-skills",
+        "generate-cover-prompt-yashu",
+        "image-pixel-viewer-yashu",
+        "move-big-folder-yashu",
+        "skill-description-optimizer-yashu",
+        "skill-get-link-yashu",
+        "suffix-to-json-yashu",
+        "svg-diagram-yashu",
+        "task-sop-architect-yashu",
+        "video-course-recorder-yashu",
+        "wechat-content-optimizer-yashu",
+        "wechat-publisher-yashu",
+        "wechat-title-optimizer-yashu",
+        "workbuddy-skill-group-manager-yashu"
+      ]
+    },
+    "WorkBuddy 内置技能": {
+      "description": "WorkBuddy 内置技能",
+      "skills": [
+        "3D模型与视频特效",
+        "ardot-design-core",
+        "ardot-design-router",
+        "ardot-design-to-code",
+        "ardot-poster",
+        "ardot-slides",
+        "ardot-ui-design",
+        "cloudstudio-deploy",
+        "expert-manager",
+        "geo-map-compliance-guard",
+        "marketplace-skill-installer",
+        "recommend-connectors",
+        "recommend-experts",
+        "skill-creator",
+        "tencent-docs-routing",
+        "tencent-local-office-edit",
+        "wb-finance-skill",
+        "资料库"
+      ]
     }
   }
 }
