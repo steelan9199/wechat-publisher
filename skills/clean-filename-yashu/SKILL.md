@@ -1,5 +1,5 @@
 ---
-name: clean-filename
+name: clean-filename-yashu
 description: 本技能清理并规范化文件名中的标点符号，生成跨系统安全可用的干净文件名。激活条件：用户消息须包含以下关键词之一:`规范化文件名`、`文件名特殊字符`、`文件名报错`。
 ---
 

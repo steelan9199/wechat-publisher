@@ -1,5 +1,5 @@
 ---
-name: "video-course-recorder"
+name: "video-course-recorder-yashu"
 description: "自动启停视频课程录制所需的辅助程序。激活条件：用户消息须包含以下关键词之一:`我要录制视频课程`、`开始录制视频课程`、`准备录课`、`视频课程录完了`、`录课结束`、`停止录制`。"
 ---
 

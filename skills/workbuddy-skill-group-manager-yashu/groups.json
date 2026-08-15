@@ -1,0 +1,123 @@
+{
+  "version": 1,
+  "groups": {
+    "公众号": {
+      "description": "公众号写作与发布：标题优化、内容优化、Markdown 发布到公众号、生成封面提示词",
+      "skills": [
+        "wechat-title-optimizer-yashu",
+        "wechat-content-optimizer-yashu",
+        "wechat-publisher-yashu",
+        "generate-cover-prompt-yashu"
+      ]
+    },
+    "设计创意": {
+      "description": "视觉与创意生成（内置）：Ardot 画布设计系列 + 3D模型与视频特效",
+      "skills": [
+        "ardot-design-core",
+        "ardot-design-router",
+        "ardot-design-to-code",
+        "ardot-poster",
+        "ardot-slides",
+        "ardot-ui-design",
+        "3D模型与视频特效"
+      ]
+    },
+    "部署发布": {
+      "description": "静态站部署（内置）：CloudStudio 一键部署静态站",
+      "skills": [
+        "cloudstudio-deploy"
+      ]
+    },
+    "地图合规": {
+      "description": "地图合规守卫（内置）：中国地图数据合规检查",
+      "skills": [
+        "geo-map-compliance-guard"
+      ]
+    },
+    "文档办公": {
+      "description": "文档/办公（内置）：资料库、本地 Office/WPS 路由与实时编辑",
+      "skills": [
+        "资料库",
+        "tencent-docs-routing",
+        "tencent-local-office-edit"
+      ]
+    },
+    "专家连接器": {
+      "description": "专家与连接器（内置）：按需推荐 Connector、专家、专家包运营",
+      "skills": [
+        "recommend-connectors",
+        "recommend-experts",
+        "expert-manager"
+      ]
+    },
+    "技能管理": {
+      "description": "技能管理（内置）：创建/更新技能、从市场安装技能",
+      "skills": [
+        "skill-creator",
+        "marketplace-skill-installer"
+      ]
+    },
+    "金融": {
+      "description": "金融场景总入口（内置）：股票/基金/ETF/宏观/外汇/财报/估值/量化等",
+      "skills": [
+        "wb-finance-skill"
+      ]
+    },
+    "飞书集成": {
+      "description": "飞书生态集成（用户）：多维表格、文档",
+      "skills": [
+        "feishu-bitable-yashu",
+        "feishu-docx-yashu"
+      ]
+    },
+    "技能运维": {
+      "description": "技能运维工具箱（用户）：查找/搜索/删除/发布/审计/描述优化/去重/链接/冲突检查/指纹自升级",
+      "skills": [
+        "find-skills",
+        "skill-searcher-yashu",
+        "skill-deleter-yashu",
+        "skill-publish-yashu",
+        "skill-publish-auditor-yashu",
+        "skill-bloat-auditor-yashu",
+        "skill-description-optimizer-yashu",
+        "skill-doc-dedup-yashu",
+        "skill-get-link-yashu",
+        "skill-logic-conflict-checker-yashu",
+        "skill-group-manager-yashu",
+        "source-fingerprint-self-upgrade",
+        "self-contained-auditor-yashu"
+      ]
+    },
+    "自动化与工作流": {
+      "description": "自动化与工作流（用户）：AutoJS 任务运行、SOP 架构、上下文交接、Coze 低代码调用",
+      "skills": [
+        "autojs-task-runner-yashu",
+        "task-sop-architect-yashu",
+        "context-handoff-yashu",
+        "coze-low-code-caller-yashu"
+      ]
+    },
+    "文件处理": {
+      "description": "文件处理（用户）：清理文件名、移动大文件夹、后缀转 JSON",
+      "skills": [
+        "clean-filename-yashu",
+        "move-big-folder-yashu",
+        "suffix-to-json-yashu"
+      ]
+    },
+    "媒体创作": {
+      "description": "媒体创作（用户）：图片像素查看、SVG 图表、视频课程录制",
+      "skills": [
+        "image-pixel-viewer-yashu",
+        "svg-diagram-yashu",
+        "video-course-recorder-yashu"
+      ]
+    },
+    "需求澄清": {
+      "description": "需求澄清（用户）：elite-intent-architect 反向提问/理清需求/顾问模式/专家对齐",
+      "skills": [
+        "elite-intent-architect-yashu"
+      ]
+    }
+  }
+}

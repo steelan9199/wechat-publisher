@@ -1,0 +1,9 @@
+{
+  "active_groups": ["公众号"],
+  "whitelist": [
+    "skill-group-manager-yashu",
+    "elite-intent-architect-yashu",
+    "find-skills",
+    "skill-creator"
+  ]
+}

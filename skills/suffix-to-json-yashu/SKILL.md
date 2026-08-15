@@ -1,5 +1,5 @@
 ---
-name: suffix-to-json
+name: suffix-to-json-yashu
 description: "本技能将多行后缀文本文件转换为 JSON 的 suffix 字段，将换行转义为 \n 并输出最小 JSON 对象。激活条件：用户消息须包含以下关键词之一:`后缀转JSON`、`转成suffix`、`多行后缀转JSON`、`文件转JSON suffix`。"
 agent_created: true
 ---
