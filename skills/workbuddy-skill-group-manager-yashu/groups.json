@@ -12,16 +12,11 @@
     },
     "飞书集成": {
       "description": "飞书生态集成（用户）：多维表格、文档",
-      "skills": [
-        "feishu-bitable-yashu",
-        "feishu-docx-yashu"
-      ]
+      "skills": ["feishu-bitable-yashu", "feishu-docx-yashu"]
     },
     "需求澄清": {
       "description": "需求澄清（用户）：elite-intent-architect 反向提问/理清需求/顾问模式/专家对齐",
-      "skills": [
-        "elite-intent-architect-yashu"
-      ]
+      "skills": ["elite-intent-architect-yashu"]
     }
   }
 }
