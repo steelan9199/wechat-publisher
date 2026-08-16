@@ -53,7 +53,11 @@ description: "自动启停视频课程录制所需的辅助程序。激活条件
 当用户表达"开始录制视频课程"意图时，按顺序执行以下命令启动四个程序：
 
 ```powershell
-Start-Process -FilePath "C:\Program Files\NVIDIA Corporation\NVIDIA Broadcast\NVIDIA Broadcast.exe" -WorkingDirectory "C:\Program Files\NVIDIA Corporation\NVIDIA Broadcast"
+# NVIDIA Broadcast 必须用 explorer.exe 拉起，不能用 Start-Process 直接拉。
+# 原因：Start-Process 会把进程创建在自动化所在会话上下文，拿不到 GPU/显示上下文，
+# 导致 Broadcast（Electron + NVIDIA 驱动/DXGI 加速）进程一闪即退。
+# 经 explorer.exe 派生则落在交互桌面会话，GPU 上下文正常，可稳定常驻。
+Start-Process -FilePath "C:\Windows\explorer.exe" -ArgumentList "C:\Program Files\NVIDIA Corporation\NVIDIA Broadcast\NVIDIA Broadcast.exe"
 Start-Process -FilePath "D:\software\PointerFocus\pointerfocus2.4\PointerFocus\PointerFocus.exe" -WorkingDirectory "D:\software\PointerFocus\pointerfocus2.4\PointerFocus"
 Start-Process -FilePath "C:\Users\Administrator\AppData\Local\carnac\Carnac.exe" -WorkingDirectory "C:\Users\Administrator\AppData\Local\carnac"
 Start-Process -FilePath "D:\software\obs\obs-studio\bin\64bit\obs64.exe" -WorkingDirectory "D:\software\obs\obs-studio\bin\64bit"
@@ -87,4 +91,4 @@ Stop-Process -Name "NVIDIA Broadcast" -Force -ErrorAction SilentlyContinue
 1. **仅 Windows 11** — 此技能硬编码了 Windows 11 的程序路径，不适用于其他系统
 2. **启动与关闭对称** — 关闭顺序与启动顺序相反（先启后关），确保依赖关系不被破坏。OBS 依赖 Broadcast 的音频输入，因此 Broadcast 最先启动、最后关闭。
 3. **静默错误处理** — 关闭时使用 `-ErrorAction SilentlyContinue`，避免进程已退出时报错
-4. **使用 PowerShell** — 使用 `Start-Process` / `Stop-Process`，更可靠且输出更清晰
+4. **使用 PowerShell** — 关闭用 `Stop-Process`；启动中 PointerFocus/Carnac/OBS 用 `Start-Process`，但 **NVIDIA Broadcast 必须用 `explorer.exe` 派生启动**（见启动命令注释），直接用 `Start-Process` 拉会一闪即退。
