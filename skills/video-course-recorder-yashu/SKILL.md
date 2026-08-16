@@ -63,7 +63,18 @@ Start-Process -FilePath "C:\Users\Administrator\AppData\Local\carnac\Carnac.exe"
 Start-Process -FilePath "D:\software\obs\obs-studio\bin\64bit\obs64.exe" -WorkingDirectory "D:\software\obs\obs-studio\bin\64bit"
 ```
 
-检查四个进程都正常启动后，提示用户：
+### 验证启动结果
+
+启动命令执行后，**另起一条 Bash 命令**，用 `tasklist` 验证四个进程是否都已拉起（不要用 PowerShell 输出验证，原因同关闭部分）：
+
+```bash
+tasklist | grep -iE "obs64|Carnac|PointerFocus|NVIDIA Broadcast"
+```
+
+- 应能看到 obs64、Carnac、PointerFocus、NVIDIA Broadcast 四条记录。
+- 若 NVIDIA Broadcast 未出现，多半是用 `Start-Process` 直接拉导致一闪即退，需改用 `explorer.exe` 派生（见启动命令注释）。
+
+确认四个进程都正常启动后，提示用户：
 
 > 录课环境已就绪。PointerFocus、Carnac、OBS、NVIDIA Broadcast 已启动，祝录制顺利！
 
@@ -80,6 +91,21 @@ Stop-Process -Name "PointerFocus" -Force -ErrorAction SilentlyContinue
 Stop-Process -Name "NVIDIA Broadcast" -Force -ErrorAction SilentlyContinue
 ```
 
+### 验证关闭结果（关键）
+
+⚠️ **不要用 PowerShell 命令的输出验证关闭结果。** 本环境下 PowerShell 调用的 stdout 会被吞掉（返回空）。如果依赖 `Write-Output` / `Get-Process | Format-Table` / `foreach` 拼接等方式确认，会因为拿不到任何输出而反复重试，白白浪费数十秒。
+
+正确做法：关闭命令执行后，**另起一条 Bash 命令**，用 `tasklist` 核验进程是否残留：
+
+```bash
+# 等待 1~2 秒让进程真正退出（无需更长），再核验
+sleep 2
+tasklist | grep -iE "obs64|Carnac|PointerFocus|NVIDIA Broadcast" || echo "无匹配进程（已全部关闭）"
+```
+
+- 输出 `无匹配进程（已全部关闭）` → 四个程序均已退出，验证通过。
+- 仍列出某进程 → 未被成功关闭（权限/被锁定），需单独二次 `Stop-Process` 或人工处理。
+
 确认关闭后，提示用户：
 
 > 四个录课程序已全部关闭。
@@ -92,3 +118,4 @@ Stop-Process -Name "NVIDIA Broadcast" -Force -ErrorAction SilentlyContinue
 2. **启动与关闭对称** — 关闭顺序与启动顺序相反（先启后关），确保依赖关系不被破坏。OBS 依赖 Broadcast 的音频输入，因此 Broadcast 最先启动、最后关闭。
 3. **静默错误处理** — 关闭时使用 `-ErrorAction SilentlyContinue`，避免进程已退出时报错
 4. **使用 PowerShell** — 关闭用 `Stop-Process`；启动中 PointerFocus/Carnac/OBS 用 `Start-Process`，但 **NVIDIA Broadcast 必须用 `explorer.exe` 派生启动**（见启动命令注释），直接用 `Start-Process` 拉会一闪即退。
+5. **验证一律用 Bash 的 `tasklist`** — 本环境下 PowerShell 调用的 stdout 返回为空，绝不能依赖 PowerShell 命令（`Write-Output` / `Get-Process` 等）的输出去判断进程状态，否则会反复重试、浪费大量时间。启动/关闭后都用单独的 Bash 命令跑 `tasklist | grep` 核验，简洁可靠。
