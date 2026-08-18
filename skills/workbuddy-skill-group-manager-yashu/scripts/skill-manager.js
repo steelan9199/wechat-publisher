@@ -81,7 +81,22 @@ function saveState(st) {
 // ---------------------------------------------------------------------------
 // 技能扫描
 // ---------------------------------------------------------------------------
-// 在 skill 目录下查找 SKILL.md：兼容直接子文件，或一层子目录（如 <版本>/SKILL.md）
+// 解析版本号（x.y.z 数字格式），返回 [major, minor, patch]；非版本号目录名返回 null
+function parseVersion(dirName) {
+  const m = dirName.match(/^(\d+)\.(\d+)\.(\d+)(?:[-+][\w.-]*)?$/);
+  return m ? [parseInt(m[1], 10), parseInt(m[2], 10), parseInt(m[3], 10)] : null;
+}
+
+// 比较两个版本数组：a > b 返回正数，a === b 返回 0，a < b 返回负数
+function compareVersions(a, b) {
+  for (let i = 0; i < 3; i++) {
+    if (a[i] !== b[i]) return a[i] - b[i];
+  }
+  return 0;
+}
+
+// 在 skill 目录下查找 SKILL.md：兼容直接子文件，或一层子目录（如 <版本>/SKILL.md）。
+// 存在多个版本子目录时，取版本号最大的（最新版本）；无版本号目录时回退到第一个找到的。
 function findSkillMd(dir) {
   let st;
   try {
@@ -98,13 +113,19 @@ function findSkillMd(dir) {
   } catch (e) {
     return null;
   }
+  let best = null; // 版本号最大的 { ver, path }
+  let first = null; // 第一个含 SKILL.md 的子目录（无版本号时回退）
   for (const s of sub) {
-    if (s.isDirectory()) {
-      p = path.join(dir, s.name, 'SKILL.md');
-      if (fs.existsSync(p)) return p;
+    if (!s.isDirectory()) continue;
+    p = path.join(dir, s.name, 'SKILL.md');
+    if (!fs.existsSync(p)) continue;
+    if (!first) first = p;
+    const ver = parseVersion(s.name);
+    if (ver && (!best || compareVersions(ver, best.ver) > 0)) {
+      best = { ver, path: p };
     }
   }
-  return null;
+  return best ? best.path : first;
 }
 
 // 扫描单个根目录；scope 用于区分「用户 / 内置」
