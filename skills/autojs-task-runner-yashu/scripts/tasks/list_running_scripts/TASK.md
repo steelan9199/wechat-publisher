@@ -48,5 +48,5 @@ node run_task.js --path tasks/list_running_scripts/list_running_scripts.js --arg
 ```
 
 ## 红线提醒
-- 只读模板，不操作界面、不停止任何脚本；与微信自动化无关。
+- 只读模板，不操作界面、不停止任何脚本；与支付操作无关。
 - 返回的 `source`/`name` 仅供巡检与定位，不要把本模板当「批量管理」入口去做越权调度。

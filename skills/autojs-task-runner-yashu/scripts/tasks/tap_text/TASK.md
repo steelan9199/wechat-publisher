@@ -29,4 +29,4 @@ node run_task.js --path tasks/tap_text/tap_text.js --args '{"text":"确定"}'
 ```
 
 ## 红线提醒
-- 不做微信自动化（风控封号）。
+- 不做支付操作。

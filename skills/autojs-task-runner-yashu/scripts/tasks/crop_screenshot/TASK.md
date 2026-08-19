@@ -37,4 +37,4 @@ node run_task.js --path tasks/crop_screenshot/crop_screenshot.js --args '{"left"
 ```
 
 ## 红线提醒
-- 同其它模板：不做微信自动化、不执行支付/删除等不可逆操作。
+- 同其它模板：不做支付/删除等不可逆操作。

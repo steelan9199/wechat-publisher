@@ -40,4 +40,81 @@ node run_task.js --path tasks/ocr/ocr.js --args '{"detail":true,"minConfidence":
 ```
 
 ## 红线提醒
-- 同其它模板：不做微信自动化、不执行支付/删除等不可逆操作。
+- 同其它模板：不做支付/删除等不可逆操作。
+
+
+## 如果不仅要识别文字，还要获取文字所在的区域位置坐标信息，可以参考下面的代码。
+
+```js
+threads.start(function () {
+  text("立即开始").clickable(true).findOne(3000).click();
+});
+
+// 请求截图
+if (!requestScreenCapture()) {
+  toastLog("请求截图失败");
+  exit();
+}
+
+var img = captureScreen();
+// 不带region参数， 识别全图文字
+var res = ocr.detect(img); // 返回 OcrResult 数组.
+log(res);
+// [ OcrResult@f8e8ac7{text=上午10:00, confidence=0.80245537, bounds=Rect(238, 78 - 458, 123)},
+//   OcrResult@ae3e8f4{text=10:00, confidence=0.5765625, bounds=Rect(93, 301 - 497, 481)},
+//   OcrResult@1c2eb37{text=豆包, confidence=0.8417969, bounds=Rect(932, 2365 - 1053, 2412)},
+//   OcrResult@77686bc{text=球球大作战, confidence=0.82421875, bounds=Rect(1148, 2367 - 1372, 2409)} ]
+
+var region = [932, 2365, 1053 - 932 + 1, 2412 - 2365 + 1]; // 左上宽高
+var res2 = ocr.detect(img, region); // 识别区域文字
+log(res2); // 返回 OcrResult 数组.
+// [ OcrResult@d741fcf{text=豆包, confidence=0.68359375, bounds=Rect(949, 2369 - 1032, 2408)} ]
+
+detect(imgPath); // 识别指定路径对应图像包含的所有文本,返回 OcrResult 数组.
+detect(imgPath, region); // 识别指定路径对应图像在指定区域内包含的所有文本,返回 OcrResult 数组.
+
+```
+
+## ocr的Region支持三种
+
+| 类型 | 简述 | 示例 |
+| ---- | ---- | ---- |
+| number[] | 数字数组, [ X 坐标, Y 坐标, 宽, 高 ] | `[ 0, 0, 200, 400 ]` |
+| OpenCVRect | org.opencv.core.Rect 类型 | 1. `images.buildRegion(img, [ 0, 0, 200, 400 ])`<br>2. `new org.opencv.core.Rect(x, y, w, h)` |
+| AndroidRect | android.graphics.Rect 类型 | 1. `pickup(/\w+/, 'bounds')`<br>2. `new android.graphics.Rect(left, top, right, bottom)` |
+
+将一个 500 × 500 的图片裁剪其中心区域 300 × 300 的示例:
+
+```js
+let img = images.read('...');
+let imgWidth = img.getWidth(); // 500
+let imgHeight = img.getHeight(); // 500
+
+let clipWidth = 300;
+let clipHeight = 300;
+let clipX = (imgWidth - clipWidth) / 2;
+let clipY = (imgHeight - clipHeight) / 2;
+
+/* 使用 number[] 作为区域. */
+
+images.clip(img, [ clipX, clipY, clipWidth, clipHeight ]);
+
+/* 使用 OpenCVRect 作为区域. */
+
+images.clip(img, new org.opencv.core.Rect(clipX, clipY, clipWidth, clipHeight));
+
+/* 使用 AndroidRect 作为区域. */
+
+let left = clipX;
+let top = clipY;
+let right = clipX + clipWidth;
+let bottom = clipY + clipHeight;
+images.clip(img, new android.graphics.Rect(left, top, right, bottom));
+
+/* AndroidRect 结合控件的应用. */
+/* 假设屏幕的活动窗口中存在一个控件, id 为 aim, 它的控件矩形区域恰好为所需区域. */
+
+let bounds = pickup({ id: 'aim' }, 'bounds');
+images.clip(img, bounds); /* bounds 是一个 AndroidRect 实例. */
+
+```

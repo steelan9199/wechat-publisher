@@ -52,6 +52,7 @@ temp/
 
 # IDE specific files
 .idea/
+skills/autojs-task-runner-yashu/.vscode/
 
 # Python
 __pycache__/
