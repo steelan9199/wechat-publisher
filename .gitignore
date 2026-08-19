@@ -1,5 +1,9 @@
 skills/phone-screenshot-yashu/screenshots
 
+# uploads 目录下只保留 .gitkeep，忽略所有图片等上传文件
+skills/autojs-task-runner-yashu/scripts/uploads/*
+!skills/autojs-task-runner-yashu/scripts/uploads/.gitkeep
+
 .trae
 test
 技能目录.md
