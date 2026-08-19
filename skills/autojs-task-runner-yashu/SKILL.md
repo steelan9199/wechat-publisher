@@ -1,6 +1,9 @@
 ---
 name: autojs-task-runner-yashu
-description: 通过 AutoJS 在 Android 手机上自动执行任务。用户在 AI 软件里描述任务（如"打开手机上的设置"），AI 规划步骤、生成/选择 AutoJS 脚本，下发到手机执行并取回结果。激活条件：用户消息须包含以下关键词之一:`运行手机任务`、`执行手机任务`、`手机执行任务`、`AI控制手机`、`手机自动化`、`用AI操控手机`、`autojs任务`、`下发手机任务`。
+description: 通过 AutoJS 在 Android 手机上自动执行任务。用户在 AI 软件里描述任务（如"打开手机上的设置"），AI
+  规划步骤、生成/选择 AutoJS
+  脚本，下发到手机执行并取回结果。激活条件：用户消息须包含以下关键词之一:`运行手机任务`、`执行手机任务`、`手机执行任务`、`AI控制手机`、`手机自动化`、`用AI操控手机`、`autojs任务`、`下发手机任务`。
+disable-model-invocation: false
 ---
 
 # 手机任务执行器（AI → AutoJS）
@@ -125,6 +128,7 @@ cd <skill_dir> && \
 - 响应 `{"success":true,"result":"{\"ok\":1}"}` → 该步成功，继续下一步（result 是 JSON 字符串，需再解析一次）；
 - `{"ok":0,"err":"..."}` → 立即换策略重试一次（如 tap_text 找不到就截图看屏幕），仍失败则终止并向用户汇报卡在哪一步；
 - 界面跳转类步骤后，插一步 `wait`（500~1500ms）再操作下一步。
+- **下发后 PC 端 30 秒超时、但手机端日志显示脚本明明执行完了** → 第一嫌疑：**脚本没把结果广播出去**。中继只监听手机端 `events.broadcast.emit("autojs_result", <JSON字符串>)` 事件，单纯 `console.log(...)` **不会**回传，PC 永远收不到 → 表现即「手机跑完了、PC 却超时」。确认脚本（含现场一次性脚本）末尾有 `events.on("exit", ...)` 广播、或显式 `events.broadcast.emit("autojs_result", ...)`；UI/常驻脚本更要「建好即广播」（见「现场脚本规范 · 回执」）。这是最高频的想当然错误，排障时**优先排除它**。
 
 ### 第 3 步：看屏幕（需要时）
 
@@ -210,7 +214,7 @@ node <skill_dir>/scripts/scan_tasks.js --human
 
 - **严格 ES5：变量一律 `var`**，禁 let/const/箭头函数；
 - 参数从 `/sdcard/脚本/task_args.json` 读，禁止写死；
-- 以标准回执收尾：
+- 以标准回执收尾：**⚠️ 高频坑——回执必须靠 `events.broadcast.emit("autojs_result", ...)` 广播，不是 `console.log`**。中继只监听 `autojs_result` 事件；脚本里只写 `console.log(...)`，结果 PC 端永远收不到、表现为 30 秒超时（但手机端其实跑完了）。所以回执代码块里的广播不能省、也绝不能被你改成 `console.log`：
 
 ```js
 var result = { ok: 0, err: "脚本未产出结果" };

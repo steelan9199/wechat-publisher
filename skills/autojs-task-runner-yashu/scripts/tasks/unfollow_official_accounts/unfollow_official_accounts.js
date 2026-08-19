@@ -91,16 +91,13 @@ function logCheck(actual, expect) {
 /* ==================================================================
  * 二、OCR 辅助（列表页/确认框都用 OCR，因这俩无障碍分析不到）
  * ================================================================== */
-// 顶部杂字过滤：标题、搜索框、索引字母等都不是公众号名
+// 杂字过滤（来自实测页面规则）：
+//   通知栏下方只有「公众号」标题；标题之下、且非单个 A–Z/# 字母的项，必定是公众号。
+//   因此只排除「标题本身」与「右侧 A–Z/# 索引字母」，其余一律视为可点击取关的公众号——
+//   绝不用子串过滤（否则「按键精灵公众号」这类名字会被误杀而永远留着）。
 function isChrome(t) {
   if (!t) { return true; }
-  if (t.indexOf("公众号") >= 0) { return true; }   // 标题/标签
-  if (t.indexOf("订阅号") >= 0) { return true; }
-  if (t.indexOf("搜索") >= 0) { return true; }      // 顶部搜索框
-  if (t.indexOf("合集") >= 0) { return true; }
-  if (t.indexOf("最近更新") >= 0) { return true; }
-  if (t.indexOf("最近关注") >= 0) { return true; }
-  if (t.indexOf("星标") >= 0) { return true; }
+  if (t === "公众号" || t === "订阅号" || t === "订阅号消息") { return true; } // 标题本身
   if (/^[A-Za-z#]$/.test(t)) { return true; }        // 右侧 A-Z / # 索引字母
   return false;
 }
