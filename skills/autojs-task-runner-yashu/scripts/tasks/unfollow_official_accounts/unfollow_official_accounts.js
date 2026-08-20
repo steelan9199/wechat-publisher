@@ -98,7 +98,7 @@ function logCheck(actual, expect) {
 function isChrome(t) {
   if (!t) { return true; }
   if (t === "公众号" || t === "订阅号" || t === "订阅号消息") { return true; } // 标题本身
-  if (/^[A-Za-z#]$/.test(t)) { return true; }        // 右侧 A-Z / # 索引字母
+  if (/^[A-Za-z#]{1,3}$/.test(t)) { return true; }   // 右侧 A-Z / # 索引字母（含 OCR 粘连成 2~3 字母的情况，如 EF/ABC）
   return false;
 }
 // 屏幕顶部 1/3 是否含「公众号」标题 → 判定在列表页
@@ -145,8 +145,9 @@ function pickFirstAccount(det, img) {
     t = o.text;
     if (!t) { continue; }
     if (isChrome(t)) { continue; }
-    if (t.length < 2 || t.length > 20) { continue; }  // 过滤索引字母/超长预览
+    if (t.length < 2 || t.length > 40) { continue; }  // 过滤索引字母/超长预览（上限放宽到 40，避免长名公众号如「Cherry Studio 全能AI工作站」被误杀）
     if (o.bounds.top <= tb) { continue; }             // 必须在「公众号」标题下方
+    if (o.bounds.right > img.width * 0.88) { continue; } // 排除最右侧字母索引条区域（几何拦截，不依赖 OCR 文字内容）
     if (best == null || o.bounds.top < best.bounds.top) { best = o; }
   }
   return best;
