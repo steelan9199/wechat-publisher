@@ -9,7 +9,7 @@ description: "自动启停视频课程录制所需的辅助程序。激活条件
 
 - **PointerFocus** — 鼠标高亮/聚焦效果
 - **Carnac** — 实时按键显示
-- **OBS Studio** — 录屏/推流
+- **Recordly** — 录屏
 - **NVIDIA Broadcast** — AI降噪/虚拟背景
 
 ---
@@ -19,32 +19,32 @@ description: "自动启停视频课程录制所需的辅助程序。激活条件
 四个程序之间存在依赖关系，启动和关闭顺序必须严格遵守，不可随意调整：
 
 ```
-音频链路：麦克风 → NVIDIA Broadcast（降噪） → OBS（录制）
+音频链路：麦克风 → NVIDIA Broadcast（降噪） → Recordly（录制）
 ```
 
-- **NVIDIA Broadcast** 是 OBS 的音频输入源。OBS 不直接采集麦克风，而是采集 Broadcast 降噪后的音频流。
-- 因此：**Broadcast 必须在 OBS 之前启动**，确保 OBS 启动时音频源已就绪。
-- 关闭时则相反：**OBS 必须在 Broadcast 之前关闭**，避免 OBS 还在录制时音频源被切断。
+- **NVIDIA Broadcast** 是 Recordly 的音频输入源。Recordly 不直接采集麦克风，而是采集 Broadcast 降噪后的音频流。
+- 因此：**Broadcast 必须在 Recordly 之前启动**，确保 Recordly 启动时音频源已就绪。
+- 关闭时则相反：**Recordly 必须在 Broadcast 之前关闭**，避免 Recordly 还在录制时音频源被切断。
 
 启动顺序（正向，先启依赖，后启消费者）：
 
 | 顺序 | 程序             | 原因                                         |
 | ---- | ---------------- | -------------------------------------------- |
-| 1    | NVIDIA Broadcast | 音频降噪源，OBS 依赖其音频输出，必须最先启动 |
+| 1    | NVIDIA Broadcast | 音频降噪源，Recordly 依赖其音频输出，必须最先启动 |
 | 2    | PointerFocus     | 独立工具，无依赖，中间位置任意               |
 | 3    | Carnac           | 独立工具，无依赖，中间位置任意               |
-| 4    | OBS Studio       | 依赖 Broadcast 的音频流，必须最后启动        |
+| 4    | Recordly         | 依赖 Broadcast 的音频流，必须最后启动        |
 
 关闭顺序（反向，先关消费者，后关依赖）：
 
 | 顺序 | 程序             | 原因                           |
 | ---- | ---------------- | ------------------------------ |
-| 1    | OBS Studio       | 先停止录制，不再需要音频输入   |
+| 1    | Recordly         | 先停止录制，不再需要音频输入   |
 | 2    | Carnac           | 独立工具，无依赖               |
 | 3    | PointerFocus     | 独立工具，无依赖               |
 | 4    | NVIDIA Broadcast | OBS 已关闭，音频源可以安全关闭 |
 
-总结：**启动正序（Broadcast 最先，OBS 最后），关闭反序（OBS 最先，Broadcast 最后）。**
+总结：**启动正序（Broadcast 最先，Recordly 最后），关闭反序（Recordly 最先，Broadcast 最后）。**
 
 ---
 
@@ -60,7 +60,7 @@ description: "自动启停视频课程录制所需的辅助程序。激活条件
 Start-Process -FilePath "C:\Windows\explorer.exe" -ArgumentList "C:\Program Files\NVIDIA Corporation\NVIDIA Broadcast\NVIDIA Broadcast.exe"
 Start-Process -FilePath "D:\software\PointerFocus\pointerfocus2.4\PointerFocus\PointerFocus.exe" -WorkingDirectory "D:\software\PointerFocus\pointerfocus2.4\PointerFocus"
 Start-Process -FilePath "C:\Users\Administrator\AppData\Local\carnac\Carnac.exe" -WorkingDirectory "C:\Users\Administrator\AppData\Local\carnac"
-Start-Process -FilePath "D:\software\obs\obs-studio\bin\64bit\obs64.exe" -WorkingDirectory "D:\software\obs\obs-studio\bin\64bit"
+Start-Process -FilePath "C:\Users\Administrator\AppData\Local\Programs\recordly\Recordly.exe" -WorkingDirectory "C:\Users\Administrator\AppData\Local\Programs\recordly"
 ```
 
 ### 验证启动结果
@@ -68,15 +68,15 @@ Start-Process -FilePath "D:\software\obs\obs-studio\bin\64bit\obs64.exe" -Workin
 启动命令执行后，**另起一条 Bash 命令**，用 `tasklist` 验证四个进程是否都已拉起（不要用 PowerShell 输出验证，原因同关闭部分）：
 
 ```bash
-tasklist | grep -iE "obs64|Carnac|PointerFocus|NVIDIA Broadcast"
+tasklist | grep -iE "Recordly|Carnac|PointerFocus|NVIDIA Broadcast"
 ```
 
-- 应能看到 obs64、Carnac、PointerFocus、NVIDIA Broadcast 四条记录。
+- 应能看到 Recordly、Carnac、PointerFocus、NVIDIA Broadcast 四条记录。
 - 若 NVIDIA Broadcast 未出现，多半是用 `Start-Process` 直接拉导致一闪即退，需改用 `explorer.exe` 派生（见启动命令注释）。
 
 确认四个进程都正常启动后，提示用户：
 
-> 录课环境已就绪。PointerFocus、Carnac、OBS、NVIDIA Broadcast 已启动，祝录制顺利！
+> 录课环境已就绪。PointerFocus、Carnac、Recordly、NVIDIA Broadcast 已启动，祝录制顺利！
 
 ---
 
@@ -85,7 +85,7 @@ tasklist | grep -iE "obs64|Carnac|PointerFocus|NVIDIA Broadcast"
 当用户表达"视频课程录完了"意图时，按顺序强制关闭四个程序：
 
 ```powershell
-Stop-Process -Name "obs64" -Force -ErrorAction SilentlyContinue
+Stop-Process -Name "Recordly" -Force -ErrorAction SilentlyContinue
 Stop-Process -Name "Carnac" -Force -ErrorAction SilentlyContinue
 Stop-Process -Name "PointerFocus" -Force -ErrorAction SilentlyContinue
 Stop-Process -Name "NVIDIA Broadcast" -Force -ErrorAction SilentlyContinue
@@ -100,7 +100,7 @@ Stop-Process -Name "NVIDIA Broadcast" -Force -ErrorAction SilentlyContinue
 ```bash
 # 等待 1~2 秒让进程真正退出（无需更长），再核验
 sleep 2
-tasklist | grep -iE "obs64|Carnac|PointerFocus|NVIDIA Broadcast" || echo "无匹配进程（已全部关闭）"
+tasklist | grep -iE "Recordly|Carnac|PointerFocus|NVIDIA Broadcast" || echo "无匹配进程（已全部关闭）"
 ```
 
 - 输出 `无匹配进程（已全部关闭）` → 四个程序均已退出，验证通过。
@@ -115,7 +115,7 @@ tasklist | grep -iE "obs64|Carnac|PointerFocus|NVIDIA Broadcast" || echo "无匹
 ## 核心原则
 
 1. **仅 Windows 11** — 此技能硬编码了 Windows 11 的程序路径，不适用于其他系统
-2. **启动与关闭对称** — 关闭顺序与启动顺序相反（先启后关），确保依赖关系不被破坏。OBS 依赖 Broadcast 的音频输入，因此 Broadcast 最先启动、最后关闭。
+2. **启动与关闭对称** — 关闭顺序与启动顺序相反（先启后关），确保依赖关系不被破坏。Recordly 依赖 Broadcast 的音频输入，因此 Broadcast 最先启动、最后关闭。
 3. **静默错误处理** — 关闭时使用 `-ErrorAction SilentlyContinue`，避免进程已退出时报错
-4. **使用 PowerShell** — 关闭用 `Stop-Process`；启动中 PointerFocus/Carnac/OBS 用 `Start-Process`，但 **NVIDIA Broadcast 必须用 `explorer.exe` 派生启动**（见启动命令注释），直接用 `Start-Process` 拉会一闪即退。
+4. **使用 PowerShell** — 关闭用 `Stop-Process`；启动中 PointerFocus/Carnac/Recordly 用 `Start-Process`，但 **NVIDIA Broadcast 必须用 `explorer.exe` 派生启动**（见启动命令注释），直接用 `Start-Process` 拉会一闪即退。
 5. **验证一律用 Bash 的 `tasklist`** — 本环境下 PowerShell 调用的 stdout 返回为空，绝不能依赖 PowerShell 命令（`Write-Output` / `Get-Process` 等）的输出去判断进程状态，否则会反复重试、浪费大量时间。启动/关闭后都用单独的 Bash 命令跑 `tasklist | grep` 核验，简洁可靠。
