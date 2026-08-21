@@ -212,6 +212,21 @@ node <skill_dir>/scripts/scan_tasks.js --human
 
 - **写/改 JS 卡住时先翻例子库**：`scripts/autojs代码参考例子/` 下有一批 AutoJS JS 示例（UI/canvas/悬浮窗、功能、数据库等分类），遇到 API 用法或写法问题优先去那里找相似例子照抄。
 
+- **创建文件 vs 创建目录（结尾 `/` 是开关，高频坑）**：`files.createWithDirs(path)` / `files.ensureDir(path)` 用 path **最后一个字符是不是 `/`** 决定建文件还是建目录——**不带结尾 `/` 建成文件，带结尾 `/` 建成目录**；`files.exists(path)` 不受结尾 `/` 影响（底层 java.io.File 自动吃掉斜杠）。实测对照（在 `/sdcard/aabbcc` 下验证）：
+
+  | API | path 不带结尾 `/` | path 带结尾 `/` |
+  |-----|------------------|----------------|
+  | `files.createWithDirs` | 建成**文件**（isFile=true），return=true | 建成**目录**（isDirectory=true），return=false |
+  | `files.exists` | 不敏感，按物理路径判断 | 不敏感，结果与不带 `/` 一致 |
+  | `files.ensureDir` | 只建**父目录链**，target 本身不创建 | 连 **target 本身**也建成目录 |
+
+  正确用法：
+  - 建目录用 `files.createWithDirs("/sdcard/x/dir/")`（**结尾 `/` 不能漏**），漏了会建成名为 dir 的文件，后续往 `dir/xx.txt` 写就报 `ENOTDIR (Not a directory)`；
+  - 或直接用 `java.io.File(path).mkdirs()`——明确无歧义、可 `isDirectory()` 复核，最稳；
+  - 建文件所在目录链（不建文件本身）用 `files.ensureDir("/sdcard/x/dir/file.txt")`（不带结尾 `/`）；
+  - **别只看 `createWithDirs` 的 return**：带 `/` 时 return 会是 `false`（"已存在"判断的副作用），目录其实建好了，用 `isDirectory()` 复核。
+  - **实测踩坑记录**：曾因 `createWithDirs("/sdcard/aaa/bbb")` 漏掉结尾 `/`，把 bbb 建成文件，导致批量复制报 `ENOTDIR`，排查极费周折；改用 `java.io.File.mkdirs()` 后解决。
+
 - **严格 ES5：变量一律 `var`**，禁 let/const/箭头函数；
 - 参数从 `/sdcard/脚本/task_args.json` 读，禁止写死；
 - 以标准回执收尾：**⚠️ 高频坑——回执必须靠 `events.broadcast.emit("autojs_result", ...)` 广播，不是 `console.log`**。中继只监听 `autojs_result` 事件；脚本里只写 `console.log(...)`，结果 PC 端永远收不到、表现为 30 秒超时（但手机端其实跑完了）。所以回执代码块里的广播不能省、也绝不能被你改成 `console.log`：
