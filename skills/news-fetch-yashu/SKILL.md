@@ -22,7 +22,7 @@ description: 合并获取最新 AI 资讯并输出极简 JSON。触发条件：�
 ## 渠道与裁剪规则
 
 - **aihub**：AIHub 中文AI资讯（aihub.cn/news），仅保留自然日近 2 天。
-- **arxiv**：arXiv 最新 3 条论文，限定 cs.CL/cs.LG/cs.AI + LLM/生成式关键词。
+- **arxiv**：arXiv 最新 5 条论文，限定 cs.CL/cs.LG/cs.AI + LLM/生成式关键词。
 - **aibase**：AIBase 第一页「AI新闻资讯」（news.aibase.cn/news），**只取第一页全部标题**，不做时间筛选（页面时间为相对词不可靠，第一页即当天最新流）。
 
 ## 输出（stdout，单行紧凑 JSON，无额外空格）

@@ -1,7 +1,7 @@
 // news-fetch skill: 两渠道 —— arXiv 最新论文 + AIHub 中文AI资讯
 // 输出: [{ source, items }, ...]  顺序固定 aihub → arxiv
 //   - aihub : AIHub 中文AI资讯，自然日近 2 天（无 description，省 token）
-//   - arxiv : 最新 3 条 LLM/生成式论文（保留 description + authors）
+//   - arxiv : 最新 5 条 LLM/生成式论文（保留 description + authors）
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 const FETCH_TIMEOUT = 8000;
 
@@ -33,13 +33,13 @@ async function getText(url, ua) {
   }
 }
 
-// ---- arXiv: 最新 3 条 LLM/生成式论文（cs.CL/cs.LG/cs.AI）----
+// ---- arXiv: 最新 5 条 LLM/生成式论文（cs.CL/cs.LG/cs.AI）----
 function arxivUrl() {
   const cats = 'cs.CL,cs.LG,cs.AI'.split(',').map(c => `cat:${c.trim()}`).join(' OR ');
   const kw = 'abs:"large language model" OR abs:"generative AI" OR abs:"diffusion model" OR ti:LLM';
   const params = new URLSearchParams({
     search_query: `(${cats}) AND (${kw})`,
-    sortBy: 'submittedDate', sortOrder: 'descending', max_results: '3'
+    sortBy: 'submittedDate', sortOrder: 'descending', max_results: '5'
   });
   return `http://export.arxiv.org/api/query?${params.toString()}`;
 }
@@ -59,7 +59,7 @@ function parseArxiv(xml) {
 async function fetchArxiv() {
   try {
     const xml = await getText(arxivUrl());
-    return parseArxiv(xml).slice(0, 3);
+    return parseArxiv(xml).slice(0, 5);
   } catch (e) {
     console.error('[arXiv] 失败跳过:', e.message); return [];
   }
@@ -159,7 +159,7 @@ const byTimeDesc = (a, b) => (b.publishedAt || '').localeCompare(a.publishedAt |
   md.push('');
 
   // ---- arXiv ----
-  md.push('## arXiv（最新 3 条 · cs.CL/cs.LG/cs.AI + LLM/生成式）');
+  md.push('## arXiv（最新 5 条 · cs.CL/cs.LG/cs.AI + LLM/生成式）');
   md.push('');
   if (arxiv.length) {
     arxiv.forEach(it => {
