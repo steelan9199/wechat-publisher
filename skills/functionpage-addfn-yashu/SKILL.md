@@ -1,5 +1,5 @@
 ---
-name: functionpage-addfn
+name: functionpage-addfn-yashu
 description: 给本地功能网页（D:\software\functionPage）新增一个功能页面。当用户说「给功能网页加个 XX 功能」「给功能网页加一个 XX 功能」「给功能网页新增 XX 功能」时启用。功能可为纯前端（计算/复制/取色等），或需要本地 Hono 后台（server/routes/<id>.js）调用本机程序；自动创建对应文件并登记到 functions.js，首页功能列表即可见、可用。
 ---
 
@@ -44,7 +44,7 @@ functionPage/
 ```
 前端（file:// 打开）通过 `fetch('http://localhost:默认端口/api/<id>/...')` 与后台通信；后台已开 CORS（`origin: '*'`），放行 file:// 的 null 源。
 
-**端口（默认 `18787`，全文档唯一数字定义处）**：改端口只需动下方"端口怎么改"指明的入口，正文其他地方统称"默认端口"，无需改动。
+**端口（默认 `18789`，全文档唯一数字定义处）**：改端口只需动下方"端口怎么改"指明的入口，正文其他地方统称"默认端口"，无需改动。
 - 后端：`server/index.js` 的 `PORT`（读取环境变量 `PORT`，未设则回落到默认端口）。
 - 启动脚本：`start-server.bat` 的 `PORT=`（或直接 `start-server.bat <端口>` 用命令行参数覆盖）。
 - 前端页面：功能页顶部「后台地址」输入框（默认值即默认端口，改动后自动记忆到 localStorage），状态检测与发送都按框里的值走。**改端口后须让前端框里的地址与后台实际端口一致。**
