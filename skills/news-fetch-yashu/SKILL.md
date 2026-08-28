@@ -7,16 +7,10 @@ description: 合并获取最新 AI 资讯并输出极简 JSON。触发条件：�
 
 一次调用，合并三个渠道，直接输出裁剪后的结果（脚本负责最终裁剪，省 token）。
 
-## 前置条件
-
-- Node 18+，用托管运行时：
-  `C:/Users/Administrator/.workbuddy/binaries/node/versions/22.22.2/node.exe`
-- 无需任何 API 密钥（三渠道均零依赖公开抓取）。
-
 ## 标准命令（唯一模式）
 
 ```
-"node.exe" "news-fetch-yashu/scripts/news_fetch.js"
+node "news-fetch-yashu/scripts/news_fetch.js"
 ```
 
 ## 渠道与裁剪规则
