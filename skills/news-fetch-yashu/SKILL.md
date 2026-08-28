@@ -1,6 +1,6 @@
 ---
 name: news-fetch-yashu
-description: 合并获取最新 AI 资讯并输出极简 JSON。触发条件：用户或自动化请求"AI资讯"时触发。
+description: 合并获取最新 AI 资讯并输出极简 JSON。触发条件：用户或自动化请求"AI资讯"或者"AI新闻"时触发。
 ---
 
 # 新闻获取（三渠道合并）
