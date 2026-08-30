@@ -40,7 +40,7 @@ export const VERSION = "1.0.0";
  * 极速版：不读取文件内容，仅 stat 取「相对路径 + 字节大小 + 修改时间(ms)」参与哈希，
  *   文件再多也只做 O(N) 次 stat，几乎不受文件体积影响；源码改动必然改 mtime，仍能被检到。
  * 作为"老程序 / 新程序"的唯一判据，外部可通过 GET /version 获取。
- * AI 改任意源码文件（含 scan_tasks.js、任务模板 tasks 下各 .js、run_task.js 等）
+ * AI 改任意源码文件（含 scan-tasks.js、任务模板 tasks 下各 .js、run-task.js 等）
  *   → 指纹自动变化 → 触发自升级，无需手动 bump 版本号，也无需 git / 构建步骤。
  * 范围：技能根目录（scripts/ 的上一级）整体遍历；任意层级的 node_modules 均跳过
  *   （依赖不参与指纹，避免改依赖即自升级）；只哈希 .js，不碰 uploads / 截图等运行时产物。
@@ -100,7 +100,7 @@ export const UPLOAD_DIR = process.env.RELAY_UPLOAD_DIR
 
 /**
  * 电脑端【发往手机的中转目录】（PC→手机 文件下发通道专用）。
- * pc_to_phone.js 把任意本地文件复制进来（安全文件名），手机侧 send_file_to_phone 模板
+ * pc-to-phone.js 把任意本地文件复制进来（安全文件名），手机侧 send_file_to_phone 模板
  * 经 /pcfile/<name> 拉取并写入手机。放在系统临时目录（不在技能目录内），
  * 因此不参与源码构建指纹、不污染 scripts/、也不会随技能更新被误删。
  * 可用 RELAY_PC_FILE_DIR 覆盖（如换盘/调试时）。
@@ -120,7 +120,7 @@ export const MAX_PC_UPLOAD_FILES = 30;
 
 /**
  * 电脑端"AI 现场一次性脚本库"目录（<skill_dir>/temp/）：
- * AI 临时写的一次性脚本默认落这里（见 run_task.js 用法示例、SKILL.md「现场脚本规范」）。
+ * AI 临时写的一次性脚本默认落这里（见 run-task.js 用法示例、SKILL.md「现场脚本规范」）。
  * 历史版本不自动清理、靠人工管理；现加上数量上限，按修改时间只保留最新 30 个文件（不限扩展名）。
  * 可用 RELAY_TEMP_DIR 覆盖（如换盘/调试时）。
  */
@@ -144,8 +144,29 @@ export const RUN_TIMEOUT = 30000;
  * 心跳间隔（毫秒）：中继周期性给手机发 WebSocket ping 帧（协议层控制帧，
  * 不进业务消息通道、不占应用层额度），手机端 okhttp 自动回 pong。
  * 约定：每个心跳周期先把 isAlive 置 false、收到 pong 再置 true；
- * 若连续一个周期未收到 pong，isAlive 保持 false，isPhoneOnline() 据此判定为
- * 假在线/僵尸连接，使 /run 立即 503 而非干等 RUN_TIMEOUT。
- * 保守策略：超时仅标记离线，不主动 terminate 连接（避免误杀偶发慢回的手机）。
+ * 下一周期开始时若 isAlive 仍为 false（上一周期未回 pong），判定为半开/僵尸
+ * 连接并直接 terminate 强断——手机端立即感知断线、3 秒自动重连，系统自愈。
+ * 红线：不可改回"仅标记离线、不 terminate"。那会导致一次 pong 丢失后心跳
+ * 永久停发、手机端也永远不知道要重连，卡死在"PC 判离线、手机仍在线"的死局。
  */
 export const HEARTBEAT_INTERVAL = 15000;
+
+/**
+ * 应用层心跳判死阈值（毫秒）：手机端脚本引擎每 10s 发一次 {"type":"ping"}（应用层，
+ * 由引擎线程发出）。协议层 pong 由 okhttp 自动回复——引擎被杀后 pong 仍在，
+ * 探测不到引擎死亡。因此中继额外跟踪最近一次应用层 ping 的时间：超过本阈值
+ * （连续 3 拍未收到）即判定引擎已死/客户端假死，terminate 强断让状态归位。
+ * 注意：仅在收到过至少一次应用层 ping（检测器已armed）后才启用本判定，
+ * 避免误杀不发应用层 ping 的旧版客户端。红线：手机端 10s 一发的节奏不可改慢。
+ */
+export const APP_PING_STALE_MS = 35000;
+
+/**
+ * 任务单提交超时（毫秒）：/run 提交后 status 一直停在 submitted（startedAt 为空）
+ * 超过本阈值（手机未接单）→ 熔断为 failed，任务单不永久悬挂。
+ * 覆盖场景：提交瞬间手机断线、客户端假死不执行指令、中继重启后重载的历史悬挂单。
+ */
+export const SUBMIT_TIMEOUT_MS = 60000;
+
+/** 任务单熔断扫描间隔（毫秒） */
+export const SUBMIT_SWEEP_INTERVAL_MS = 5000;

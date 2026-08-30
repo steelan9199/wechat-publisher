@@ -2,7 +2,7 @@
 title: 引擎 self 识别与 isSelf 判定
 summary: 在 AutoJS6 脚本里判断"某个运行中的引擎是不是当前正在执行代码的自己"的正确方法
 read_when:
-  - 写/改任意需要"标出自己"或"保护自身不被停止"的手机模板(list_running_scripts / stop_script_by_name 等)
+  - 写/改任意需要"标出自己"或"保护自身不被停止"的手机模板(list-running-scripts / stop-script-by-name 等)
   - 遇到 isSelf / 自保护 / 跳过自身 / eng === myEngine 相关逻辑
 ---
 
@@ -19,7 +19,7 @@ var isSelf = (eng === myEngine);   // ❌ 中继下发场景下恒为 false
 ```
 **为什么错**:本技能里所有任务脚本都不是手机端直接双击运行,而是 PC 中继 → 手机常驻客户端(`autojs-task-phone-client.js`)→ `engines.execScriptFile(临时文件)` 下发给"子引擎"执行。在这个路径下,`engines.all()` 返回的引擎对象集合 与 `engines.myEngine()` 返回的当前引擎对象,**不是同一个引用实例**(AutoJs6 Rhino 已知怪癖)。于是哪怕 `eng` 逻辑上就是"自己",`===` 也判不相等,`isSelf` 永远 `false`。
 
-已踩坑证据:实测 `list_running_scripts` 回执里,真正在跑任务的临时包 `run_<ts>.js`(id 150)被标成 `isSelf:false`——它就是自己却没被认出。
+已踩坑证据:实测 `list-running-scripts` 回执里,真正在跑任务的临时包 `run_<ts>.js`(id 150)被标成 `isSelf:false`——它就是自己却没被认出。
 
 ## 对的方法:双要素匹配
 ```js
@@ -47,9 +47,9 @@ for (...) {
 ## 关键陷阱:文件名是"实际执行路径的基名",不是模板逻辑名
 `getSource()` 返回的是脚本**实际被执行的文件路径**的基名,例如:
 - 常驻客户端:`$remote/1.js`(经中继 `$remote` 通道下发,被命名成 `1.js`)
-- 任务模板:`/sdcard/脚本/tap_point.js`(PC 经 /run 下发后,手机端写到 AutoJS 默认脚本文件夹 `/sdcard/脚本/`,文件名即模板原名)
+- 任务模板:`/sdcard/脚本/tap-point.js`(PC 经 /run 下发后,手机端写到 AutoJS 默认脚本文件夹 `/sdcard/脚本/`,文件名即模板原名)
 
-`files.getName()` 取到的基名是 `1.js` / `tap_point.js`,**不是** `autojs-task-phone-client.js` / `list_running_scripts.js`。(内联 code 下发的脚本基名为固定名 `autojs_inline_task.js`,也不等于模板名。)
+`files.getName()` 取到的基名是 `1.js` / `tap-point.js`,**不是** `autojs-task-phone-client.js` / `list-running-scripts.js`。(内联 code 下发的脚本基名为固定名 `inline-task.js`,也不等于模板名。)
 
 这没问题——只要 `myEngine` 和每个 `eng` 用**同一套取法**(`getSource()` → `files.getName()`),两边拿到的是同一个基名,比较自然一致。**无需、也不能**依赖"模板逻辑名"来判断自己。
 
@@ -61,5 +61,5 @@ for (...) {
 
 ## 技能内已采用/可参考
 - `scripts/autojs-task-phone-client.js` 第 39–52 行:自身巡检即 `if (eng.id === myEngine.id)` 跳过自己(id 单要素,已验证可用)。
-- `scripts/tasks/list_running_scripts/list_running_scripts.js`:已采用上述 id+文件名 双要素(见第 49 行附近 myId/myName 计算、第 65 行附近 isSelf 计算)。
-- `scripts/tasks/stop_script_by_name/stop_script_by_name.js`:自保护(默认 `includeSelf=false` 时跳过自身)已采用双要素(见第 42 行附近 myId/myName 计算、第 55 行附近自保护判断);文件名任一侧取不到时退化为仅按 id 判定(更保守,宁错保不误杀自己),勿用 `===`。
+- `scripts/tasks/list-running-scripts/list-running-scripts.js`:已采用上述 id+文件名 双要素(见第 49 行附近 myId/myName 计算、第 65 行附近 isSelf 计算)。
+- `scripts/tasks/stop-script-by-name/stop-script-by-name.js`:自保护(默认 `includeSelf=false` 时跳过自身)已采用双要素(见第 42 行附近 myId/myName 计算、第 55 行附近自保护判断);文件名任一侧取不到时退化为仅按 id 判定(更保守,宁错保不误杀自己),勿用 `===`。

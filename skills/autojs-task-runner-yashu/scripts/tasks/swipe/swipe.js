@@ -1,7 +1,7 @@
 /**
  * swipe.js - 滑动屏幕
  *
- * 输入（/sdcard/脚本/task_args.json）:
+ * 输入（任务单注入 __TASK_ARGS_PATH，按单文件 scripts-from-computer/data/task-args/<taskId>.json）:
  *   x1 {number} 必填  起点横坐标
  *   y1 {number} 必填  起点纵坐标
  *   x2 {number} 必填  终点横坐标
@@ -14,11 +14,13 @@
  */
 
 function readArgs() {
+  // 参数唯一权威源：任务单注入的 __TASK_ARGS_PATH（scripts-from-computer/data/task-args/<taskId>.json）
   try {
-    return JSON.parse(files.read("/sdcard/脚本/task_args.json"));
-  } catch (e) {
-    return {};
-  }
+    if (typeof __TASK_ARGS_PATH !== "undefined" && __TASK_ARGS_PATH) {
+      return JSON.parse(files.read(__TASK_ARGS_PATH));
+    }
+  } catch (e) {}
+  return {};
 }
 
 var result = { ok: 0, err: "脚本未产出结果" };

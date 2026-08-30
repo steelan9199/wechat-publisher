@@ -1,7 +1,7 @@
 /**
  * wait.js - 等待（用于等界面加载 / 动画结束后再走下一步）
  *
- * 输入（/sdcard/脚本/task_args.json）:
+ * 输入（任务单注入 __TASK_ARGS_PATH，按单文件 scripts-from-computer/data/task-args/<taskId>.json）:
  *   ms {number} 必填  等待毫秒数
  * 输出:
  *   成功 {ok:1}   失败 {ok:0, err:"原因"}
@@ -10,11 +10,13 @@
  */
 
 function readArgs() {
+  // 参数唯一权威源：任务单注入的 __TASK_ARGS_PATH（scripts-from-computer/data/task-args/<taskId>.json）
   try {
-    return JSON.parse(files.read("/sdcard/脚本/task_args.json"));
-  } catch (e) {
-    return {};
-  }
+    if (typeof __TASK_ARGS_PATH !== "undefined" && __TASK_ARGS_PATH) {
+      return JSON.parse(files.read(__TASK_ARGS_PATH));
+    }
+  } catch (e) {}
+  return {};
 }
 
 var result = { ok: 0, err: "脚本未产出结果" };

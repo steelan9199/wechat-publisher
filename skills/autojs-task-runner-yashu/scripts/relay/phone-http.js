@@ -132,7 +132,7 @@ async function handlePcFile(c) {
 
   try {
     const data = await fs.readFile(filePath);
-    // 注：此处**不**在服务端自动删除（一次性删除由 PC 侧 pc_to_phone.js 在收到手机 ok 回执后负责），
+    // 注：此处**不**在服务端自动删除（一次性删除由 PC 侧 pc-to-phone.js 在收到手机 ok 回执后负责），
     // 这样手机下载失败可重试，且不会因服务端提前删除而丢失文件。
     return c.body(data, 200, {
       "Content-Type": "application/octet-stream",

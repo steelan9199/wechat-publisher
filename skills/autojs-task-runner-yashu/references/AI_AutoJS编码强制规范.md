@@ -9,15 +9,15 @@ description: 编写 AutoJS(AutoJs6/Rhino) 手机端 JS 脚本必须遵守的底�
 > 一次性现场脚本 `temp/`、可复用模板 `tasks/<name>/`、常驻客户端 `autojs-task-phone-client.js`。
 >
 > 这些规则不是"最佳实践"，是**硬约束**。违反后往往不是立刻报错，而是：
-> 脚本静默崩溃（回执为空）、UI 卡死（点不动也关不掉）、PC 端 30 秒中继超时误判失败。
+> 脚本静默崩溃（回执为空）、UI 卡死（点不动也关不掉）、任务单收不到回执（等待超时或被心跳判失败）。
 > 排错极难，**所以宁可写之前读完本篇，也不要写完靠试错**。
 
 ## AutoJS在安卓手机上的默认脚本文件夹
 
 ```js
-let sdcardPath = files.getSdcardPath();
+var sdcardPath = files.getSdcardPath();
 log("sdcardPath", sdcardPath); // sdcardPath /storage/emulated/0
-let autojs脚本文件夹 = files.join(sdcardPath, "脚本");
+var autojs脚本文件夹 = files.join(sdcardPath, "脚本");
 log(autojs脚本文件夹); // /storage/emulated/0/脚本
 ```
 
@@ -27,13 +27,23 @@ log(autojs脚本文件夹); // /storage/emulated/0/脚本
 
 1. **严格 ES5**：变量一律 `var`，禁用 `let` / `const` / 箭头函数 / 展开运算符。
 2. **UI 主线程零阻塞**：任何有延迟、有 I/O、有密集计算的代码，绝不写进 UI 线程；必须进 `threads.start` 子线程。
-3. **回执不依赖退出**：UI / 常驻类脚本用「建好即回执」，不能只靠 `events.on("exit")`（详见 SKILL.md「现场脚本规范」）。
+3. **回执不依赖退出**：UI / 常驻类脚本用「建好即回执」，不能只靠 `events.on("exit")`（详见 references/现场脚本规范.md）。
 
 ---
 
 ## 1. 语法层：严格 ES5（Rhino 引擎支持不全）
 
 AutoJs6 用的是 **Rhino** JS 引擎，对 ES6+ 支持不完整且行为不稳。**全部按 ES5 写**。
+
+### 1.0 ES6 语法使用边界（有条件放开）
+
+AutoJs6 的 Rhino 引擎**实测支持部分 ES6 语法**（已验证：`?.` 可选链可用；现行选择器 API 为
+`textMatch`，旧名 `textMatches` 已弃用）。但政策仍是**尽量少用 ES6**：
+
+- **默认一律 ES5**；只有当用户明确说「我已经测试过了，确实支持这个语法」，才允许使用该特定
+  ES6 特性，并在代码旁注明「用户实测支持」；
+- 禁止凭主观判断引入未经验证的 ES6——用户群设备与 AutoJs6 版本参差，你的机型支持不代表别人的支持；
+- 已获用户实测放行的特性清单：`?.` 可选链、`textMatch()`（正则字面量）。
 
 ### 1.3 数字字面量与颜色 `int` 溢出（高频炸点）
 
@@ -214,14 +224,14 @@ threads.start(function () {
 
 ### 2.6 可运行样例（对照学习）
 
-- `temp/color_wheel.js`：UI 主线程只做 `ui.layout` + 事件绑定 + canvas 绘制回调（绘制是 GPU 级轻量活，不 sleep 不网络）；点击取色在回调里即时算出 `#HEX`，无耗时阻塞——规范的"UI 线程该长什么样"范例。
+- `autojs代码参考例子/autojs-projects/ColorWheel/`：UI 主线程只做 `ui.layout` + 事件绑定 + canvas 绘制回调（绘制是 GPU 级轻量活，不 sleep 不网络）；点击取色在回调里即时算出 `#HEX`，无耗时阻塞——规范的"UI 线程该长什么样"范例。
 - 凡是「点按钮 → 去网络取数据 → 回显」的 UI，必套 2.3 + 2.4 的 `threads.start` + `ui.run` 骨架。
 
 ---
 
 ## 3. 回执规范（建好即回执，简引）
 
-> 完整规则与代码骨架见 SKILL.md「现场脚本规范」的 **UI / 常驻类脚本用「建好即回执」** 段，此处只提示要点：
+> 完整规则与代码骨架见 references/现场脚本规范.md 的「建好即回执」段，此处只提示要点：
 
 - **会自己跑完结束**的任务（点按钮、截图等）：标准 `events.on("exit", ...)` 回执即可。
 - **UI / 常驻类**（窗口不关就不 exit）：`ui.layout()` 成功后**立即同步** `sendResult`，`events.on("exit")` 仅作兜底。
@@ -232,10 +242,10 @@ threads.start(function () {
 ## 4. 其他高频坑（顺手记）
 
 - **截图权限前置**：凡 `captureScreen()` / `ocr()`，脚本最前必须有
-  「后台线程自动点『立即开始』+ `requestScreenCapture()` + `sleep(500)`」前置代码，否则截屏失败 / 卡死（表现为回执为空）。模板 `screenshot` / `crop_screenshot` / `ocr` 已内置，新建照 `references/截图权限与弹框处理.md` 加。
-- **参数不写死**：从 `/sdcard/脚本/task_args.json` 读，用 `JSON.parse(files.read(...))`；不要硬编码坐标 / 文本。
+  「后台线程自动点『立即开始』+ `requestScreenCapture()` + `sleep(500)`」前置代码，否则截屏失败 / 卡死（表现为回执为空）。模板 `screenshot` / `crop-screenshot` / `ocr` 已内置，新建照 `references/截图权限与弹框处理.md` 加。
+- **参数不写死**：从任务单注入的 `__TASK_ARGS_PATH` 读（`JSON.parse(files.read(...))`）；不要硬编码坐标 / 文本。
 - **勿 setInterval 保活**：经 `/run` 下发的现场脚本正常 `exit` 即可；只有常驻客户端才用 `setInterval` 保活心跳。
-- **一次一请求**：中继同一时刻只处理一个在途请求，逐步顺序下发，切勿并发下任务。
+- **一次一个 UI 任务**：run 类任务单可并发落单（回执按 taskId 归位），但手机屏幕同一时刻只能做一件事，UI 自动化任务仍逐步串行下发、切勿并发；截屏/更新客户端/删工程等同步短操作在中继侧互斥（并发返回 429）。
 
 ---
 
@@ -255,7 +265,7 @@ threads.start(function () {
 - [ ] 子线程内部有独立 `try/catch`；
 - [ ] 回执正确：UI/常驻类已「建好即回执」，`events.on("exit")` 作兜底；
 - [ ] 截图类脚本已内置权限前置代码；
-- [ ] 参数从 `task_args.json` 读取，未写死。
+- [ ] 参数从注入的 `__TASK_ARGS_PATH` 读取，未写死。
 
 > 任一勾选项不达标，下发前必须改。宁可多花 1 分钟自查，省下 30 分钟排"为什么没回执"。
 

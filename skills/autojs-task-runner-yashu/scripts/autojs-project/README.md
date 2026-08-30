@@ -16,13 +16,13 @@
 
 ```bash
 cd /c/Users/Administrator/.workbuddy/skills/autojs-task-runner-yashu && \
-  node scripts/deploy_project.js scripts/autojs-project/<工程名> --name <工程名> --args '{...}'
+  node scripts/deploy-project.js scripts/autojs-project/<工程名> --name <工程名> --args '{...}'
 ```
 
 工程较复杂（多模块 / 带资源）时，用 `--zip` 模式整体打包、只走一次传输：
 
 ```bash
-node scripts/deploy_project.js scripts/autojs-project/<工程名> --zip
+node scripts/deploy-project.js scripts/autojs-project/<工程名> --zip
 ```
 
 > 工程编码硬约束（ES5 / var only、入口回执、相对 require 由运行侧注入）详见 SKILL.md「工程代码编写规范」。

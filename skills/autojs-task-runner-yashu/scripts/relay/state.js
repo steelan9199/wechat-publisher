@@ -10,11 +10,16 @@
  *   - settle（resolve/reject）时先摘除引用再回调，避免回调里再次触发时读到脏值
  */
 
+import { APP_PING_STALE_MS } from "./config.js";
+
 /** 手机端 WebSocket 连接，未连接时为 null */
 let phoneWS = null;
 
 /** 等待手机回传的在途请求 { resolve, reject }，空闲时为 null */
 let pendingRequest = null;
+
+/** 手机端上报的 AutoJS 脚本根目录（getSdcardPath()+"/脚本" 动态拼接结果），路径事实源 */
+let scriptBaseDir = null;
 
 // ============ 手机连接 ============
 
@@ -28,11 +33,48 @@ export function setPhoneWS(ws) {
   phoneWS = ws;
 }
 
-/** 手机是否在线（readyState 1 = WebSocket.OPEN，且协议层心跳判定存活） */
+/** 获取手机端脚本根目录（未上报时为 null） */
+export function getScriptBaseDir() {
+  return scriptBaseDir;
+}
+
+/** 记录手机端脚本根目录（连接注册时上报，路径变了自动刷新） */
+export function setScriptBaseDir(dir) {
+  if (typeof dir === "string" && dir) scriptBaseDir = dir;
+}
+
+// ============ 应用层心跳（引擎存活事实源） ============
+// 手机端脚本引擎每 10s 发一次 {"type":"ping"}（phone-ws.js 收到时调 noteAppPing()）。
+// 协议层 pong 由 okhttp 自动回复——引擎死后 pong 仍在，探测不到引擎死亡；
+// 应用层 ping 停发才是引擎假死的可靠信号（实测：手动停掉客户端引擎后，
+// health 恒报 connected、任务单永久悬挂，即本机制缺失所致）。
+
+/** 最近一次应用层 ping 到达时间；null = 未armed（本连接还没收到过 ping） */
+let lastAppPingAt = null;
+
+/** 手机端应用层 ping 到达时调用（刷新时间戳） */
+export function noteAppPing() {
+  lastAppPingAt = Date.now();
+}
+
+/** 连接重建时清零：新连接视为未armed，首次应用层 ping 到达后才启用判死，
+ *  避免误杀不发应用层 ping 的旧版客户端 */
+export function resetAppPing() {
+  lastAppPingAt = null;
+}
+
+/** 应用层心跳是否新鲜（未armed 视为新鲜；超过 APP_PING_STALE_MS 视为引擎假死） */
+export function isAppPingFresh() {
+  return lastAppPingAt === null || Date.now() - lastAppPingAt < APP_PING_STALE_MS;
+}
+
+/** 手机是否在线：WS 处于 OPEN 且应用层心跳新鲜。
+ *  注意：不再把协议层 isAlive===false 当离线——那只是"已发 ping 等 pong"的窗口
+ *  （15s 一拍、持续几毫秒），按离线处理会把正常下发秒级误拒（实测踩过：
+ *  并发回归中一次下发恰撞窗口被拒，health 却恒为 connected）。真正僵死的
+ *  连接由 phone-ws 心跳在下一周期 terminate 强断，断开后本函数自然返回 false。 */
 export function isPhoneOnline() {
-  // ws.isAlive 由 phone-ws 心跳维护：undefined（非心跳 socket）视为存活，
-  // 仅显式 false（连续一个心跳周期未收到 pong）判为假在线/僵尸连接
-  return Boolean(phoneWS) && phoneWS.readyState === 1 && phoneWS.isAlive !== false;
+  return Boolean(phoneWS) && phoneWS.readyState === 1 && isAppPingFresh();
 }
 
 /**

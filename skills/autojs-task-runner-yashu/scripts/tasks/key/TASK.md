@@ -10,7 +10,7 @@ args: { "name": "string*" }
 - 误入某页用 `back` 返回；任务收尾用 `home` 回桌面；切换 App 用 `recent`。
 
 ## 什么时候不该用
-- 想关掉弹窗：优先找"关闭/X"文字用 `tap_text`，key 的 back 不一定关弹窗。
+- 想关掉弹窗：优先找"关闭/X"文字用 `tap-text`，key 的 back 不一定关弹窗。
 - 应用内"返回"按钮可能和系统的 back 行为不同，必要时用坐标点应用内按钮。
 
 ## 参数细节与坑
@@ -22,5 +22,5 @@ args: { "name": "string*" }
 
 ## 示例调用
 ```bash
-node run_task.js --path tasks/key/key.js --args '{"name":"back"}'
+node run-task.js --path tasks/key/key.js --args '{"name":"back"}'
 ```

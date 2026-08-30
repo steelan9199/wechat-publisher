@@ -7,11 +7,11 @@ args: { "ms": "number*" }
 # wait · 等待
 
 ## 使用场景
-- `open_app` / `tap_text` / `swipe` 等导致界面变化的步骤之后，给界面 500~1500ms 稳定时间。
+- `open-app` / `tap-text` / `swipe` 等导致界面变化的步骤之后，给界面 500~1500ms 稳定时间。
 - 固定轮询间隙（不推荐长等待，会拖慢任务）。
 
 ## 什么时候不该用
-- 等某个特定控件出现：用 `inspect_control_by_coord` 轮询比盲等更准。
+- 等某个特定控件出现：用 `inspect-control-by-coord` 轮询比盲等更准。
 - 大段等待（>3s）说明步骤设计可优化，考虑截图核验代替死等。
 
 ## 参数细节与坑
@@ -22,5 +22,5 @@ args: { "ms": "number*" }
 
 ## 示例调用
 ```bash
-node run_task.js --path tasks/wait/wait.js --args '{"ms":1000}'
+node run-task.js --path tasks/wait/wait.js --args '{"ms":1000}'
 ```

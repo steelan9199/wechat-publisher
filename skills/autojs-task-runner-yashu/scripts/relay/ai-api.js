@@ -3,10 +3,13 @@
  *
  * AI 聊天软件通过 HTTP 调用本模块下发指令：
  *   GET  /health      健康检查（同时被"启动自保护"用作身份识别）
- *   GET  /screenshot  触发手机截图并落盘
- *   POST /run         下发 AutoJS 脚本到手机执行并取回结果
- *   POST /run-project  运行已部署到手机的真实工程（多文件 + 资源）
- *   POST /update-client  一键更新并重启手机端客户端（免手动）
+ *   GET  /screenshot  触发手机截图并落盘（同步，短操作）
+ *   POST /run         下发 AutoJS 脚本到手机执行（异步：立即返回 taskId，结果经任务单查询）
+ *   POST /run-project  运行已部署到手机的真实工程（异步，同 /run）
+ *   GET  /task-status/:taskId  查询任务单（状态/进度/心跳/结果）
+ *   GET  /task-list    列出最近任务单
+ *   POST /task-stop   按 taskId 强制终止手机端任务引擎
+ *   POST /update-client  一键更新并重启手机端客户端（免手动，同步短操作）
  *   GET  /version     返回服务版本号
  *   GET  /pid         返回当前进程 PID（含可直接执行的结束命令）
  *   GET  /templates   纯本地扫描任务模板库，返回 {count, tasks}（不依赖手机在线）
@@ -17,7 +20,7 @@
  */
 
 import { sendJson, readBodyJson } from "./utils/http.js";
-import { scanTasks } from "../scan_tasks.js";
+import { scanTasks } from "../scan-tasks.js";
 import {
   APP_NAME,
   VERSION,
@@ -33,10 +36,18 @@ import {
   setPending,
   clearPending,
   getServer,
+  getScriptBaseDir,
   getPhoneWS,
   isShuttingDown,
   setShuttingDown,
 } from "./state.js";
+import {
+  createTask,
+  getTask,
+  listTasks,
+  finishTask,
+  publicView,
+} from "./task-registry.js";
 
 /**
  * 登记一个在途请求并挂上超时。
@@ -69,6 +80,7 @@ function handleHealth(c) {
     app: APP_NAME,
     phone: isPhoneOnline() ? "connected" : "disconnected",
     port: PORT,
+    scriptBaseDir: getScriptBaseDir(),
   });
 }
 
@@ -102,7 +114,7 @@ async function handleScreenshot(c) {
   }
 }
 
-/** POST /run —— AI 动态下发 AutoJS 脚本 */
+/** POST /run —— AI 动态下发 AutoJS 脚本（异步任务单：立即返回 taskId，不挂起等结果） */
 async function handleRun(c) {
   if (c.req.method !== "POST") {
     return c.json(
@@ -119,9 +131,6 @@ async function handleRun(c) {
       503
     );
   }
-  if (hasPending()) {
-    return c.json({ error: "已有请求在处理中，请稍后再试" }, 429);
-  }
 
   const parsed = await c.req.json().catch(() => null);
   const code = parsed ? parsed.code : undefined;
@@ -134,27 +143,34 @@ async function handleRun(c) {
     return c.json({ error: "缺少 code 或 path 字段" }, 400);
   }
 
-  // 透传给手机端；undefined 字段 JSON.stringify 会自动省略
-  sendToPhone({ action: "run", code, path: scriptPath, args });
-  console.log("[HTTP] 已发送 run 指令给手机，等待结果...");
-
-  try {
-    const result = await waitForPhone(
-      RUN_TIMEOUT,
-      "脚本执行超时（30 秒内未收到结果）"
-    );
-    return c.json({ success: true, result });
-  } catch (err) {
-    const isTimeout = err.message.includes("超时");
-    return c.json({ error: err.message }, isTimeout ? 504 : 500);
+  // 登记任务单并下发；短任务由调用方（run-task.js）轮询任务单等回执，
+  // 长任务拿到 taskId 即可返回，期间截图/点按/传文件等操作照常并发。
+  const name = scriptPath
+    ? String(scriptPath).split(/[\\/]/).pop()
+    : "inline_code";
+  const task = createTask({ kind: "run", name, args });
+  const sent = sendToPhone({
+    action: "run",
+    taskId: task.taskId,
+    code,
+    path: scriptPath,
+    args,
+  });
+  if (!sent) {
+    finishTask(task.taskId, "failed", { ok: 0, err: "手机离线，指令未送达" });
+    return c.json({ error: "手机连接中断，指令未送达" }, 503);
   }
+  console.log(
+    `[HTTP] 已下发 run 任务 ${task.taskId}（${task.name}），结果经任务单查询`
+  );
+  return c.json({ success: true, taskId: task.taskId, status: "submitted" });
 }
 
 /**
  * POST /run-project —— AI 运行已部署到手机的真实工程（多文件 + 资源，非单文件模板）
  * body: { projectName, main?, args? }
- * 手机端收到 {action:"run_project", ...} 后，拼接工程目录、运行入口 main.js，
- * 结果仍由子脚本 exit 时经 broadcast 回传（与本模块 /run 共用同一在途请求机制）。
+ * 异步任务单：立即返回 taskId；手机端运行入口 main.js，结果经 broadcast 回传、
+ * 按 taskId 归位到任务单（与 /run 同一套任务单机制）。
  */
 async function handleRunProject(c) {
   if (c.req.method !== "POST") {
@@ -166,9 +182,6 @@ async function handleRunProject(c) {
       503
     );
   }
-  if (hasPending()) {
-    return c.json({ error: "已有请求在处理中，请稍后再试" }, 429);
-  }
 
   const parsed = await c.req.json().catch(() => null);
   const projectName = parsed ? parsed.projectName : undefined;
@@ -179,19 +192,65 @@ async function handleRunProject(c) {
     return c.json({ error: "缺少 projectName 字段" }, 400);
   }
 
-  sendToPhone({ action: "run_project", projectName, main, args });
-  console.log("[HTTP] 已发送 run_project 指令给手机，等待结果...");
-
-  try {
-    const result = await waitForPhone(
-      RUN_TIMEOUT,
-      "工程执行超时（30 秒内未收到结果）"
-    );
-    return c.json({ success: true, result });
-  } catch (err) {
-    const isTimeout = err.message.includes("超时");
-    return c.json({ error: err.message }, isTimeout ? 504 : 500);
+  const task = createTask({ kind: "project", name: projectName, args });
+  const sent = sendToPhone({
+    action: "run_project",
+    taskId: task.taskId,
+    projectName,
+    main,
+    args,
+  });
+  if (!sent) {
+    finishTask(task.taskId, "failed", { ok: 0, err: "手机离线，指令未送达" });
+    return c.json({ error: "手机连接中断，指令未送达" }, 503);
   }
+  console.log(`[HTTP] 已下发 run_project 任务 ${task.taskId}（${projectName}）`);
+  return c.json({ success: true, taskId: task.taskId, status: "submitted" });
+}
+
+/** GET /task-status/:taskId —— 查询任务单（状态/进度/心跳/结果） */
+function handleTaskStatus(c) {
+  const rec = getTask(c.req.param("taskId"));
+  if (!rec) {
+    return c.json({ error: "任务单不存在（可能已被清理或单号有误）" }, 404);
+  }
+  return c.json({ success: true, task: publicView(rec) });
+}
+
+/** GET /task-list —— 列出最近任务单（?limit=N，默认 20，按提交时间倒序） */
+function handleTaskList(c) {
+  const limit = Number(c.req.query("limit")) || 20;
+  return c.json({ success: true, tasks: listTasks(limit).map(publicView) });
+}
+
+/**
+ * POST /task-stop —— 按 taskId 强制终止手机端任务引擎
+ * body: { taskId }
+ * 已终态的任务单直接返回 alreadyFinished；手机端找到引擎则 forceStop 并回报
+ * task_stopped，状态机由此落终态。
+ */
+async function handleTaskStop(c) {
+  if (c.req.method !== "POST") {
+    return c.json({ error: "请使用 POST 方法调用 /task-stop" }, 405);
+  }
+  const parsed = await c.req.json().catch(() => null);
+  const taskId = parsed ? parsed.taskId : undefined;
+  if (typeof taskId !== "string" || !taskId) {
+    return c.json({ error: "缺少 taskId 字段" }, 400);
+  }
+  const rec = getTask(taskId);
+  if (!rec) {
+    return c.json({ error: "任务单不存在（可能已被清理或单号有误）" }, 404);
+  }
+  if (rec.status === "success" || rec.status === "failed" || rec.status === "stopped") {
+    return c.json({ success: true, alreadyFinished: true, task: publicView(rec) });
+  }
+  const sent = sendToPhone({ action: "stop_task", taskId });
+  if (!sent) {
+    return c.json({ error: "手机未连接，无法下发终止指令" }, 503);
+  }
+  console.log(`[HTTP] 已下发 stop_task 指令: ${taskId}`);
+  return c.json({ success: true, taskId, msg: "终止指令已下发，状态以手机回报为准" });
 }
 
 /**
@@ -362,6 +421,9 @@ export function registerAiRoutes(app) {
   // 还原旧版"错误方法返回 405"的契约。
   app.all("/run", handleRun);
   app.all("/run-project", handleRunProject);
+  app.get("/task-status/:taskId", handleTaskStatus);
+  app.get("/task-list", handleTaskList);
+  app.all("/task-stop", handleTaskStop);
   app.all("/update-client", handleUpdateClient);
   app.all("/delete-project", handleDeleteProject);
   app.get("/version", handleVersion);

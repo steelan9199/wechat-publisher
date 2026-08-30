@@ -11,7 +11,7 @@ args: { "x1": "number*", "y1": "number*", "x2": "number*", "y2": "number*", "dur
 
 ## 什么时候不该用
 - 只是想"回到顶部/底部"，优先看 App 是否有锚点按钮。
-- 需要精确拖到某个控件，先 `inspect_control_by_coord` 拿坐标再 swipe。
+- 需要精确拖到某个控件，先 `inspect-control-by-coord` 拿坐标再 swipe。
 
 ## 参数细节与坑
 - x1/y1/x2/y2 必填数字。duration 选填，默认 500ms；太快系统可能不识别，长列表可加到 800~1200。
@@ -23,5 +23,5 @@ args: { "x1": "number*", "y1": "number*", "x2": "number*", "y2": "number*", "dur
 
 ## 示例调用
 ```bash
-node run_task.js --path tasks/swipe/swipe.js --args '{"x1":500,"y1":1500,"x2":500,"y2":500,"duration":800}'
+node run-task.js --path tasks/swipe/swipe.js --args '{"x1":500,"y1":1500,"x2":500,"y2":500,"duration":800}'
 ```

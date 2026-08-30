@@ -1,2 +1,3 @@
 # 取消忽略本项目下的 scripts/temp 目录（父级 .gitignore 中 temp/ 规则会忽略它）
 !scripts/temp/
+temp/

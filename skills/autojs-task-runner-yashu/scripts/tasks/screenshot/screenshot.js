@@ -1,31 +1,46 @@
 /**
  * screenshot.js - 整屏截图并上传到电脑
  *
- * 输入（/sdcard/脚本/task_args.json）:
- *   name   {string} 选填  上传到电脑的文件名（仅允许字母数字 _ - .，须 .png 结尾），默认 screenshot_<时间戳>.png
+ * 输入（任务单注入 __TASK_ARGS_PATH，按单文件 scripts-from-computer/data/task-args/<taskId>.json）:
+ *   name   {string} 选填  上传到电脑的文件名（仅允许字母数字 _ - .，须 .jpg 结尾），默认 screenshot_<时间戳>.jpg
  * 输出:
- *   成功 {ok:1, path:"电脑绝对路径", size:N, name:"xxx.png"}
+ *   成功 {ok:1, path:"电脑绝对路径", size:N, name:"xxx.jpg"}
  *   失败 {ok:0, err:"原因"}
  *
- * 流程: captureScreen() → images.save 存临时 PNG → http.postMultipart 上传到电脑 /upload
+ * 流程: captureScreen() → images.save 存 JPEG（质量 70，保持原始分辨率——
+ *       控件 bounds 与截图像素同坐标系，压缩不缩放，AI 读图报坐标可直接用）
+ *       → http.postMultipart 上传到电脑 /upload
+ *       1440x3200 整屏 PNG 约 5MB，JPEG q70 约 0.3~0.6MB，上传与读图显著提速。
  *
  * 上传方式: 用 AutoJS 的 http.postMultipart(url, {file: open(路径)}) 上传（AutoJS 上传文件唯一允许的方式，不转 base64）。
- * 服务器地址: 从 /sdcard/脚本/relay_config.json 读取（由手机常驻客户端连上时写入）。
+ * 服务器地址: 从 scripts-from-computer/data/relay-config.json 读取（由手机常驻客户端连上时写入）。
  *
  * 语法: ES5（var only）。单文件自包含。
  */
 
 function readArgs() {
+  // 参数唯一权威源：任务单注入的 __TASK_ARGS_PATH（scripts-from-computer/data/task-args/<taskId>.json）
   try {
-    return JSON.parse(files.read("/sdcard/脚本/task_args.json"));
-  } catch (e) {
-    return {};
-  }
+    if (typeof __TASK_ARGS_PATH !== "undefined" && __TASK_ARGS_PATH) {
+      return JSON.parse(files.read(__TASK_ARGS_PATH));
+    }
+  } catch (e) {}
+  return {};
 }
 
 function readRelayConfig() {
   try {
-    return JSON.parse(files.read("/sdcard/脚本/relay_config.json"));
+    return JSON.parse(
+      files.read(
+        files.join(
+          files.getSdcardPath(),
+          "脚本",
+          "scripts-from-computer",
+          "data",
+          "relay-config.json",
+        ),
+      ),
+    );
   } catch (e) {
     return null;
   }
@@ -37,7 +52,7 @@ function uploadBytes(filePath, name) {
   var cfg = readRelayConfig();
   if (!cfg || !cfg.serverIp) {
     throw new Error(
-      "未找到中继配置 /sdcard/脚本/relay_config.json，请先运行手机常驻客户端 autojs-task-phone-client.js",
+      "未找到中继配置 scripts-from-computer/data/relay-config.json，请先运行手机常驻客户端 autojs-task-phone-client.js",
     );
   }
   var port = cfg.serverPort || 9421;
@@ -57,33 +72,41 @@ function uploadBytes(filePath, name) {
 // 生成默认文件名（时间戳，避开 Windows 非法字符）
 function genName() {
   var ts = new Date().getTime();
-  return "screenshot_" + ts + ".png";
+  return "screenshot_" + ts + ".jpg";
 }
 
-// 过滤成服务器允许的安全文件名：仅字母数字 _ - .，并保证 .png 结尾
+// 过滤成服务器允许的安全文件名：仅字母数字 _ - .，并保证 .jpg 结尾
 function safeName(input) {
   if (typeof input !== "string" || !input) return null;
   if (!/^[A-Za-z0-9_\-\.]+$/.test(input)) return null;
-  if (!/\.png$/i.test(input)) return input + ".png";
+  if (!/\.(jpg|jpeg)$/i.test(input)) return input + ".jpg";
   return input;
 }
 
-var TEMP_IMAGE_DIR = "/sdcard/autojs_temp/images";
+var TEMP_IMAGE_DIR = files.join(files.getSdcardPath(), "autojs_temp", "images");
 var MAX_TEMP_IMAGES = 10;
 
 // 清理旧版本遗留：旧代码会把截图直接写在 /sdcard/autojs_temp/ 下（含固定名 autojs_temp_screenshot.png），
 // 新版统一放到 images 子目录。这里删掉父目录里散落的 .png，避免旧大文件继续占手机空间。
 function cleanupLegacyTempImages() {
   try {
-    var legacyDir = "/sdcard/autojs_temp";
+    var legacyDir = files.join(files.getSdcardPath(), "autojs_temp");
     if (!files.isDir(legacyDir)) return;
     var names = files.listDir(legacyDir, function (n) {
-      return /\.png$/i.test(n) && files.isFile(files.join(legacyDir, n));
+      return (
+        /\.(png|jpg|jpeg)$/i.test(n) && files.isFile(files.join(legacyDir, n))
+      );
     });
     for (var i = 0; i < names.length; i++) {
-      try { files.remove(files.join(legacyDir, names[i])); } catch (e) { /* 忽略 */ }
+      try {
+        files.remove(files.join(legacyDir, names[i]));
+      } catch (e) {
+        /* 忽略 */
+      }
     }
-  } catch (e) { /* 忽略 */ }
+  } catch (e) {
+    /* 忽略 */
+  }
 }
 
 // 确保统一图片目录存在：用文档里的 files.ensureDir，给它一个占位文件名，
@@ -91,7 +114,9 @@ function cleanupLegacyTempImages() {
 function ensureImageDir() {
   try {
     files.ensureDir(files.join(TEMP_IMAGE_DIR, ".ensure"));
-  } catch (e) { /* 忽略：目录创建失败不应阻断截图 */ }
+  } catch (e) {
+    /* 忽略：目录创建失败不应阻断截图 */
+  }
   cleanupLegacyTempImages();
 }
 
@@ -103,28 +128,42 @@ function enforceImageCap() {
   try {
     if (!files.isDir(TEMP_IMAGE_DIR)) return;
     var names = files.listDir(TEMP_IMAGE_DIR, function (n) {
-      return /\.png$/i.test(n) && files.isFile(files.join(TEMP_IMAGE_DIR, n));
+      return (
+        /\.(png|jpg|jpeg)$/i.test(n) &&
+        files.isFile(files.join(TEMP_IMAGE_DIR, n))
+      );
     });
-    var pngs = [];
+    var imgs = [];
     for (var i = 0; i < names.length; i++) {
       var p = files.join(TEMP_IMAGE_DIR, names[i]);
-      pngs.push({ name: names[i], mtime: new java.io.File(p).lastModified() });
+      imgs.push({ name: names[i], mtime: new java.io.File(p).lastModified() });
     }
-    pngs.sort(function (a, b) { return a.mtime - b.mtime; });
-    var excess = pngs.length - MAX_TEMP_IMAGES;
+    imgs.sort(function (a, b) {
+      return a.mtime - b.mtime;
+    });
+    var excess = imgs.length - MAX_TEMP_IMAGES;
     for (var j = 0; j < excess; j++) {
-      try { files.remove(files.join(TEMP_IMAGE_DIR, pngs[j].name)); } catch (e) { /* 忽略 */ }
+      try {
+        files.remove(files.join(TEMP_IMAGE_DIR, imgs[j].name));
+      } catch (e) {
+        /* 忽略 */
+      }
     }
-  } catch (e) { /* 忽略 */ }
+  } catch (e) {
+    /* 忽略 */
+  }
 }
 
 var result = { ok: 0, err: "脚本未产出结果" };
 var uploaded = false;
 try {
   var args = readArgs();
-  // 申请截图权限 + 后台线程自动点「立即开始」（详见 references/截图权限与弹框处理.md）
+  // 申请截图权限 + 后台线程正则多候选自动点掉授权按钮（文案因 ROM 而异，详见 references/截图权限与弹框处理.md）
   threads.start(function () {
-    text("立即开始").clickable(true).findOne(3000).click();
+    textMatch(/立即开始|开始截图|开始使用|立即启用|START NOW/)
+      .clickable(true)
+      .findOne(3000)
+      ?.click();
   });
   var img = null;
   if (!requestScreenCapture()) {
@@ -138,11 +177,11 @@ try {
     }
   }
   if (img) {
-    // 整屏截图直接存盘，无需裁剪
+    // 整屏截图存 JPEG 质量 70（不缩放：bounds 与截图像素同坐标系）
     var ts = new Date().getTime();
     ensureImageDir();
-    var tmpPath = TEMP_IMAGE_DIR + "/screenshot_" + ts + ".png";
-    images.save(img, tmpPath, "png");
+    var tmpPath = TEMP_IMAGE_DIR + "/screenshot_" + ts + ".jpg";
+    images.save(img, tmpPath, "jpg", 70);
     // captureScreen() 返回的图片由系统管理，无需手动 recycle（AutoJS 会自动回收）
     // AutoJS 无 length() API 取文件大小，用 Java 的 java.io.File.length()（Java 更稳更可靠）
     var sizeOnPhone = new java.io.File(tmpPath).length();
@@ -184,7 +223,11 @@ try {
   // 失败则保留（便于排查），统一由 enforceImageCap 把整个临时图片目录限制在最多 10 张，
   // 超过则按修改时间删除最旧的，避免图片无限累积占用手机空间。
   if (uploaded) {
-    try { files.remove(tmpPath); } catch (e2) { /* 忽略 */ }
+    try {
+      files.remove(tmpPath);
+    } catch (e2) {
+      /* 忽略 */
+    }
   }
   enforceImageCap();
 }
