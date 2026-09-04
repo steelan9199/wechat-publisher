@@ -95,7 +95,7 @@ disable-model-invocation: false
 - `references/手机连接排障.md` — **手机未连接五步排障**：取 IP、改 SERVER_IP、手机跑客户端、权限/WiFi 检查、连接确认（「手机未连接时的处理」完整版）。
 - `references/AI_新建模板手册.md` — **AI 新建/扩展模板总手册**：决策流程 + 分类骨架 + 核心规范 + 自检清单，照抄即可扩展新模板（详见「现场脚本规范」节引用）。
 - `references/AI_AutoJS编码强制规范.md` — **写任何手机端 JS 脚本前必读**：严格 ES5(var only)、UI 线程禁止 sleep/耗时、耗时 API 必须 `threads.start` 多线程、颜色字面量 int 溢出等底层硬约束 + 编码前自检清单。本技能最高频的"静默崩溃/卡死/超时"都源于违反它，**写/改 JS 前先读**。
-- `references/引擎_self_识别与isSelf判定.md` — **判断"某引擎是不是自己"(isSelf / 自保护)**：为什么不能用 `eng === myEngine`、正确双要素(id+文件名)判定法、防御式写法与临时名陷阱。凡写 `list-running-scripts` / `stop-script-by-name` / 任何要标 self 或自保护的模板必查。
+- `references/引擎_self_识别与isSelf判定.md` — **判断"某引擎是不是自己"(isSelf / 自保护)**：为什么不能用 `eng === myEngine`、正确的**单 id 要素**判定法（已废弃旧的 id+文件名双要素）、防御式写法与临时名陷阱，附 `id`/`source`/`cwd` 三字段真机实测取证表。凡写 `list-running-scripts` / `stop-script-by-id` / 任何要标 self 或自保护的模板必查。
 - `scripts/autojs代码参考例子/` — **AutoJS JS 代码例子库**：一批可直接参考的 .js 示例。以后写/改手机端 JS 脚本遇到 API 用法或写法问题，去 scripts/autojs代码参考例子/ 下按分类翻
 
 ## 执行 SOP（AI 必须按此顺序）

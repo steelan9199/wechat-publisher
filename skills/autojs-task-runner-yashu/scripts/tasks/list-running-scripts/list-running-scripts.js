@@ -1,16 +1,28 @@
 /**
- * list_running_scripts.js - 列出手机端当前所有正在运行的 AutoJS 脚本实例
+ * list-running-scripts.js - 列出手机端当前所有正在运行的 AutoJS 脚本实例（原始字段版）
  *
  * 输入（任务单注入 __TASK_ARGS_PATH，按单文件 scripts-from-computer/data/task-args/<taskId>.json）:
- *   （无必填参数）
- *   limit {number}      选填  最多回传几条，默认 50（防异常时刷屏，非截断隐藏）
+ *   limit {number}  选填  最多回传几条，默认 50（防异常时刷屏；真实总数永远由 total 如实报告）
  * 输出:
- *   成功 {ok:1, count:N, engines:[{name, source, cwd, id, isSelf}]}
+ *   成功 {ok:1, count:N, total:M, engines:[{id, source, cwd, isSelf}]}
+ *        count=本次回传条数，total=engines.all() 真实总数；被 limit 截断时 count<total，一眼可见
  *   失败 {ok:0, err:"原因"}
  *
- * 逻辑：engines.all() 遍历全部引擎 → getSource() 取源路径 → files.getName() 取基名；
- *       以「引擎 id + 临时文件名」双要素比对 myEngine，标出正在执行本任务的引擎(isSelf)。
- *       注意:判定 self 用 id+文件名,绝不用 eng === myEngine(引用相等在中继下发场景会失效)。
+ * 只回原始字段，不做任何派生（已删除旧的 name 派生字段）：
+ *   id     : eng.id        → number（与 eng.getId() 等价）。全局自增、进程内不复用；
+ *                           ⚠ APP 进程重启后归零重发号，只作瞬时标识，不可跨会话持久化使用
+ *   source : eng.source    → String() 后为源路径。文件脚本=绝对路径；字符串脚本=$engine/名称.js
+ *   cwd    : eng.cwd()     → 工作目录。工程脚本=工程目录；客户端下发的单脚本=客户端目录
+ *   isSelf : 仅按 id 单要素比对，不掺文件名。
+ *
+ * 为什么 isSelf 不用「id + 文件名」双要素（2026-09-04 真机实测结论）：
+ *   实测抓到 id=11 与 id=12 两个引擎，source、cwd 完全相同（同一工程重复启动）。
+ *   文件名在这种场景下无法区分实例，作为 AND 的第二要素只会平添漏判风险——
+ *   一旦 source 读取异常，AND 逻辑会把「自己」判成非自己。同进程同一时刻 id 唯一，
+ *   单要素即可。myId 取不到时全部置 isSelf:false（保守，宁可不标也不误标）。
+ *
+ * 取值依据：三场景（单脚本 / 工程 / 字符串脚本）共 9 个引擎样本实测，id/source/cwd 100% 可得。
+ * 详见 references/引擎_self_识别与isSelf判定.md。
  *
  * 语法: ES5（var only）。单文件自包含。
  */
@@ -25,23 +37,38 @@ function readArgs() {
   return {};
 }
 
-function safeCwd(eng) {
-  try {
-    var c = eng.cwd();
-    return c == null ? "" : String(c);
-  } catch (e) {
-    return "";
-  }
-}
-
+// 引擎 id：实测为 number，与 getId() 等价；只收 number / 非空 string，其余当 null
 function safeId(eng) {
   try {
-    // id 非官方稳定字段，尽力读取；非数字则忽略
     var id = eng.id;
     if (typeof id === "number") return id;
     if (typeof id === "string" && id !== "") return id;
   } catch (e) {}
   return null;
+}
+
+// 引擎源路径：优先 .source 属性（实测恒可得，返回 Java 对象需 String 转换），异常回退官方 getSource()
+function safeSource(eng) {
+  try {
+    var s = eng.source;
+    if (s !== null && s !== undefined) return String(s);
+  } catch (e) {}
+  try {
+    var s2 = eng.getSource();
+    if (s2 !== null && s2 !== undefined) return String(s2);
+  } catch (e2) {}
+  return null;
+}
+
+// 工作目录：官方 cwd()；实测恒返回字符串（工程=工程目录，单脚本=客户端目录）
+function safeCwd(eng) {
+  try {
+    var c = eng.cwd();
+    if (c === null || c === undefined) return null;
+    return String(c);
+  } catch (e) {
+    return null;
+  }
 }
 
 var result = { ok: 0, err: "脚本未产出结果" };
@@ -50,42 +77,31 @@ try {
   var limit = (typeof args.limit === "number" && args.limit > 0) ? args.limit : 50;
 
   var myEngine = engines.myEngine();
-  // 判定"自己"的双要素:引擎 id + 下发时实际执行文件的基名(如 脚本根目录(动态拼接)/tap_point.js -> tap_point.js)。
+  // 判定"自己"只用 id 单要素。
   // 严禁用 eng === myEngine(引用相等)——中继经 execScriptFile 下发子引擎时,
   // engines.all() 与 engines.myEngine() 返回的不是同一引用实例,会导致 self 永远判 false。
-  var myId = (typeof myEngine.id === "number" || typeof myEngine.id === "string") ? myEngine.id : null;
-  var myName = "";
-  try {
-    var _ms = myEngine.getSource();
-    if (_ms) myName = files.getName(_ms);
-  } catch (e) {
-    try { var _ms2 = myEngine.source; if (_ms2) myName = files.getName(_ms2); } catch (e2) {}
-  }
+  var myId = safeId(myEngine);
+
   var all = engines.all();
   if (!all) all = [];
+  var total = all.length;
 
   var list = [];
   for (var i = 0; i < all.length && list.length < limit; i++) {
     var eng = all[i];
-    var name = "(未知)";
-    var source = "";
-    try {
-      var src = eng.getSource();          // 如 "$remote/autojs-task-phone-client.js"
-      source = src == null ? "" : String(src);
-      name = files.getName(source);       // 取基名，如 "autojs-task-phone-client.js"
-    } catch (e) {
-      // 读源失败则该条 name 保留“(未知)”，source 置空，不中断整体
-    }
     var engId = safeId(eng);
-    // 双要素齐全才算"自己":id 相等 且 文件名(基名)相等。
-    var isSelf = (myId !== null && engId !== null && engId === myId)
-              && (myName !== "" && name !== "" && name === myName);
-    var item = { name: name, source: source, cwd: safeCwd(eng), isSelf: isSelf };
-    if (engId !== null) item.id = engId;
-    list.push(item);
+    // myId 取不到(null)时一律 isSelf:false——同进程内 id 唯一,单要素足够,
+    // 掺入文件名只会引入漏判(把自识别成非自己)风险。
+    var isSelf = (myId !== null && engId !== null && engId === myId);
+    list.push({
+      id: engId,
+      source: safeSource(eng),
+      cwd: safeCwd(eng),
+      isSelf: isSelf
+    });
   }
 
-  result = { ok: 1, count: list.length, engines: list };
+  result = { ok: 1, count: list.length, total: total, engines: list };
 } catch (e) {
   result = { ok: 0, err: e.toString() };
 }

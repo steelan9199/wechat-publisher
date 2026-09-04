@@ -1,0 +1,11 @@
+{
+    "name": "license-generator",
+    "main": "main.js",
+    "packageName": "org.autojs.licensegenerator",
+    "versionName": "1.0.0",
+    "versionCode": 1,
+    "ignore": [
+        "/.internal/",
+        "/node_modules/"
+    ]
+}
