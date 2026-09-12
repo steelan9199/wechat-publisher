@@ -1,0 +1,101 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.x"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify tag matches manifest version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          MANIFEST_VERSION=$(node -p "require('./manifest.json').version")
+          echo "tag=$TAG manifest=$MANIFEST_VERSION"
+          if [ "$TAG" != "$MANIFEST_VERSION" ]; then
+            echo "::error::Tag '$TAG' does not match manifest.json version '$MANIFEST_VERSION'."
+            echo "::error::Update manifest.json (and package.json) to $TAG, commit, then move the tag."
+            exit 1
+          fi
+
+      - name: Verify manifest is valid
+        run: |
+          node -e "
+          const m = require('./manifest.json');
+          const required = ['id', 'name', 'version', 'minAppVersion', 'description', 'author', 'isDesktopOnly'];
+          const missing = required.filter((k) => m[k] === undefined || m[k] === null || m[k] === '');
+          if (missing.length) {
+            console.error('Missing required manifest fields: ' + missing.join(', '));
+            process.exit(1);
+          }
+          if (/obsidian/i.test(m.id)) {
+            console.error('Plugin id must not contain \"obsidian\": ' + m.id);
+            process.exit(1);
+          }
+          if (/^obsidian/i.test(m.name)) {
+            console.error('Plugin name must not start with \"Obsidian\": ' + m.name);
+            process.exit(1);
+          }
+          if (m.description.length > 250) {
+            console.error('Description exceeds 250 characters: ' + m.description.length);
+            process.exit(1);
+          }
+          if (!m.description.endsWith('.')) {
+            console.error('Description must end with a period.');
+            process.exit(1);
+          }
+          if (!/^\d+\.\d+\.\d+$/.test(m.version)) {
+            console.error('Version must follow x.y.z: ' + m.version);
+            process.exit(1);
+          }
+          console.log('manifest.json looks good.');
+          "
+
+      - name: Typecheck and build
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          for f in main.js manifest.json; do
+            if [ ! -f "$f" ]; then
+              echo "::error::$f was not produced by the build."
+              exit 1
+            fi
+          done
+          echo "Build produced:"
+          ls -la main.js manifest.json
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "$GITHUB_REF_NAME" \
+            --generate-notes \
+            main.js manifest.json

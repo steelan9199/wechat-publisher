@@ -1,0 +1,10 @@
+{
+  "id": "my-plugin",
+  "name": "My Plugin",
+  "version": "1.0.0",
+  "minAppVersion": "1.4.0",
+  "description": "Does one thing well.",
+  "author": "github-handle",
+  "authorUrl": "https://github.com/github-handle",
+  "isDesktopOnly": true
+}
