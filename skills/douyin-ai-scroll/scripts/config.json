@@ -1,0 +1,91 @@
+{
+  "douyin_pkg": "com.ss.android.ugc.aweme",
+  "sherpa_onnx_url": "http://127.0.0.1:8000",
+  "rapidocr_url": "http://127.0.0.1:8765",
+  "media_root": "F:\\obsidian\\obsidian-data-master\\53AI手机自动化\\03AI手机看懂某音视频\\04媒体文件",
+  "listen_window_sec": 8,
+  "windows_per_video": 2,
+  "live_max_windows": 8,
+  "live_check_every": 2,
+  "like_probability": 0.2,
+  "comment_probability": 0.1,
+  "keep_audio": true,
+  "ai_vision_enabled": true,
+  "comment_templates": [
+    "有点意思",
+    "这个视频挺不错的",
+    "学到了",
+    "哈哈哈",
+    "支持一下"
+  ],
+  "ad_block_keywords": [
+    "小黄车",
+    "点击下方",
+    "点击链接",
+    "9块9",
+    "9.9",
+    "下单",
+    "购物车",
+    "橱窗",
+    "拍下",
+    "优惠券",
+    "秒杀",
+    "直播间下单",
+    "抢购"
+  ],
+  "live_keywords": [
+    "直播间",
+    "直播中",
+    "正在直播",
+    "直播发现",
+    "直播广场",
+    "小时榜",
+    "人气榜",
+    "礼物",
+    "粉丝团",
+    "福袋",
+    "连麦",
+    "付费连线",
+    "匿名连线",
+    "加入连线",
+    "直播连线",
+    "正在连线",
+    "连线中",
+    "人正在看",
+    "人气",
+    "主播",
+    "观众",
+    "说点什么",
+    "关注了主播",
+    "来了"
+  ],
+  "swipe_coords": {
+    "x1": 720,
+    "y1": 2500,
+    "x2": 720,
+    "y2": 800,
+    "duration": 400
+  },
+  "like_coord": [
+    1326,
+    1800
+  ],
+  "comment_coord": [
+    1326,
+    2100
+  ],
+  "comment_input_coord": [
+    280,
+    2930
+  ],
+  "send_comment_text": "发送",
+  "send_comment_coord": [
+    1296,
+    1776
+  ],
+  "screen_w": 1440,
+  "screen_h": 3200,
+  "capture_screenshots": true,
+  "ocr_skip_top_lines": 2,
+  "ocr_skip_bottom_lines": 2
+}
