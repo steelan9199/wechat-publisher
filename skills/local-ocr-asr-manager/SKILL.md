@@ -9,16 +9,16 @@ description: 管理本机两个本地离线 AI 服务——RapidOCR 图片文字
 
 ## 服务清单
 
-| 服务 | 简称 | 端口 | 健康检查 | 说明 |
-|---|---|---|---|---|
-| RapidOCR | ocr | 8765 | `GET http://127.0.0.1:8765/health` | 图片文字识别（PP-OCRv6，项目 venv 解释器） |
-| sherpa-onnx | asr | 8000 | `GET http://127.0.0.1:8000/health` | 音频转文字（SenseVoice，`python` 解释器） |
+| 服务 | 简称 | 端口 | 健康检查 | 固定解释器（venv） | 说明 |
+|---|---|---|---|---|---|
+| RapidOCR | ocr | 8765 | `GET http://127.0.0.1:8765/health` | `D:\software\RapidOCR\.venv\Scripts\python.exe` | 图片文字识别（PP-OCRv6） |
+| sherpa-onnx | asr | 8000 | `GET http://127.0.0.1:8000/health` | `D:\software\sherpa-onnx\.venv\Scripts\python.exe` | 音频转文字（SenseVoice） |
 
 两个服务均只监听 `127.0.0.1`，仅本机可访问，全程离线。
 
 ## 唯一入口：管理脚本
 
-所有操作通过 `scripts/service_manager.py` 完成（脚本必须用含 sherpa_onnx 的 `python` 运行）：
+所有操作通过 `scripts/service_manager.py` 完成。**脚本用任意 Python 3 运行即可**（脚本本身只用标准库；两个服务各自使用上表的固定 venv 解释器，由脚本内部自动选定，不依赖调用方 `python` 的 PATH 解析）：
 
 ```powershell
 python "<本技能目录>\scripts\service_manager.py" <action> <target>
@@ -48,9 +48,29 @@ python "<本技能目录>\scripts\service_manager.py" <action> <target>
   - `error` → 向用户说明失败原因（端口占用、解释器缺失、启动后健康检查超时），并附日志路径
 - 不要重复探测：脚本内部已完成幂等检查与启动后验证，按其输出汇报即可。
 
+## 解释器策略（跨 AI 兼容的关键设计）
+
+- 两个服务的解释器都是**固定 venv 绝对路径**（见服务清单），脚本解析顺序：**固定 venv → `sys.executable` → PATH 中 `python`/`py`**，并分别按服务校验依赖（OCR 校验 `rapidocr, fastapi`；ASR 校验 `sherpa_onnx, numpy`）。
+- 因此**无论哪个 AI 会话、其 PATH 里 `python` 解析到哪个解释器，本技能都能正常工作**：ASR 不再依赖“PATH 里恰好有装了 sherpa_onnx 的 python”。
+- 若固定 venv 被删除/损坏，脚本会回退探测并明确报错（提示见 JSON 的 `hint` 字段）。
+
+## venv 重建（仅当固定 venv 缺失或损坏时）
+
+```powershell
+# OCR（RapidOCR，需 fastapi/uvicorn 等 Web 依赖）
+uv venv "D:\software\RapidOCR\.venv"
+uv pip install --python "D:\software\RapidOCR\.venv\Scripts\python.exe" rapidocr fastapi uvicorn numpy pillow pydantic requests
+
+# ASR（sherpa-onnx，注意：asr_server.py 依赖 numpy，必须一并安装）
+uv venv "D:\software\sherpa-onnx\.venv"
+uv pip install --python "D:\software\sherpa-onnx\.venv\Scripts\python.exe" sherpa-onnx numpy
+```
+
+重建后分别验证导入：`& "…\Scripts\python.exe" -c "import rapidocr, fastapi"` 与 `import sherpa_onnx, numpy` 均无报错即恢复。
+
 ## 常见坑
 
-- **运行脚本的解释器**：用 `python`（Python 3.14.7，已装 sherpa_onnx）。OCR 服务脚本内部自动使用其 venv 解释器（`D:\software\RapidOCR\.venv\Scripts\python.exe`），ASR 使用运行脚本的解释器或探测到的可用 `python`。
+- **运行脚本的解释器**：任意 Python 3 均可，脚本内部自动使用各服务固定 venv；不要手动指定 `python` 解析，也不要用 `python` 直跑 `asr_server.py`（那样依赖 PATH 里的解释器）。
 - **服务是独立进程**：以 DETACHED 方式启动，与 AI 会话无关，会话结束服务继续运行；停止按监听端口定位 PID 后终止，不误杀其他进程。
 - **启动等待**：OCR / ASR 首次启动需加载模型（数秒），脚本会自动轮询健康检查，无需人工等待。
 - **日志位置**：OCR → `D:\software\RapidOCR\server.{out,err}.log`；ASR → `D:\software\sherpa-onnx\server.{out,err}.log`。启动失败时以 `server.err.log` 排查。

@@ -6,7 +6,7 @@
   - ocr: RapidOCR 图片文字识别   http://127.0.0.1:8765
   - asr: sherpa-onnx 音频转文字   http://127.0.0.1:8000
 
-用法（脚本需用含 sherpa_onnx 的 `python` 运行）：
+用法（脚本用任意 Python 3 运行即可，内部自动使用各服务固定 venv，不依赖调用方的 PATH）：
   python service_manager.py status  [ocr|asr|all]
   python service_manager.py start   [ocr|asr|all]   # 智能幂等：已运行则跳过
   python service_manager.py stop    [ocr|asr|all]
@@ -32,6 +32,7 @@ SERVICES = {
         "port": 8765,
         "health_url": "http://127.0.0.1:8765/health",
         "python": r"D:\software\RapidOCR\.venv\Scripts\python.exe",
+        "probe_import": "rapidocr, fastapi",
         "script": r"D:\software\RapidOCR\ocr_server.py",
         "cwd": r"D:\software\RapidOCR",
         "args": [],
@@ -44,7 +45,8 @@ SERVICES = {
         "desc": "sherpa-onnx 音频转文字",
         "port": 8000,
         "health_url": "http://127.0.0.1:8000/health",
-        "python": None,  # 运行时探测（优先 sys.executable，需含 sherpa_onnx）
+        "python": r"D:\software\sherpa-onnx\.venv\Scripts\python.exe",
+        "probe_import": "sherpa_onnx, numpy",
         "script": r"D:\software\sherpa-onnx\asr_server.py",
         "cwd": r"D:\software\sherpa-onnx",
         "args": ["8000"],
@@ -88,28 +90,37 @@ def find_pids_by_port(port):
     return sorted(pids)
 
 
+def probe_python(py, svc):
+    """校验解释器能否导入该服务所需依赖；可用返回 True"""
+    mods = svc.get("probe_import", "sherpa_onnx, numpy")
+    try:
+        r = subprocess.run(
+            [py, "-c", "import %s" % mods],
+            capture_output=True, timeout=20,
+        )
+        return r.returncode == 0
+    except Exception:
+        return False
+
+
 def resolve_python(svc):
-    """确定启动该服务使用的 Python 解释器路径；找不到返回 None"""
+    """确定启动该服务使用的 Python 解释器路径；找不到返回 None。
+    策略：优先服务自带固定 venv（对任意 AI 会话均有效），
+    固定 venv 失效时才回退到 sys.executable / PATH 中的 python。
+    """
     fixed = svc.get("python")
-    if fixed and os.path.isfile(fixed):
+    if fixed and os.path.isfile(fixed) and probe_python(fixed, svc):
         return fixed
     candidates = []
     if sys.executable:
         candidates.append(sys.executable)
     for name in ("python", "py"):
         p = shutil.which(name)
-        if p:
+        if p and p not in candidates:
             candidates.append(p)
     for cand in candidates:
-        try:
-            r = subprocess.run(
-                [cand, "-c", "import sherpa_onnx, numpy"],
-                capture_output=True, timeout=20,
-            )
-            if r.returncode == 0:
-                return cand
-        except Exception:
-            continue
+        if probe_python(cand, svc):
+            return cand
     return None
 
 
@@ -150,8 +161,9 @@ def start_service(key):
         return {
             "status": "error",
             "service": key,
-            "message": "未找到可用 Python 解释器（需含 sherpa_onnx / 对应依赖）",
-            "hint": "OCR 需 RapidOCR venv；ASR 需 `python`（3.14，已装 sherpa_onnx）",
+            "message": "未找到可用 Python 解释器（%s 依赖校验失败）" % svc.get("probe_import", ""),
+            "hint": "固定 venv 缺失或损坏：OCR 用 %s，ASR 用 %s；重建方法见 SKILL.md『venv 重建』" % (
+                SERVICES["ocr"]["python"], SERVICES["asr"]["python"]),
         }
     cmd = [py, svc["script"]] + list(svc.get("args", []))
     try:
