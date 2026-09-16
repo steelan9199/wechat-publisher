@@ -7,6 +7,13 @@
       "request": "launch",
       "program": "${workspaceFolder}/push.js",
       "console": "integratedTerminal"
+    },
+    {
+      "name": "⬇️ Pull from remote",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "git pull --ff-only origin main; exit $LASTEXITCODE",
+      "cwd": "${workspaceFolder}"
     }
   ]
 }
