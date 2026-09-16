@@ -31,6 +31,7 @@ SERVICES = {
         "desc": "RapidOCR 图片文字识别",
         "port": 8765,
         "health_url": "http://127.0.0.1:8765/health",
+        "host": "127.0.0.1",
         "python": r"D:\software\RapidOCR\.venv\Scripts\python.exe",
         "probe_import": "rapidocr, fastapi",
         "script": r"D:\software\RapidOCR\ocr_server.py",
@@ -45,6 +46,7 @@ SERVICES = {
         "desc": "sherpa-onnx 音频转文字",
         "port": 8000,
         "health_url": "http://127.0.0.1:8000/health",
+        "host": "127.0.0.1",
         "python": r"D:\software\sherpa-onnx\.venv\Scripts\python.exe",
         "probe_import": "sherpa_onnx, numpy",
         "script": r"D:\software\sherpa-onnx\asr_server.py",
@@ -55,6 +57,9 @@ SERVICES = {
         "startup_sec": 40,
     },
 }
+
+# --host 覆盖（None 表示各服务用自身默认 127.0.0.1）
+HOST_OVERRIDE = None
 
 
 def check_health(url, timeout=3):
@@ -165,7 +170,7 @@ def start_service(key):
             "hint": "固定 venv 缺失或损坏：OCR 用 %s，ASR 用 %s；重建方法见 SKILL.md『venv 重建』" % (
                 SERVICES["ocr"]["python"], SERVICES["asr"]["python"]),
         }
-    cmd = [py, svc["script"]] + list(svc.get("args", []))
+    cmd = [py, svc["script"], str(svc["port"]), HOST_OVERRIDE or svc.get("host", "127.0.0.1")]
     try:
         with open(svc["log_out"], "a", encoding="utf-8") as fo, \
                 open(svc["log_err"], "a", encoding="utf-8") as fe:
@@ -258,11 +263,15 @@ def restart_service(key):
 
 
 def main():
+    global HOST_OVERRIDE
     parser = argparse.ArgumentParser(description="本地 OCR/ASR 服务管理器")
     parser.add_argument("action", choices=["status", "start", "stop", "restart"])
     parser.add_argument("target", nargs="?", default="all",
                         choices=["ocr", "asr", "all"])
+    parser.add_argument("--host", default=None,
+                        help="服务监听地址：默认 127.0.0.1（仅本机）；传 0.0.0.0 允许局域网/手机访问（需配合防火墙放行）")
     args = parser.parse_args()
+    HOST_OVERRIDE = args.host
     keys = ["ocr", "asr"] if args.target == "all" else [args.target]
     results = {}
     for k in keys:
