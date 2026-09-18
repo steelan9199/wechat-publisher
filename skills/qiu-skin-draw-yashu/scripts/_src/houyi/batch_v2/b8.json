@@ -1,0 +1,7 @@
+{
+  "ops": [
+    {"act": "color", "color": "gray"},
+    {"act": "size", "size": "thick"},
+    {"act": "path", "points": [[1520, 1040], [1520, 1060], [1520, 1080]], "duration": 600}
+  ]
+}

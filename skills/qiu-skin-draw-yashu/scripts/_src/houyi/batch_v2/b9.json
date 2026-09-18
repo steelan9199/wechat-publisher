@@ -1,0 +1,17 @@
+{
+  "ops": [
+    {"act": "color", "color": "blue"},
+    {"act": "size", "size": "thick"},
+    {"act": "path", "points": [[1340, 710], [1340, 850], [1340, 990]], "duration": 600},
+    {"act": "color", "color": "white"},
+    {"act": "size", "size": "thin"},
+    {"act": "path", "points": [[1340, 720], [1400, 790], [1475, 875]], "duration": 700},
+    {"act": "path", "points": [[1475, 875], [1400, 930], [1340, 980]], "duration": 700},
+    {"act": "color", "color": "red"},
+    {"act": "size", "size": "thin"},
+    {"act": "path", "points": [[1475, 875], [1680, 278]], "duration": 800},
+    {"act": "color", "color": "gray"},
+    {"act": "size", "size": "thin"},
+    {"act": "path", "points": [[1462, 888], [1475, 875], [1488, 888]], "duration": 400}
+  ]
+}

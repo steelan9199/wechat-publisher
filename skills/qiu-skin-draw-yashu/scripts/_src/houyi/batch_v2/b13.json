@@ -1,0 +1,32 @@
+{
+  "ops": [
+    {"act": "color", "color": "blue"},
+    {"act": "size", "size": "thick"},
+    {"act": "path", "points": [[1475, 875], [1550, 650], [1680, 278]], "duration": 700},
+    {"act": "path", "points": [[1390, 630], [1450, 700], [1475, 875]], "duration": 500},
+    {"act": "path", "points": [[1395, 840], [1450, 860], [1475, 875]], "duration": 500},
+    {"act": "path", "points": [[1390, 620], [1460, 620], [1460, 620]], "duration": 400},
+    {"act": "path", "points": [[1390, 840], [1460, 840], [1460, 840]], "duration": 400},
+    {"act": "color", "color": "red"},
+    {"act": "size", "size": "mid"},
+    {"act": "path", "points": [
+      [1500, 580],
+      [1520, 620],
+      [1545, 660],
+      [1559, 679],
+      [1545, 700],
+      [1520, 740],
+      [1500, 780]
+    ], "duration": 1400},
+    {"act": "color", "color": "white"},
+    {"act": "size", "size": "thin"},
+    {"act": "path", "points": [[1500, 580], [1500, 720], [1500, 870]], "duration": 700},
+    {"act": "path", "points": [[1500, 780], [1500, 830], [1500, 870]], "duration": 500},
+    {"act": "color", "color": "red"},
+    {"act": "size", "size": "thin"},
+    {"act": "path", "points": [[1500, 870], [1560, 680], [1681, 279]], "duration": 900},
+    {"act": "color", "color": "gray"},
+    {"act": "size", "size": "thin"},
+    {"act": "path", "points": [[1488, 882], [1500, 870], [1512, 882]], "duration": 400}
+  ]
+}
