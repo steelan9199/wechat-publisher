@@ -1,0 +1,29 @@
+{
+  "assets": [],
+  "encryptLevel": 0,
+  "useFeatures": [],
+  "launchConfig": {
+    "displaySplash": true,
+    "hideLogs": false,
+    "splashText": "Powered by AutoJs6",
+    "stableMode": false
+  },
+  "main": "main.js",
+  "name": "ballbattle-aiplay",
+  "optimization": {
+    "removeOpenCv": false,
+    "unusedResources": false
+  },
+  "packageName": "org.autojs.autojs6.ballbattle.aiplay",
+  "scripts": {},
+  "versionCode": 5,
+  "versionName": "0.8.0",
+  "ignore": [
+    "/.internal/",
+    "/build/",
+    "/node_modules/",
+    "/out/",
+    "/declarations/",
+    "/autojs6-dts/"
+  ]
+}

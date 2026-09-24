@@ -1,0 +1,6 @@
+# 工作临时区（技能运行期产物）
+temp/
+_backup/
+
+# 依赖
+node_modules/
