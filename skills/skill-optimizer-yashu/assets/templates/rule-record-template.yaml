@@ -1,0 +1,39 @@
+# 规则卡片模板（YAML 结构示例）
+# 可复制到规则清单中；实际使用时替换尖括号内容。
+
+id: R-001
+source_text: <规则原文摘要>
+source_location:
+  file: <文件路径>
+  section: <章节>
+  line: <行号，可为范围>
+rule_type: safety # safety/legal/privacy/process/tool/format/concept/example/fact
+trigger:
+  condition: <当遇到什么场景>
+  action: <执行什么动作>
+exceptions:
+  - <不适用或改用其他规则的条件>
+rationale: <规则存在的理由>
+source:
+  type: official_document # official_document/standard/law/incident/expert/user_requirement
+  reference: <链接、文档名或事故编号>
+risk:
+  severity: medium # low/medium/high/critical
+  consequence: <违反后的后果>
+confidence: verified # verified/likely/uncertain/conflicting/outdated
+current_location: inline # inline/reference/checklist/example/script/asset
+recommended_location: reference # inline/reference/checklist/example/automation/retire
+verification:
+  method: test # test/checklist/replay/manual_review/example
+  reference: <测试或验收项编号>
+lifecycle: active # active/needs_confirmation/merge/rewrite/automate/suspend/retire/delete
+related_rules:
+  - <相关规则 ID>
+maintenance:
+  owner: <负责人，可为空>
+  last_verified: <YYYY-MM-DD>
+  review_condition: <何时复核>
+change_history:
+  - date: <YYYY-MM-DD>
+    action: <创建/改写/合并/暂停/退休>
+    reason: <原因>
