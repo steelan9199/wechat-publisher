@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>让人看呆的数学三维图形 · 公式画廊</title>
+<style>
+  :root{
+    --bg:#05070f;
+    --bg-soft:#0a0e1c;
+    --card:#0d1223;
+    --line:rgba(120,160,255,.14);
+    --txt:#e8eeff;
+    --txt-dim:#96a3c8;
+    --accent:#4fd1c5;
+    --accent2:#ffd166;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1100px 700px at 18% -8%, #16224a 0%, transparent 60%),
+      radial-gradient(900px 600px at 92% 4%, #3a1152 0%, transparent 58%),
+      var(--bg);
+    color:var(--txt);
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1220px;margin:0 auto;padding:0 24px 100px}
+
+  header{padding:86px 0 46px;text-align:center}
+  .kicker{
+    display:inline-block;font-size:12.5px;letter-spacing:.32em;
+    text-transform:uppercase;color:var(--accent);
+    border:1px solid rgba(79,209,197,.32);
+    padding:7px 18px;border-radius:999px;margin-bottom:26px;
+    background:rgba(79,209,197,.06);
+  }
+  h1{
+    margin:0 0 20px;font-size:clamp(30px,5.2vw,54px);
+    font-weight:800;letter-spacing:-.5px;line-height:1.18;
+    background:linear-gradient(100deg,#fff 8%,#7fe3d8 42%,#ffd166 78%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  header p{max-width:730px;margin:0 auto;color:var(--txt-dim);font-size:16.5px}
+  header p b{color:var(--txt);font-weight:600}
+
+  .hint{
+    display:flex;gap:12px;justify-content:center;flex-wrap:wrap;
+    margin-top:30px;font-size:13.5px;color:var(--txt-dim);
+  }
+  .hint span{
+    background:rgba(255,255,255,.035);border:1px solid var(--line);
+    padding:7px 15px;border-radius:9px;
+  }
+
+  h2.sec{
+    font-size:15px;letter-spacing:.2em;text-transform:uppercase;
+    color:var(--accent);margin:76px 0 8px;font-weight:700;
+  }
+  h2.sec + .sub{color:var(--txt-dim);font-size:14.5px;margin:0 0 30px}
+  .rule{height:1px;background:linear-gradient(90deg,transparent,var(--line) 12%,var(--line) 88%,transparent);margin:0 0 34px}
+
+  .grid{
+    display:grid;gap:26px;
+    grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+  }
+  .card{
+    background:linear-gradient(180deg,var(--card),#080c18);
+    border:1px solid var(--line);border-radius:18px;
+    overflow:hidden;display:flex;flex-direction:column;
+    transition:transform .35s cubic-bezier(.2,.8,.3,1),border-color .35s,box-shadow .35s;
+  }
+  .card:hover{
+    transform:translateY(-7px);
+    border-color:rgba(79,209,197,.45);
+    box-shadow:0 22px 56px rgba(0,0,0,.62),0 0 0 1px rgba(79,209,197,.1);
+  }
+  .shot{position:relative;aspect-ratio:1;background:#05070f;overflow:hidden}
+  .shot img{width:100%;height:100%;object-fit:cover;display:block}
+  .tag{
+    position:absolute;top:12px;left:12px;font-size:11.5px;
+    background:rgba(6,9,20,.82);border:1px solid var(--line);
+    padding:4px 11px;border-radius:999px;color:var(--txt-dim);
+    backdrop-filter:blur(8px);
+  }
+  .body{padding:20px 21px 23px;flex:1;display:flex;flex-direction:column}
+  .body h3{margin:0 0 4px;font-size:19px;font-weight:700;letter-spacing:.2px}
+  .cn{color:var(--txt-dim);font-size:13px;margin:0 0 14px}
+  .eq{
+    background:rgba(79,209,197,.055);border-left:3px solid var(--accent);
+    padding:12px 14px;border-radius:0 9px 9px 0;margin:0 0 14px;
+    font-family:"Cambria Math","Latin Modern Math",Georgia,serif;
+    font-size:14.5px;color:#cfe9ff;overflow-x:auto;line-height:1.85;
+  }
+  .eq .c{color:#7c8bb0;font-size:12.5px}
+  .body p{margin:0;font-size:14px;color:var(--txt-dim);flex:1}
+
+  .cards-2{grid-template-columns:repeat(auto-fill,minmax(460px,1fr))}
+
+  footer{
+    margin-top:84px;padding-top:34px;border-top:1px solid var(--line);
+    color:var(--txt-dim);font-size:13.5px;text-align:center;
+  }
+  footer code{
+    background:rgba(255,255,255,.06);padding:2px 7px;border-radius:5px;
+    font-size:12.5px;color:#a8e6df;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Mathematical Surfaces</div>
+  <h1>让人一眼看呆的<br>数学三维图形</h1>
+  <p>下面每一张图，都是<b>一个公式</b>画出来的。下面两张列表分别是它们背后的方程——<b>短到离谱的方程，却长出了整个宇宙</b>。</p>
+  <div class="hint">
+    <span>22 个图形</span>
+    <span>最小曲面 · 分形 · 拓扑怪胎 · 混沌吸引子</span>
+    <span>全部由 Python + 光线步进实时渲染</span>
+  </div>
+</header>
+
+<h2 class="sec">Ⅰ · 一眼惊住：极小曲面与周期结构</h2>
+<p class="sub">这类方程只有几个三角函数，却是数学里"美得不像话"的存在。</p>
+<div class="grid cards-2" id="g1"></div>
+
+<h2 class="sec">Ⅱ · 拓扑怪胎：只有一个面，却两面同时</h2>
+<p class="sub">下面这几个是真正的"数学奇观"，至今还有人看不懂它们的构造。</p>
+<div class="grid" id="g2"></div>
+
+<h2 class="sec">Ⅲ · 分形：无限细节，越看越深</h2>
+<p class="sub">自相似——整体是局部，局部又是整体，缩放到任何尺度都不糊。</p>
+<div class="grid" id="g3"></div>
+
+<h2 class="sec">Ⅳ · 混沌与吸引子：确定性里的随机</h2>
+<p class="sub">三个方程，没有一个随机数，却画出永不重复的诡异轨迹。</p>
+<div class="grid" id="g4"></div>
+
+<footer>
+  渲染：纯 Python（numpy / scipy）自写 <code>sphere tracing</code> 光线步进 +
+  软阴影 + 环境光遮蔽 + 辉光后处理 &nbsp;·&nbsp; 环境：共享 venv <code>D:\software\uv\envs\geo</code>
+</footer>
+
+</div>
+
+<script>
+const DATA = [
+  // ── Ⅰ minimal / periodic ─────────────────────────────
+  {g:"g1", k:"03_gyroid", t:"Gyroid", cn:"旋节面 / Schwarz P 曲面", tag:"极小曲面",
+   eq:"cos x·cos y + cos y·cos z + cos z·cos x = 0",
+   d:"三个余弦的和等于零。整个方程没有一个参数、没有一张图，却能无限重复铺满空间——而且是数学上<b>唯一</b>那种“三周期”结构：往三个方向重复 tiling 都无缝。它是建筑里最常被拿来做镂空造型的曲面。"},
+  {g:"g1", k:"04_schwarz_d", t:"Schwarz D", cn:"施瓦茨 D 曲面", tag:"极小曲面",
+   eq:"2cos x·cos y·cos z − cos²x − cos²y − cos²z + 1 = 0",
+   d:"和 Gyroid 同一家族的三周期极小曲面，但长相完全不同：一个不断自我穿插、像“编织物”一样的骨架。极小曲面意思是<b>平均曲率为零</b>——肥皂泡最小的自然形态就是它。"},
+  {g:"g1", k:"05_enneper", t:"Enneper", cn:"恩内珀曲面", tag:"极小曲面",
+   eq:"x = u − u³/3 + uv²<br>y = v − v³/3 + u²v<br>z = u² − v²",
+   d:"最著名的极小曲面之一，方程短到可以背下来。中央有一个无法消去的<b>奇点</b>，曲面在那里自己穿过自己，像一只被拧麻花的号角。"},
+  {g:"g1", k:"16_menger", t:"Menger Sponge", cn:"门格海绵", tag:"分形",
+   eq:"迭代 3 次：每次挖去立方体的中心与<br>6 个面中央的小立方体",
+   d:"把立方体均分 27 块，挖掉中间那块和六个面中心的小块，然后对剩下的每一块<b>重复同样的操作</b>。它的体积趋于 0，表面积却趋于无穷大——一个“无限大但没重量”的物体。"},
+  {g:"g1", k:"14_apollonian", t:"Apollonian", cn:"阿波罗尼斯球 gasket", tag:"分形",
+   eq:"反复对球做反演<br>|z| ↦ 1/ conj(z − c)",
+   d:"从五个互相相切的球出发，不断对球做“反演”变换，缝隙里会生出无穷多个小球。它是数学里<b>最密集</b>的三维分形之一，也是研究数论和动力系统的利器。"},
+  {g:"g1", k:"15_mandelbulb", t:"Mandelbulb", cn:"曼德球（8 次方）", tag:"分形",
+   eq:"z ← z⁸ + c　（不断迭代）",
+   d:"把曼德布罗集合从 2 维升到 3 维、指数改成 8 的产物。整个球体由<b>无数个小球</b>长出来，表面上的褶皱在任何缩放下都重复出现。这大概是“分形”最震撼的三维代表。"},
+
+  // ── Ⅱ topology ───────────────────────────────────────
+  {g:"g2", k:"01_klein_bottle", t:"Klein Bottle", cn:"克莱因瓶", tag:"拓扑怪胎",
+   eq:"x = (a + cos(u/2)sin v − sin(u/2)sin 2v)·cos u<br>y = (a + cos(u/2)sin v − sin(u/2)sin 2v)·sin u<br>z = sin(u/2)sin v + cos(u/2)sin 2v",
+   d:"数学史上最著名的“不可能图形”。它<b>只有一个面</b>：瓶口和瓶底是连在一起的，曲面从内侧穿出去又从外侧穿回来。在三维空间里你无法造出它，只能在四维里理解它。"},
+  {g:"g2", k:"10_boys", t:"Boy's Surface", cn:"博伊曲面", tag:"拓扑怪胎",
+   eq:"x = cos(u/2)cos v − sin(u/2)sin 2v<br>y = cos(u/2)sin v + sin(u/2)cos 2v<br>z = 2sin(u/2)",
+   d:"真实空间里“单面的”代表。它是<b>射影平面</b>在三维欧氏空间里的最佳近似浸没——著名的非可定向曲面，和克莱因瓶是拓扑学的孪生兄弟。"},
+  {g:"g2", k:"02_mobius", t:"Möbius Strip", cn:"莫比乌斯带", tag:"拓扑怪胎",
+   eq:"x = (R + v·cos(u/2))·cos u<br>y = (R + v·cos(u/2))·sin u<br>z = v·sin(u/2)",
+   d:"只有一条边、只有一个面的带子。跟着它的边走一圈，你会回到<b>出发点的反面</b>。传送带、剪纸环、建筑里的 twists 都来自它。"},
+  {g:"g2", k:"11_helicoid", t:"Helicoid", cn:"螺旋面", tag:"极小曲面",
+   eq:"r = a·θ　(绕 z 轴螺旋上升)",
+   d:"与悬链面一起，是仅有的两个可以“用纸做出来”且仍然保持极小的曲面。麦克斯托曾用它当“最小曲面”实验的标尺，公式简单到只用一行。"},
+  {g:"g2", k:"09_roman", t:"Roman Surface", cn:"罗马曲面 / Steiner 曲面", tag:"拓扑怪胎",
+   eq:"x = sin t·cos²u<br>y = sin t·sin u·cos u<br>z = cos t + ½(cos2t − 1) + ½(cos2t − 2cos²u)",
+   d:"因为在德国做过它的“原子”模型而得名。它带<b>三重对称</b>和自交点，投影看起来像一朵金属花，常出现在参数化建模的封面里。"},
+  {g:"g2", k:"22_klein_bottle_classic", t:"Klein Bottle (Bottle Form)", cn:"克莱因瓶（瓶形）", tag:"拓扑怪胎",
+   eq:"x = −(2/15)·cos u·(3cos v − 30sin u + 90cos⁴u sin u − 60cos⁶u sin u + 5cos u cos v sin u)<br>z = (2/15)(3 + 5cos u sin u)·sin v　（y 式见文档）",
+   d:"同一个克莱因瓶的另一种画法。上面那个是“<b>8 字形浸入</b>”，长成一根扭转的环管；这个是“<b>瓶形浸入</b>”，才是大众印象里那个带把手的瓶子——瓶颈弯下来、穿过瓶身再连回瓶底。两者拓扑完全相同，只是嵌进三维空间的方式不同。"},
+
+  // ── Ⅲ fractal / special ──────────────────────────────
+  {g:"g3", k:"06_superformula", t:"Superformula", cn:"超公式（Gielis）", tag:"分形",
+   eq:"r(φ) = ( |cos(mφ/4)/a|^n₂ + |sin(mφ/4)/b|^n₃ )^(−1/n₁)",
+   d:"一个公式能描述几乎所有形状：m,n 换成不同值，就从五角星变成贝壳、变成花朵、变成球。生物学里许多生物形态都能被它拟合出来。"},
+  {g:"g3", k:"08_trefoil", t:"Trefoil Knot", cn:"三叶结", tag:"拓扑",
+   eq:"x = (1 + 0.42cos3u)·cos2u<br>y = (1 + 0.42cos3u)·sin2u<br>z = 0.55·sin3u",
+   d:"最简单、最著名的<b>结</b>。它和圆环一样“闭合”，但你永远无法把它的绳头从环里抽出来——这是拓扑学里“本质不同”的第一条证据。"},
+  {g:"g3", k:"07_rose3d", t:"Rose Bloom", cn:"数学玫瑰", tag:"点云",
+   eq:"56 片凹面花瓣，方位按黄金角错开：<br>φᵢ = 2π·frac(i·0.618)，由内向外逐层摊开",
+   d:"玫瑰长不出自旋转体：把平面玫瑰线绕 z 轴转一圈，只会得到一个会转的风车。<b>名字是玫瑰，就得长得像玫瑰</b>——外瓣摊平外翻、中瓣立起、内瓣卷成花心，相邻花瓣按黄金角错位，一朵花才真的开出来。"},
+  {g:"g3", k:"13_heart", t:"Heart Surface", cn:"心形隐式曲面", tag:"隐式",
+   eq:"(x² + y² + z² − 1)³ = x²y²z²",
+   d:"一个方程画出一颗心。这是“隐式曲面”的经典例子：不给参数、不扫线，只说一句“所有满足这个等式的点都算”，形状就自己长出来了。"},
+  {g:"g3", k:"12_gabriel_horn", t:"Gabriel's Horn", cn:"加百列号角", tag:"悖论",
+   eq:"y = 1 / x　(绕 x 轴旋转)",
+   d:"用有限体积装下无限长的曲线：尾巴永远粗、永远填不满，却能塞进有限空间。这就是著名的“加百列号角悖论”，至今还在提醒人们“局部”与“整体”的关系。"},
+  {g:"g3", k:"21_orbital_f", t:"f Orbital", cn:"f 轨道（五瓣）", tag:"量子",
+   eq:"|Y₃₀| = c，Y₃₀ = cosθ(5cos²θ − 3)，c = 0.50",
+   d:"比 d 轨道多一个瓣。注意阈值 c 必须相对场的<b>实际上界</b>来设：Y₃₀ = cos3θ 上界只有 1.0，若取 0.95 则只剩极值附近，图形会塌成两片碎块。"},
+
+  // ── Ⅳ chaos ──────────────────────────────────────────
+  {g:"g4", k:"17_lorenz", t:"Lorenz Attractor", cn:"洛伦兹吸引子", tag:"混沌",
+   eq:"ẋ = σ(y − x)<br>ẏ = x(ρ − z) − y<br>ż = xy − βz<br>(σ=10, ρ=28, β=8/3)",
+   d:"蝴蝶形状的“蝴蝶效应”之源：初始值只改<b>百万分之一</b>，轨迹就完全分道扬镳。它是第一个被广泛研究的“确定性混沌”例子。"},
+  {g:"g4", k:"18_dejong", t:"de Jong Attractor", cn:"德容吸引子", tag:"混沌",
+   eq:"x' = sin(a·y) − cos(b·x)<br>y' = sin(c·x) − cos(d·y)<br>z = 0.16(x·cos0.7y + y·sin0.7y)",
+   d:"只靠两个 sin/cos 方程、没有 z 迭代，就能长出像神经丛一样的三维云。这类“随机吸引子”是用极简规则生成无限复杂图案的巅峰。"},
+  {g:"g4", k:"19_clifford", t:"Clifford Attractor", cn:"克利福德吸引子", tag:"混沌",
+   eq:"x' = sin(a·y) + c·cos(a·x)<br>y' = sin(b·x) + d·cos(b·y)<br>z' = sin(c·x) + d·cos(c·z)",
+   d:"和 de Jong 同源，改一改系数就换一种“神经质”的形态。这些图案看起来像宇宙星云或神经网络，其实只是几个三角函数的固定点。"},
+  {g:"g4", k:"20_orbital_d", t:"d Orbital", cn:"d 轨道（四瓣）", tag:"量子",
+   eq:"|Y₂₀| = c，Y₂₀ = 3cos²θ − 1，c = 0.62",
+   d:"最经典的原子轨道形状：四个瓣沿 z 轴与赤道面交替排列。它不是电子的“路径”，而是<b>概率的等值面</b>。"},
+];
+
+// remove placeholders
+const items = DATA.filter(d=>!d.hide);
+
+document.querySelectorAll(".grid").forEach(()=>{});
+items.forEach(d=>{
+  const el = document.getElementById(d.g);
+  if(!el) return;
+  const card = document.createElement("article");
+  card.className = "card";
+  card.innerHTML = `
+    <div class="shot">
+      <img src="figs/${d.k}.png" alt="${d.t}" loading="lazy">
+      <span class="tag">${d.tag}</span>
+    </div>
+    <div class="body">
+      <h3>${d.t}</h3>
+      <p class="cn">${d.cn}</p>
+      <div class="eq">${d.eq}</div>
+      <p>${d.d}</p>
+    </div>`;
+  el.appendChild(card);
+});
+</script>
+</body>
+</html>
