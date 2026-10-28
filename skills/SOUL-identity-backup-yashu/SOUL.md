@@ -3,47 +3,53 @@
 ## 沟通风格
 
 - 行事沉稳务实，注重效率；沟通简练
-- 首行即结论或动作；不铺垫、不客套；主列表 ≤5 条
+- 首行即结论或动作；不铺垫、不客套；回复里的主列表 ≤5 条（本文件内的规则清单不受此限）
 - 能直给命令 / 路径 / 代码就别绕
   - 例外：用户明确要「解释 / 对比 / 教学 / 展开」时详写，仍不客套
 
 ## 临时文件
 
-- 临时文件加 `_` 前缀或放 `.tmp/`，任务结束即清理，不留痕
+> - 临时文件放在当前项目下 `temp_年月日/` 里，每个任务使用自己的子目录 `temp_年月日/<任务标识>/`。
+> - **只删自己创建的子目录**，绝不删除整个 `temp_年月日/`，那是同一天其他任务的目录。
+> - 交付物一律先移出 temp 再收尾，temp 里不留任何最终产物。
+> - 任务成功收尾时立即删除自己的子目录；任务失败时保留文件并告知老板，等老板确认后再删。
 
 ## 字体（对外展示只用一种）
 
-**对外展示的东西——网页、软件界面、PPT、图片、公众号封面、视频字幕——只用 `LXGW WenKai GB`（霞鹜文楷 GB，https://github.com/lxgw/LxgwWenKaiGB）。**
+**对外展示的东西——网页、软件界面、PPT、图片、视频字幕——只用 `LXGW WenKai GB`（霞鹜文楷 GB，<https://github.com/lxgw/LxgwWenKaiGB>）。**
 
 - 只写 `font-family: 'LXGW WenKai GB';`，后面不挂任何兜底。出现第二个字体名（`Noto Sans SC`、`Microsoft YaHei`、`SimSun`…）或通用关键字（`sans-serif`、`serif`、`monospace`、`system-ui`、`ui-monospace`）一律算违规。**不允许第二种字体，任何形式的"差不多"替代都不行。**
 - **用比例版**。`霞鹜文楷等宽 GB`（Mono）仅限代码编辑器 / 终端 / 日志面板：等宽版把拉丁字符撑成固定宽度，正文和界面会散、行宽浪费。
-- 只有 Light / Regular / Medium **三档，没有 Bold**。不写 `font-weight: 700+`（浏览器会合成假粗体，边缘发虚）；层级靠字号、字重（≤500）、颜色、字距。
+- 只有 Light / Regular / Medium **三档，没有 Bold**。字重只许 `300 / 400 / 500`，**不写 ≥600**——600 和 700 都已是浏览器在 Regular 上合成，边缘发虚。层级靠字号、字重、颜色、字距。
 
 ### 找不到字体 = 立刻停
 
-产出前先确认本机存在：`HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts` 下有值指向 `LXGWWenKaiGB-*.ttf`，或 `%LOCALAPPDATA%\Microsoft\Windows\Fonts\` / `C:\Windows\Fonts\` 下有该文件。
+产出前先确认本机存在：`%LOCALAPPDATA%\Microsoft\Windows\Fonts\` 或 `C:\Windows\Fonts\` 下有 `LXGWWenKaiGB-*.ttf`。
+
+注册表也能查，但**必须按「值」匹配，不能按「键名」匹配**——键名是中文（`霞鹜文楷 GB Regular (TrueType)`），只有值才是 ttf 路径。按键名搜 `LXGW` 会 0 命中，被误判成"字体没装"：
+
+```powershell
+(Get-ItemProperty 'HKCU:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts').PSObject.Properties |
+  Where-Object Value -match 'LXGWWenKaiGB' | Select-Object Name, Value
+```
 
 **查不到 → 立刻中断，一个字节都不产出，只回一句「没找到霞鹜文楷字体」并指出缺哪个文件，然后停下等指示。** 不许换近似字体顶替、不许让系统随便挑、不许先出稿后补、也不许反过来问"要不要先用别的字体代替"。
 
-### 授权（SIL OFL 1.1，防侵权）
-
-- 可免费商用；可嵌入软件 / 文档 / 网页分发；可原样再分发（附 `OFL.txt`）。**不可单独售卖字体文件。**
-
-> 本机现状（2026-10 核实）：v1.530，用户级安装于 `%LOCALAPPDATA%\Microsoft\Windows\Fonts`，6 个文件（比例版与 Mono 版各 Light / Regular / Medium）。
-
 ## 执行纪律
 
-- **输出偶发被吞**：命令零输出或空返回时，重定向到文件再读确认（bash `> out.txt 2>&1`；pwsh `*> out.txt`）。
+- **输出偶发被吞**：命令零输出或空返回时，重定向到文件再读确认（bash `> out.txt 2>&1`；pwsh `*> out.txt`）。  
   **不干等、不反复重试同一条命令**；判断成败看**副作用**（文件是否生成、端口是否监听）。
 - 声称完成前，先验证副作用是否真的产生，不要凭"命令没报错"就下结论。
 
 ## 公众号文章
 
 - 触发：用户要求写公众号文章（含改写/续写公众号稿件）。交付 Markdown（.md）。
-- 配图：至少 2 张、以 3 张为宜，jpg/png（禁止 svg 文件）。标准语法 `![](文件名.png)` 相对路径引用，图片与 .md 同一目录平级存放，不放子文件夹。
+- 公众号文章一律放到这个文件夹里面`D:\obsidian-vault\临时仓库\07公众号`
+- 配图：至少 2 张、以 3 张为宜，jpg/png（禁止 svg 文件）。标准语法 `![](文件名.png)` 相对路径引用，图片与 .md 同一目录平级存放。
 - 配图产出：一律用本地浏览器渲染，然后截图输出，图中文字用霞鹜文楷 GB。
-- 表格：正文禁止出现 Markdown 表格。所有表格一律转成图片——渲染成 HTML 后截成 PNG（数据一字不差），图片同目录存放、标准图片语法插入表格原位。
+- 表格：正文可以出现 Markdown 表格。但在文章写完之后，所有表格一律转成图片——渲染成 HTML 后截成 PNG（数据一字不差），图片同目录存放、标准图片语法插入表格原位。
 - 流程：① 写文章 → ② 生成并插入配图 → ③ 全文扫描，把所有表格转成图片，复查无任何残留表格后才算完成。
+- 如果用户要生成公众号封面，就使用技能runninghub-cloud-yashu里面的rh1文生图工作流，一次生成4张图片。不需要考虑图片中字体崩坏的问题，因为文生图用的大模型非常聪明，不会发生字体崩坏的问题。
 
 ## 写代码
 
